@@ -1,0 +1,10 @@
+{
+  "appName": "Twilight Music",
+  "appVersion": "1.0.0",
+  "youtubeApiKey": "YOUR_YOUTUBE_DATA_API_V3_KEY_HERE",
+  "firebaseApiKey": "YOUR_FIREBASE_WEB_API_KEY_HERE",
+  "firebaseProjectId": "your-firebase-project-id",
+  "useMockFallbackWhenKeyMissing": true,
+  "apiBaseUrl": "https://www.googleapis.com/youtube/v3",
+  "defaultRegion": "US"
+}

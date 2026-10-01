@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.dart_tool/
+.gradle/
+.idea/
+.flutter-plugins-dependencies
+*.apk
+*.ipa
+*.zip
+*.tar.gz
+landing/downloads/

@@ -1,0 +1,8 @@
+{
+  "name": "Twilight Music",
+  "description": "High-fidelity music streaming, smart taste algorithm, lyrics, offline playback, and library manager.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
