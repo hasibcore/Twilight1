@@ -3,6 +3,7 @@ import { MusicProvider } from './context/MusicContext';
 import { Navigation, NavTab } from './components/Navigation';
 import { TopAppBar } from './components/TopAppBar';
 import { AudioPlayer } from './components/AudioPlayer';
+import { PlaylistModal } from './components/PlaylistModal';
 import { HomeScreen } from './screens/HomeScreen';
 import { ExploreScreen } from './screens/ExploreScreen';
 import { SearchScreen } from './screens/SearchScreen';
@@ -16,6 +17,7 @@ export const AppContent: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
   const [searchInitialQuery, setSearchInitialQuery] = useState<string>('');
+  const [playlistModalSong, setPlaylistModalSong] = useState<Song | null>(null);
 
   const handleSelectArtist = (artistName: string) => {
     setSelectedArtist(artistName);
@@ -62,7 +64,7 @@ export const AppContent: React.FC = () => {
             ) : currentTab === 'home' ? (
               <HomeScreen
                 onOpenSearch={() => handleOpenSearchWithQuery('')}
-                onOpenPlaylistModal={() => {}}
+                onOpenPlaylistModal={(song) => setPlaylistModalSong(song)}
                 onSelectArtist={handleSelectArtist}
                 onOpenLanding={handleOpenDownloads}
               />
@@ -74,7 +76,7 @@ export const AppContent: React.FC = () => {
             ) : currentTab === 'search' ? (
               <SearchScreen
                 initialQuery={searchInitialQuery}
-                onOpenPlaylistModal={() => {}}
+                onOpenPlaylistModal={(song) => setPlaylistModalSong(song)}
               />
             ) : currentTab === 'library' ? (
               <LibraryScreen />
@@ -89,6 +91,13 @@ export const AppContent: React.FC = () => {
 
       {/* Persistent Audio Player (Mini Docked + Full Screen Modal) */}
       <AudioPlayer />
+
+      {/* Add To Playlist Modal */}
+      <PlaylistModal
+        song={playlistModalSong}
+        isOpen={!!playlistModalSong}
+        onClose={() => setPlaylistModalSong(null)}
+      />
     </div>
   );
 };

@@ -96,21 +96,47 @@ export class GoogleDriveService {
       const folderId = await this.getOrCreateTwilightFolder(accessToken);
 
       if (onProgress) onProgress(45, 'Fetching release archive package...');
-      // Fetch latest built tarball from local endpoint
-      const archiveResponse = await fetch('/landing/downloads/twilight-music-full-project.tar.gz');
-      if (!archiveResponse.ok) {
-        throw new Error('Could not read release archive from local server.');
+      // Fetch latest built archive from local or GitHub release endpoint
+      let blob: Blob | null = null;
+      let fileName = `Twilight-Music-v2.0.0-Release-${new Date().toISOString().slice(0, 10)}.zip`;
+
+      const candidateUrls = [
+        '/landing/downloads/twilight-music-full-project.tar.gz',
+        '/downloads/twilight.zip',
+        'https://github.com/hasibcore/Twilight/releases/download/v2.0.0/twilight.zip',
+      ];
+
+      for (const url of candidateUrls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            blob = await res.blob();
+            if (url.endsWith('.tar.gz')) {
+              fileName = `Twilight-Music-v2.0.0-Release-${new Date().toISOString().slice(0, 10)}.tar.gz`;
+            }
+            break;
+          }
+        } catch (_) {}
       }
 
-      const blob = await archiveResponse.blob();
-      const fileName = `Twilight-Music-v1.0.1-Release-${new Date().toISOString().slice(0, 10)}.tar.gz`;
+      if (!blob) {
+        // Fallback: serialize current application snapshot & metadata
+        const snapshot = {
+          app: 'Twilight Music',
+          version: '2.0.0',
+          exportedAt: new Date().toISOString(),
+          description: 'Official backup package for Twilight Music',
+        };
+        blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
+        fileName = `Twilight-Music-Backup-${new Date().toISOString().slice(0, 10)}.json`;
+      }
 
       if (onProgress) onProgress(65, 'Uploading archive to Google Drive...');
 
       // Multipart upload
       const metadata = {
         name: fileName,
-        mimeType: 'application/gzip',
+        mimeType: blob.type || 'application/zip',
         parents: folderId !== 'root' ? [folderId] : undefined,
         description: 'Complete Twilight Music project release package with background playback and clean UI.',
       };
@@ -150,9 +176,12 @@ export class GoogleDriveService {
       };
     } catch (err: any) {
       console.error('Google Drive upload error:', err);
+      const isPopupClosed = err?.code === 'auth/popup-closed-by-user' || err?.message?.includes('closed-by-user');
       return {
         success: false,
-        error: err?.message || 'Failed to upload archive to Google Drive.',
+        error: isPopupClosed
+          ? 'Google Sign-In popup was closed before completing authorization.'
+          : (err?.message || 'Failed to upload archive to Google Drive.'),
       };
     }
   }

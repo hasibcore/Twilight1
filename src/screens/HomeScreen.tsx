@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Download,
   Headphones,
+  Plus,
 } from 'lucide-react';
 import { useMusic } from '../context/MusicContext';
 import { Song } from '../types';
@@ -298,6 +299,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <span className="text-xs text-slate-500 font-mono shrink-0">
                 {song.durationFormatted || '03:30'}
               </span>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenPlaylistModal(song);
+                }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                title="Add to Playlist"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
           ))}
         </div>

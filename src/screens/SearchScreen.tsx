@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search as SearchIcon, X, Play, Music, Sparkles } from 'lucide-react';
+import { Search as SearchIcon, X, Play, Music, Sparkles, History as HistoryIcon, Trash2, Plus } from 'lucide-react';
 import { useMusic } from '../context/MusicContext';
 import { Song } from '../types';
 import { MusicApi, POPULAR_FEATURED_SONGS } from '../services/musicApi';
@@ -9,11 +9,19 @@ interface SearchScreenProps {
   onOpenPlaylistModal: (song: Song) => void;
 }
 
-export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' }) => {
+export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '', onOpenPlaylistModal }) => {
   const { playSong } = useMusic();
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<Song[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('twilight_recent_searches');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const trendingTags = [
     'Acoustic Pop',
@@ -33,6 +41,15 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
       return;
     }
 
+    // Save to persistent recent searches
+    setRecentSearches((prev) => {
+      const updated = [term, ...prev.filter((t) => t.toLowerCase() !== term.toLowerCase())].slice(0, 8);
+      try {
+        localStorage.setItem('twilight_recent_searches', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
     setIsSearching(true);
     try {
       const songs = await MusicApi.searchSongs(term);
@@ -42,6 +59,13 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
     } finally {
       setIsSearching(false);
     }
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    try {
+      localStorage.removeItem('twilight_recent_searches');
+    } catch {}
   };
 
   useEffect(() => {
@@ -89,6 +113,39 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
           )}
         </div>
       </form>
+
+      {/* Recent Searches Chips */}
+      {recentSearches.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+              <HistoryIcon className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Recent Searches</span>
+            </span>
+            <button
+              onClick={clearRecentSearches}
+              className="text-[11px] text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>Clear</span>
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {recentSearches.map((term) => (
+              <button
+                key={`recent_${term}`}
+                onClick={() => {
+                  setQuery(term);
+                  handleSearch(term);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-xs text-indigo-200 hover:text-white transition-all flex items-center gap-1.5"
+              >
+                <span>{term}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Trending Search Chips */}
       <div className="space-y-2">
@@ -156,6 +213,18 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
                 <span className="text-xs text-slate-500 font-mono shrink-0">
                   {song.durationFormatted || '03:30'}
                 </span>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenPlaylistModal(song);
+                  }}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                  title="Add to Playlist"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
             ))}
           </div>

@@ -12,10 +12,12 @@ export const LibraryScreen: React.FC = () => {
     playSong,
     deletePlaylist,
     createPlaylist,
+    removeFromPlaylist,
   } = useMusic();
 
   const [activeTab, setActiveTab] = useState<'favorites' | 'playlists' | 'history' | 'downloads'>('favorites');
-  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
+  const selectedPlaylist = playlists.find((p) => p.id === selectedPlaylistId) || null;
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDesc, setNewDesc] = useState('');
@@ -45,7 +47,7 @@ export const LibraryScreen: React.FC = () => {
         <button
           onClick={() => {
             setActiveTab('favorites');
-            setSelectedPlaylist(null);
+            setSelectedPlaylistId(null);
           }}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             activeTab === 'favorites' && !selectedPlaylist
@@ -60,7 +62,7 @@ export const LibraryScreen: React.FC = () => {
         <button
           onClick={() => {
             setActiveTab('playlists');
-            setSelectedPlaylist(null);
+            setSelectedPlaylistId(null);
           }}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             activeTab === 'playlists' || selectedPlaylist
@@ -75,7 +77,7 @@ export const LibraryScreen: React.FC = () => {
         <button
           onClick={() => {
             setActiveTab('history');
-            setSelectedPlaylist(null);
+            setSelectedPlaylistId(null);
           }}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             activeTab === 'history' && !selectedPlaylist
@@ -90,7 +92,7 @@ export const LibraryScreen: React.FC = () => {
         <button
           onClick={() => {
             setActiveTab('downloads');
-            setSelectedPlaylist(null);
+            setSelectedPlaylistId(null);
           }}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all ${
             activeTab === 'downloads' && !selectedPlaylist
@@ -138,7 +140,7 @@ export const LibraryScreen: React.FC = () => {
                 </button>
               )}
               <button
-                onClick={() => setSelectedPlaylist(null)}
+                onClick={() => setSelectedPlaylistId(null)}
                 className="px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-300"
               >
                 Back to All
@@ -169,6 +171,17 @@ export const LibraryScreen: React.FC = () => {
                   <span className="text-xs text-slate-500 font-mono shrink-0">
                     {song.durationFormatted || '03:30'}
                   </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFromPlaylist(selectedPlaylist.id, song.id);
+                    }}
+                    className="p-1 rounded-lg text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove from playlist"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ))
             )}
@@ -221,7 +234,7 @@ export const LibraryScreen: React.FC = () => {
                 {playlists.map((pl) => (
                   <div
                     key={pl.id}
-                    onClick={() => setSelectedPlaylist(pl)}
+                    onClick={() => setSelectedPlaylistId(pl.id)}
                     className="group p-4 rounded-3xl bg-slate-900/60 hover:bg-slate-800/80 border border-white/5 hover:border-indigo-500/30 transition-all cursor-pointer flex flex-col justify-between"
                   >
                     <div className="flex items-center gap-3 mb-3">
