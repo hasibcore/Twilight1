@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search as SearchIcon, X, Play, Music, Sparkles } from 'lucide-react';
+import { Search as SearchIcon, X, Play, Music, Sparkles, History, Trash2 } from 'lucide-react';
 import { useMusic } from '../context/MusicContext';
 import { Song } from '../types';
 import { MusicApi, POPULAR_FEATURED_SONGS } from '../services/musicApi';
@@ -9,11 +9,21 @@ interface SearchScreenProps {
   onOpenPlaylistModal: (song: Song) => void;
 }
 
+const RECENT_SEARCHES_KEY = 'twilight_recent_searches';
+
 export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' }) => {
   const { playSong } = useMusic();
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<Song[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const trendingTags = [
     'Acoustic Pop',
@@ -26,11 +36,53 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
     'Queen Rock',
   ];
 
-  const handleSearch = async (searchTerm: string) => {
+  const saveRecentSearch = (searchTerm: string) => {
+    const term = searchTerm.trim();
+    if (!term || term.length < 2) return;
+
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((item) => item.toLowerCase() !== term.toLowerCase());
+      const updated = [term, ...filtered].slice(0, 10);
+      try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+      } catch {
+        // Ignore storage errors
+      }
+      return updated;
+    });
+  };
+
+  const removeRecentSearch = (e: React.MouseEvent, termToRemove: string) => {
+    e.stopPropagation();
+    setRecentSearches((prev) => {
+      const updated = prev.filter((term) => term !== termToRemove);
+      try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+      } catch {
+        // Ignore storage errors
+      }
+      return updated;
+    });
+  };
+
+  const clearAllRecentSearches = () => {
+    setRecentSearches([]);
+    try {
+      localStorage.removeItem(RECENT_SEARCHES_KEY);
+    } catch {
+      // Ignore storage errors
+    }
+  };
+
+  const handleSearch = async (searchTerm: string, recordToRecent = true) => {
     const term = searchTerm.trim();
     if (!term) {
       setResults([]);
       return;
+    }
+
+    if (recordToRecent) {
+      saveRecentSearch(term);
     }
 
     setIsSearching(true);
@@ -47,13 +99,13 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
   useEffect(() => {
     if (initialQuery) {
       setQuery(initialQuery);
-      handleSearch(initialQuery);
+      handleSearch(initialQuery, true);
     }
   }, [initialQuery]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSearch(query);
+    handleSearch(query, true);
   };
 
   return (
@@ -68,12 +120,12 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
             onChange={(e) => {
               setQuery(e.target.value);
               if (e.target.value.length > 2) {
-                handleSearch(e.target.value);
+                handleSearch(e.target.value, false);
               }
             }}
             placeholder="Search songs, artists, channels or genres..."
             autoFocus
-            className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm shadow-xl"
+            className="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm shadow-xl transition-all"
           />
           {query && (
             <button
@@ -82,13 +134,56 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
                 setQuery('');
                 setResults([]);
               }}
-              className="absolute right-3.5 p-1 rounded-full text-slate-400 hover:text-white hover:bg-white/10"
+              className="absolute right-3.5 p-1 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
       </form>
+
+      {/* Recent Searches Section */}
+      {recentSearches.length > 0 && (
+        <div className="space-y-2 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 tracking-wider uppercase">
+              <History className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Recent Searches</span>
+            </span>
+            <button
+              type="button"
+              onClick={clearAllRecentSearches}
+              className="text-[11px] font-medium text-slate-400 hover:text-rose-400 flex items-center gap-1 transition-colors px-2 py-0.5 rounded-md hover:bg-rose-500/10"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>Clear History</span>
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {recentSearches.map((term) => (
+              <div
+                key={term}
+                onClick={() => {
+                  setQuery(term);
+                  handleSearch(term, true);
+                }}
+                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-xs text-indigo-200 hover:text-white transition-all cursor-pointer shadow-sm"
+              >
+                <History className="w-3 h-3 text-indigo-400/70 group-hover:text-indigo-300 shrink-0" />
+                <span className="truncate max-w-[160px]">{term}</span>
+                <button
+                  type="button"
+                  onClick={(e) => removeRecentSearch(e, term)}
+                  className="p-0.5 rounded-full text-indigo-400/60 hover:text-rose-400 hover:bg-rose-500/20 transition-colors ml-0.5"
+                  title="Remove query"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Trending Search Chips */}
       <div className="space-y-2">
@@ -101,7 +196,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ initialQuery = '' })
               key={tag}
               onClick={() => {
                 setQuery(tag);
-                handleSearch(tag);
+                handleSearch(tag, true);
               }}
               className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-xs text-slate-300 hover:text-white transition-all"
             >
