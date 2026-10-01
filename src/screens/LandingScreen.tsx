@@ -199,6 +199,16 @@ export const LandingScreen: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
           <a
+            href="https://github.com/hasibcore/Twilight1/releases/tag/v1.0.1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2 transition-all"
+          >
+            <span>GitHub v1.0.1</span>
+            <ExternalLink className="w-4 h-4" />
+          </a>
+
+          <a
             href="/landing/downloads/twilight-music-full-project.tar.gz"
             download="twilight-music-full-project.tar.gz"
             className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all"
