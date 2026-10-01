@@ -129,14 +129,16 @@ export const LandingScreen: React.FC = () => {
             </p>
           </div>
 
-          <a
-            href="/landing/downloads/app-release.apk"
-            download="Twilight-Music-Android.apk"
-            className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all text-center"
-          >
-            <Download className="w-4 h-4" />
-            <span>Download APK (Android)</span>
-          </a>
+          <div className="flex flex-col gap-2">
+            <a
+              href="https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/Twilight-Android-v1.0.1.apk"
+              download="Twilight-Android-v1.0.1.apk"
+              className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all text-center"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download APK (Android)</span>
+            </a>
+          </div>
         </div>
 
         {/* Windows Card */}
@@ -151,14 +153,16 @@ export const LandingScreen: React.FC = () => {
             </p>
           </div>
 
-          <a
-            href="/landing/downloads/Twilight-Windows-x64.zip"
-            download="Twilight-Windows-x64.zip"
-            className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all text-center"
-          >
-            <Download className="w-4 h-4" />
-            <span>Download for Windows (x64)</span>
-          </a>
+          <div className="flex flex-col gap-2">
+            <a
+              href="https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/Twilight-Windows-x64-v1.0.1.zip"
+              download="Twilight-Windows-x64-v1.0.1.zip"
+              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30 transition-all text-center"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download for Windows (x64)</span>
+            </a>
+          </div>
         </div>
 
         {/* iOS Card */}
@@ -173,14 +177,16 @@ export const LandingScreen: React.FC = () => {
             </p>
           </div>
 
-          <a
-            href="/landing/downloads/Twilight-iOS.ipa"
-            download="Twilight-iOS.ipa"
-            className="w-full py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 transition-all text-center"
-          >
-            <Download className="w-4 h-4" />
-            <span>Download for iOS (IPA)</span>
-          </a>
+          <div className="flex flex-col gap-2">
+            <a
+              href="https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/Twilight-iOS-v1.0.1.ipa"
+              download="Twilight-iOS-v1.0.1.ipa"
+              className="w-full py-3 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 transition-all text-center"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download for iOS (IPA)</span>
+            </a>
+          </div>
         </div>
       </div>
 
