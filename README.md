@@ -3,10 +3,8 @@
   <h1>🌙 Twilight Music</h1>
   <p><strong>Ultra-fast cross-platform music streaming & offline player</strong></p>
   <p>
-    <a href="https://github.com/hasibcore/Twilight/releases/latest"><img src="https://img.shields.io/github/v/release/hasibcore/Twilight?style=flat-square&color=6366f1&label=Latest+Release" alt="Release"></a>
-    <a href="https://github.com/hasibcore/Twilight/releases/latest/download/app-release.apk"><img src="https://img.shields.io/badge/Android-APK-10b981?style=flat-square&logo=android" alt="Android"></a>
-    <a href="https://github.com/hasibcore/Twilight/releases/latest/download/Twilight-Windows-x64.zip"><img src="https://img.shields.io/badge/Windows-x64-0284c7?style=flat-square&logo=windows" alt="Windows"></a>
-    <a href="https://github.com/hasibcore/Twilight/releases/latest/download/Twilight-iOS.ipa"><img src="https://img.shields.io/badge/iOS-IPA-f43f5e?style=flat-square&logo=apple" alt="iOS"></a>
+    <a href="https://github.com/hasibcore/Twilight1/releases/latest"><img src="https://img.shields.io/github/v/release/hasibcore/Twilight1?style=flat-square&color=6366f1&label=Latest+Release" alt="Release"></a>
+    <a href="https://ais-dev-rgfeasve23tqacooiid4hu-89008514509.asia-southeast1.run.app"><img src="https://img.shields.io/badge/Instant%20App-Install%20(PWA)-10b981?style=flat-square&logo=googlechrome" alt="Install Web PWA"></a>
     <img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=flat-square&logo=flutter" alt="Flutter">
     <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="License">
   </p>
@@ -14,15 +12,50 @@
 
 ---
 
-## ⬇️ Downloads
+## ⬇️ Installation & Downloads
 
-| Platform | Link | Notes |
-|----------|------|-------|
-| 🤖 **Android** | [app-release.apk](https://github.com/hasibcore/Twilight/releases/latest/download/app-release.apk) | Android 7.0+ — Direct APK installer |
-| 🪟 **Windows PC** | [Twilight-Windows-x64.zip](https://github.com/hasibcore/Twilight/releases/latest/download/Twilight-Windows-x64.zip) | Windows 10/11 x64 — Portable ZIP |
-| 🍎 **iOS** | [Twilight-iOS.ipa](https://github.com/hasibcore/Twilight/releases/latest/download/Twilight-iOS.ipa) | iOS 14+ — AltStore / Sideloadly / TrollStore |
+### 1. ⚡ Instant Mobile Install (Direct on Phone, No PC required)
+You can install and use Twilight as a full-screen, offline-capable native app directly on Android or iOS:
+1. Open **[Twilight Web App](https://ais-dev-rgfeasve23tqacooiid4hu-89008514509.asia-southeast1.run.app)** in Chrome or Safari.
+2. Tap the browser menu (**⋮** or Share button) and select **"Install App"** (or **"Add to Home Screen"**).
+3. The official Twilight app is installed on your device with background audio, lockscreen controls, and zero crashes.
 
-> **All releases are built automatically via GitHub Actions on every `v*` tag push.**
+---
+
+### 2. 🤖 Build Android APK from Source (Flutter)
+
+If you want to build the native Android `.apk` directly from this repository:
+
+#### Requirements:
+- Flutter SDK (3.24 or newer)
+- Android SDK & Java 17
+
+```bash
+# Clone the repository
+git clone https://github.com/hasibcore/Twilight1.git
+cd Twilight1
+
+# Get Flutter dependencies
+flutter pub get
+
+# Build the production release APK
+flutter build apk --release
+```
+Your compiled APK will be located at:
+`build/app/outputs/flutter-apk/app-release.apk`
+You can transfer this `.apk` to any Android phone and install it directly!
+
+---
+
+### 3. 🚀 Automatic GitHub Actions Build (Free Cloud Build)
+
+To have GitHub automatically build the APK for you whenever you push code:
+1. Go to your repository **`hasibcore/Twilight1`** on GitHub.
+2. Click **Add file** > **Create new file**.
+3. Name the file: `.github/workflows/build-apk.yml`
+4. Paste the workflow configuration provided in `build-apk-template.yml`.
+5. Click **Commit changes**.
+6. Go to the **Actions** tab on GitHub; GitHub will automatically compile the Flutter APK and create a downloadable Release!
 
 ---
 
