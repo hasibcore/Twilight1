@@ -11,11 +11,17 @@ import {
   ExternalLink,
   Loader2,
   AlertCircle,
+  Sparkles,
+  Play,
 } from 'lucide-react';
 import { TwilightLogo } from '../components/TwilightLogo';
 import { GoogleDriveService, DriveUploadResult } from '../services/googleDriveService';
 
-export const LandingScreen: React.FC = () => {
+interface LandingScreenProps {
+  onNavigate?: (tab: 'home' | 'explore' | 'search' | 'library' | 'profile' | 'landing') => void;
+}
+
+export const LandingScreen: React.FC<LandingScreenProps> = ({ onNavigate }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Google Drive Upload State
@@ -131,19 +137,20 @@ export const LandingScreen: React.FC = () => {
 
           <div className="flex flex-col gap-2">
             <button
-              onClick={() => onNavigate('home')}
+              onClick={() => onNavigate ? onNavigate('home') : (window.location.href = '/')}
               className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all text-center cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
               <span>Launch & Install App (PWA)</span>
             </button>
             <a
-              href="https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/Twilight-Android-v1.0.1.apk"
-              download="Twilight-Android-v1.0.1.apk"
+              href="https://github.com/hasibcore/Twilight1"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700/60 transition-all text-center"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download Standalone APK</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>View GitHub Source & Build</span>
             </a>
           </div>
         </div>

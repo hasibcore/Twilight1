@@ -81,7 +81,7 @@ export const AppContent: React.FC = () => {
             ) : currentTab === 'profile' ? (
               <ProfileScreen />
             ) : currentTab === 'landing' ? (
-              <LandingScreen />
+              <LandingScreen onNavigate={(tab) => setCurrentTab(tab)} />
             ) : null}
           </div>
         </main>
