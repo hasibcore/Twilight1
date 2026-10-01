@@ -20,15 +20,28 @@ export class GoogleDriveService {
       return existingToken;
     }
 
-    // Request token via popup
-    const result = await signInWithPopup(auth, googleProvider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (!credential?.accessToken) {
-      throw new Error('Could not obtain Google Drive access token from sign-in.');
-    }
+    try {
+      // Request token via popup
+      const result = await signInWithPopup(auth, googleProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (!credential?.accessToken) {
+        throw new Error('Could not obtain Google Drive access token from sign-in.');
+      }
 
-    setDriveAccessToken(credential.accessToken);
-    return credential.accessToken;
+      setDriveAccessToken(credential.accessToken);
+      return credential.accessToken;
+    } catch (err: any) {
+      if (
+        err?.code === 'auth/popup-closed-by-user' ||
+        err?.code === 'auth/cancelled-popup-request' ||
+        err?.code === 'auth/popup-blocked' ||
+        err?.message?.includes('popup') ||
+        err?.message?.includes('INTERNAL ASSERTION FAILED')
+      ) {
+        throw new Error('Google sign-in popup was cancelled or blocked by the browser.');
+      }
+      throw err;
+    }
   }
 
   /**
@@ -96,13 +109,23 @@ export class GoogleDriveService {
       const folderId = await this.getOrCreateTwilightFolder(accessToken);
 
       if (onProgress) onProgress(45, 'Fetching release archive package...');
-      // Fetch latest built tarball from local endpoint
-      const archiveResponse = await fetch('/landing/downloads/twilight-music-full-project.tar.gz');
-      if (!archiveResponse.ok) {
-        throw new Error('Could not read release archive from local server.');
+      // Try local tarball first; fallback to GitHub archive tarball
+      let blob: Blob;
+      try {
+        const archiveResponse = await fetch('/landing/downloads/twilight-music-full-project.tar.gz');
+        if (archiveResponse.ok) {
+          blob = await archiveResponse.blob();
+        } else {
+          throw new Error('Local archive not found');
+        }
+      } catch {
+        const fallbackRes = await fetch('https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/twilight-music-full-project-v1.0.1.tar.gz');
+        if (!fallbackRes.ok) {
+          throw new Error('Could not retrieve release archive package.');
+        }
+        blob = await fallbackRes.blob();
       }
 
-      const blob = await archiveResponse.blob();
       const fileName = `Twilight-Music-v1.0.1-Release-${new Date().toISOString().slice(0, 10)}.tar.gz`;
 
       if (onProgress) onProgress(65, 'Uploading archive to Google Drive...');
@@ -149,10 +172,23 @@ export class GoogleDriveService {
         webViewLink: uploadedFile.webViewLink,
       };
     } catch (err: any) {
-      console.error('Google Drive upload error:', err);
+      const isCancellation =
+        err?.code === 'auth/popup-closed-by-user' ||
+        err?.code === 'auth/cancelled-popup-request' ||
+        err?.code === 'auth/popup-blocked' ||
+        err?.message?.includes('popup') ||
+        err?.message?.includes('cancelled') ||
+        err?.message?.includes('INTERNAL ASSERTION FAILED');
+
+      if (!isCancellation) {
+        console.warn('Google Drive upload info:', err?.message || err);
+      }
+
       return {
         success: false,
-        error: err?.message || 'Failed to upload archive to Google Drive.',
+        error: isCancellation
+          ? 'Google Sign-in was cancelled or blocked by the browser. You can download the archive directly via the Download button.'
+          : (err?.message || 'Failed to upload archive to Google Drive.'),
       };
     }
   }

@@ -229,8 +229,8 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onNavigate }) => {
           </a>
 
           <a
-            href="/landing/downloads/twilight-music-full-project.tar.gz"
-            download="twilight-music-full-project.tar.gz"
+            href="https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/twilight-music-full-project-v1.0.1.tar.gz"
+            download="twilight-music-full-project-v1.0.1.tar.gz"
             className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all"
           >
             <Download className="w-4 h-4" />
