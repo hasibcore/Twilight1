@@ -547,24 +547,28 @@ class PlayerProvider extends ChangeNotifier {
     _isLoading = false;
     _currentPosition = Duration.zero;
     _loadingWatchdog?.cancel();
-    _audioPlayer?.stop();
+    if (!_isTest) {
+      _audioPlayer?.stop().catchError((_) {});
+    }
     notifyListeners();
   }
 
   void seekTo(Duration position) {
     _currentPosition = position;
-    _audioPlayer?.seek(position);
+    if (!_isTest) {
+      _audioPlayer?.seek(position).catchError((_) {});
+    }
     notifyListeners();
   }
 
-  void onTrackEnded() {
+  Future<void> onTrackEnded() async {
     _errorSkipTimer?.cancel();
     _errorSkipTimer = null;
     if (_isRepeat) {
       seekTo(Duration.zero);
       play();
     } else {
-      next();
+      await next();
     }
   }
 
@@ -623,9 +627,10 @@ class PlayerProvider extends ChangeNotifier {
       } catch (e) {
         AppLogger.info('Autoplay dynamic extension fallback: $e');
       }
-      // No new tracks found — stop playback instead of silently restarting
-      _isPlaying = false;
-      notifyListeners();
+
+      // Continuous autoplay fallback: loop back to queue start to keep music playing seamlessly
+      _currentIndex = 0;
+      await playSong(_queue[0], queueIndex: 0);
     } else {
       _isPlaying = false;
       notifyListeners();
