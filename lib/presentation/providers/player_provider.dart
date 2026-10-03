@@ -40,7 +40,9 @@ class PlayerProvider extends ChangeNotifier {
   Duration _totalDuration = const Duration(minutes: 3, seconds: 30);
 
   bool _isShuffle = false;
+  List<Song>? _unshuffledQueue;
   bool _isRepeat = false;
+  bool _isTrackEnding = false;
   double _playbackSpeed = 1.0;
   String _audioQuality = 'High (256 kbps - Enhanced AAC)';
   String _equalizerPreset = 'Flat (Studio Reference)';
@@ -138,6 +140,7 @@ class PlayerProvider extends ChangeNotifier {
       });
 
       _positionSub = _audioPlayer!.positionStream.listen((pos) {
+        if (_isResolvingSong) return;
         _currentPosition = pos;
         if (_isLoading && pos > Duration.zero) {
           _isLoading = false;
@@ -154,6 +157,7 @@ class PlayerProvider extends ChangeNotifier {
       });
 
       _durationSub = _audioPlayer!.durationStream.listen((dur) {
+        if (_isResolvingSong) return;
         if (dur != null && dur > Duration.zero) {
           _totalDuration = dur;
           notifyListeners();
@@ -260,6 +264,49 @@ class PlayerProvider extends ChangeNotifier {
         } catch (_) {}
       }
 
+      // Synchronously set initial current song, 0:00 position, duration and queue
+      // so UI updates instantaneously with zero lag
+      _currentSong = song;
+      _currentPosition = Duration.zero;
+      final initialSecs = song.durationSeconds > 0 ? song.durationSeconds : 210;
+      _totalDuration = Duration(seconds: initialSecs);
+
+      int targetIndex = queueIndex ?? -1;
+      if (newQueue != null && newQueue.isNotEmpty) {
+        _unshuffledQueue = null;
+        if (targetIndex < 0 || targetIndex >= newQueue.length) {
+          targetIndex = newQueue.indexWhere((s) => s.id == song.id);
+          if (targetIndex == -1) {
+            targetIndex = newQueue.indexWhere(
+              (s) => s.title.toLowerCase().trim() == song.title.toLowerCase().trim(),
+            );
+          }
+        }
+        _queue = List.from(newQueue);
+        if (targetIndex >= 0 && targetIndex < _queue.length) {
+          _currentIndex = targetIndex;
+          _queue[_currentIndex] = song;
+        } else {
+          _queue.insert(0, song);
+          _currentIndex = 0;
+        }
+      } else {
+        if (targetIndex >= 0 && targetIndex < _queue.length) {
+          _currentIndex = targetIndex;
+          _queue[_currentIndex] = song;
+        } else {
+          final existingIndex = _queue.indexWhere((s) => s.id == song.id);
+          if (existingIndex != -1) {
+            _currentIndex = existingIndex;
+            _queue[_currentIndex] = song;
+          } else {
+            _queue.add(song);
+            _currentIndex = _queue.length - 1;
+          }
+        }
+      }
+      notifyListeners();
+
       Song effectiveSong = song;
       String cleanId = effectiveSong.id.trim();
       try {
@@ -297,13 +344,17 @@ class PlayerProvider extends ChangeNotifier {
         } catch (_) {}
 
         if (cleanId.length != 11) {
+          final client = http.Client();
           try {
-            final ytDatasource = YouTubeRemoteDatasource(client: http.Client(), apiKey: '');
+            final ytDatasource = YouTubeRemoteDatasource(client: client, apiKey: '');
             final searchResult = await ytDatasource.searchAll('${effectiveSong.title} ${effectiveSong.artist}');
             if (searchResult.songs.isNotEmpty) {
               cleanId = searchResult.songs.first.id;
             }
-          } catch (_) {}
+          } catch (_) {
+          } finally {
+            client.close();
+          }
         }
       }
 
@@ -325,48 +376,11 @@ class PlayerProvider extends ChangeNotifier {
             );
 
       _currentSong = targetSong;
-
-      // Update queue preserving exact song position and resolving resolved IDs in-place
-      int targetIndex = queueIndex ?? -1;
-
-      if (newQueue != null && newQueue.isNotEmpty) {
-        if (targetIndex < 0 || targetIndex >= newQueue.length) {
-          targetIndex = newQueue.indexWhere((s) => s.id == song.id || s.id == targetSong.id);
-          if (targetIndex == -1) {
-            targetIndex = newQueue.indexWhere(
-              (s) => s.title.toLowerCase().trim() == song.title.toLowerCase().trim(),
-            );
-          }
-        }
-
-        _queue = List.from(newQueue);
-
-        if (targetIndex >= 0 && targetIndex < _queue.length) {
-          _currentIndex = targetIndex;
-          _queue[_currentIndex] = targetSong;
-        } else {
-          _queue.insert(0, targetSong);
-          _currentIndex = 0;
-        }
-      } else {
-        if (targetIndex >= 0 && targetIndex < _queue.length) {
-          _currentIndex = targetIndex;
-          _queue[_currentIndex] = targetSong;
-        } else {
-          final existingIndex = _queue.indexWhere((s) => s.id == song.id || s.id == targetSong.id);
-          if (existingIndex != -1) {
-            _currentIndex = existingIndex;
-            _queue[_currentIndex] = targetSong;
-          } else {
-            _queue.add(targetSong);
-            _currentIndex = _queue.length - 1;
-          }
-        }
+      if (_currentIndex >= 0 && _currentIndex < _queue.length) {
+        _queue[_currentIndex] = targetSong;
       }
-
       final fallbackSecs = targetSong.durationSeconds > 0 ? targetSong.durationSeconds : 210;
       _totalDuration = Duration(seconds: fallbackSecs);
-      _currentPosition = Duration.zero;
       notifyListeners();
 
       // Log to Recently Played (non-blocking – don't wait for DB write)
@@ -562,13 +576,19 @@ class PlayerProvider extends ChangeNotifier {
   }
 
   Future<void> onTrackEnded() async {
+    if (_isTrackEnding) return;
+    _isTrackEnding = true;
     _errorSkipTimer?.cancel();
     _errorSkipTimer = null;
-    if (_isRepeat) {
-      seekTo(Duration.zero);
-      play();
-    } else {
-      await next();
+    try {
+      if (_isRepeat) {
+        seekTo(Duration.zero);
+        play();
+      } else {
+        await next();
+      }
+    } finally {
+      _isTrackEnding = false;
     }
   }
 
@@ -637,7 +657,7 @@ class PlayerProvider extends ChangeNotifier {
     }
   }
 
-  void previous() {
+  Future<void> previous() async {
     if (_queue.isEmpty) return;
     if (_currentPosition.inSeconds > 3) {
       seekTo(Duration.zero);
@@ -645,7 +665,7 @@ class PlayerProvider extends ChangeNotifier {
     }
     if (_currentIndex > 0) {
       _currentIndex--;
-      playSong(_queue[_currentIndex], queueIndex: _currentIndex);
+      await playSong(_queue[_currentIndex], queueIndex: _currentIndex);
     } else {
       seekTo(Duration.zero);
     }
@@ -714,14 +734,15 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeFromQueue(int index) {
+  Future<void> removeFromQueue(int index) async {
     if (index >= 0 && index < _queue.length) {
       _queue.removeAt(index);
       if (index < _currentIndex) {
         _currentIndex--;
       } else if (index == _currentIndex) {
         if (_queue.isNotEmpty) {
-          playSong(_queue[_currentIndex.clamp(0, _queue.length - 1)]);
+          _currentIndex = _currentIndex.clamp(0, _queue.length - 1);
+          await playSong(_queue[_currentIndex], queueIndex: _currentIndex);
         } else {
           _currentSong = null;
           _isPlaying = false;
@@ -749,6 +770,7 @@ class PlayerProvider extends ChangeNotifier {
         _currentIndex++;
       } else {
         _currentIndex = _queue.indexWhere((s) => s.id == _currentSong!.id);
+        if (_currentIndex == -1) _currentIndex = 0;
       }
     }
     notifyListeners();
@@ -759,6 +781,7 @@ class PlayerProvider extends ChangeNotifier {
   }
 
   void clearQueue() {
+    _unshuffledQueue = null;
     if (_currentSong != null) {
       _queue = [_currentSong!];
       _currentIndex = 0;
@@ -772,12 +795,20 @@ class PlayerProvider extends ChangeNotifier {
   void toggleShuffle() {
     _isShuffle = !_isShuffle;
     if (_isShuffle && _queue.length > 1) {
+      _unshuffledQueue = List<Song>.from(_queue);
       final current = _currentSong;
       _queue.shuffle();
       if (current != null) {
         _queue.remove(current);
         _queue.insert(0, current);
         _currentIndex = 0;
+      }
+    } else if (!_isShuffle && _unshuffledQueue != null) {
+      _queue = List<Song>.from(_unshuffledQueue!);
+      _unshuffledQueue = null;
+      if (_currentSong != null) {
+        final idx = _queue.indexWhere((s) => s.id == _currentSong!.id);
+        _currentIndex = idx != -1 ? idx : 0;
       }
     }
     notifyListeners();

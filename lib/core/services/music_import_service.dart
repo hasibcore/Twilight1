@@ -9,6 +9,9 @@ import '../utils/logger.dart';
 /// public web sources (Spotify and YouTube) in full compliance with Google Play guidelines.
 /// Never stores infringing content or bypasses DRM; uses standard public oEmbed & metadata aggregation.
 class MusicImportService {
+  static final MusicImportService _instance = MusicImportService._internal();
+  factory MusicImportService() => _instance;
+
   final http.Client client;
   YoutubeExplode? _ytInstance;
   YoutubeExplode get _yt => _ytInstance ??= YoutubeExplode();
@@ -24,7 +27,7 @@ class MusicImportService {
     _cache[key] = value;
   }
 
-  MusicImportService({http.Client? client}) : client = client ?? http.Client();
+  MusicImportService._internal({http.Client? client}) : client = client ?? http.Client();
 
   /// Determines whether a string is a Spotify URL
   bool isSpotifyUrl(String input) {
@@ -334,8 +337,8 @@ class MusicImportService {
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
         String? foundId;
-        void scan(dynamic node) {
-          if (foundId != null) return;
+        void scan(dynamic node, [int depth = 0]) {
+          if (foundId != null || depth > 20) return;
           if (node is Map<String, dynamic>) {
             if (node.containsKey('videoRenderer')) {
               final vr = node['videoRenderer'] as Map<String, dynamic>;
@@ -346,15 +349,15 @@ class MusicImportService {
               }
             }
             for (final v in node.values) {
-              scan(v);
+              scan(v, depth + 1);
             }
           } else if (node is List) {
             for (final item in node) {
-              scan(item);
+              scan(item, depth + 1);
             }
           }
         }
-        scan(data);
+        scan(data, 0);
         return foundId;
       }
     } catch (_) {}
