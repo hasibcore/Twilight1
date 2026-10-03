@@ -572,10 +572,10 @@ class PlayerProvider extends ChangeNotifier {
     if (_queue.isEmpty) return;
     if (_currentIndex + 1 < _queue.length) {
       _currentIndex++;
-      playSong(_queue[_currentIndex], queueIndex: _currentIndex);
+      await playSong(_queue[_currentIndex], queueIndex: _currentIndex);
     } else if (_isRepeat) {
       _currentIndex = 0;
-      playSong(_queue[0], queueIndex: 0);
+      await playSong(_queue[0], queueIndex: 0);
     } else if (_isAutoplay && _queue.isNotEmpty) {
       // Smart Radio / Autoplay mode: automatically fetch similar tracks to keep playback endless
       try {
@@ -602,7 +602,7 @@ class PlayerProvider extends ChangeNotifier {
           if (newTracks.isNotEmpty) {
             _queue.addAll(newTracks.take(5));
             _currentIndex++;
-            playSong(_queue[_currentIndex], queueIndex: _currentIndex);
+            await playSong(_queue[_currentIndex], queueIndex: _currentIndex);
             return;
           }
         }
@@ -617,14 +617,15 @@ class PlayerProvider extends ChangeNotifier {
         if (newTracks.isNotEmpty) {
           _queue.addAll(newTracks.take(5));
           _currentIndex++;
-          playSong(_queue[_currentIndex], queueIndex: _currentIndex);
+          await playSong(_queue[_currentIndex], queueIndex: _currentIndex);
           return;
         }
       } catch (e) {
         AppLogger.info('Autoplay dynamic extension fallback: $e');
       }
-      _currentIndex = 0;
-      playSong(_queue[0], queueIndex: 0);
+      // No new tracks found — stop playback instead of silently restarting
+      _isPlaying = false;
+      notifyListeners();
     } else {
       _isPlaying = false;
       notifyListeners();

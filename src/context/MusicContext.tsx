@@ -364,7 +364,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audio.onpause = () => setIsPlaying(false);
 
     audio.onended = () => {
-      if (isRepeat) {
+      if (isRepeatRef.current) {
         audio.currentTime = 0;
         audio.play().catch(() => {});
       } else {

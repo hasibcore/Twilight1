@@ -129,8 +129,8 @@ async function searchYouTube(query: string) {
         return 210;
       };
 
-      const traverse = (node: any) => {
-        if (!node || typeof node !== 'object') return;
+      const traverse = (node: any, depth = 0) => {
+        if (depth > 15 || !node || typeof node !== 'object') return;
         if (node.videoRenderer) {
           const vr = node.videoRenderer;
           const videoId = vr.videoId;
@@ -151,8 +151,14 @@ async function searchYouTube(query: string) {
             });
           }
         }
-        for (const key of Object.keys(node)) {
-          traverse(node[key]);
+        if (Array.isArray(node)) {
+          for (const item of node) {
+            traverse(item, depth + 1);
+          }
+        } else {
+          for (const key of Object.keys(node)) {
+            traverse(node[key], depth + 1);
+          }
         }
       };
 
