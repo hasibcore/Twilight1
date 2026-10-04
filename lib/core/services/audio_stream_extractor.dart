@@ -136,68 +136,7 @@ class AudioStreamExtractor {
       }
     }
 
-    // Tier 1: Official iOS App Client
-    try {
-      final iosResult = await _extractFromIosApp(videoId);
-      if (iosResult != null) {
-        AppLogger.info('Extracted stream via Tier 1 iOS App for $videoId');
-        if (!preferDownload) _setCache(cacheKey, iosResult);
-        return iosResult;
-      }
-    } catch (e) {
-      AppLogger.info('Tier 1 iOS App error for $videoId: $e');
-    }
-
-    // Tier 2: Mobile Web Client
-    try {
-      final mwebResult = await _extractFromMweb(videoId);
-      if (mwebResult != null) {
-        AppLogger.info('Extracted stream via Tier 2 MWEB for $videoId');
-        if (!preferDownload) _setCache(cacheKey, mwebResult);
-        return mwebResult;
-      }
-    } catch (e) {
-      AppLogger.info('Tier 2 MWEB error for $videoId: $e');
-    }
-
-    // Tier 3: Official Android YouTube App client
-    try {
-      final androidAppResult = await _extractFromAndroidApp(videoId);
-      if (androidAppResult != null) {
-        AppLogger.info('Extracted stream via Tier 3 Android App for $videoId');
-        if (!preferDownload) _setCache(cacheKey, androidAppResult);
-        return androidAppResult;
-      }
-    } catch (e) {
-      AppLogger.info('Tier 3 Android App error for $videoId: $e');
-    }
-
-    // Tier 4: Android Music Client
-    try {
-      final androidMusicResult = await _extractFromAndroidMusic(videoId);
-      if (androidMusicResult != null) {
-        AppLogger.info(
-            'Extracted stream via Tier 4 Android Music for $videoId');
-        if (!preferDownload) _setCache(cacheKey, androidMusicResult);
-        return androidMusicResult;
-      }
-    } catch (e) {
-      AppLogger.info('Tier 4 Android Music error for $videoId: $e');
-    }
-
-    // Tier 5: TV Embedded Player
-    try {
-      final tvResult = await _extractFromTvEmbedded(videoId);
-      if (tvResult != null) {
-        AppLogger.info('Extracted stream via Tier 5 TV Embedded for $videoId');
-        if (!preferDownload) _setCache(cacheKey, tvResult);
-        return tvResult;
-      }
-    } catch (e) {
-      AppLogger.info('Tier 5 TV Embedded error for $videoId: $e');
-    }
-
-    // Tier 6: YoutubeExplode with TV / MWEB / iOS clients
+    // Tier 1: YoutubeExplode with TV / MWEB / iOS clients (Deciphered official streams)
     try {
       final manifest = await _yt.videos.streamsClient.getManifest(
         videoId,
@@ -218,7 +157,7 @@ class AudioStreamExtractor {
             ? m4a.withHighestBitrate()
             : audioStreams.withHighestBitrate();
         AppLogger.info(
-            'Extracted stream via Tier 6 YoutubeExplode for $videoId');
+            'Extracted stream via Tier 1 YoutubeExplode for $videoId (${best.container.name}, ${best.bitrate})');
         final result = AudioStreamResult(
           url: best.url.toString(),
           totalBytes: best.size.totalBytes,
@@ -228,26 +167,88 @@ class AudioStreamExtractor {
           bitrate: best.bitrate.bitsPerSecond,
           headers: const {
             'User-Agent':
-                'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15',
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
           },
+          isDirectDownloadable: true,
         );
         _setCache(cacheKey, result);
         return result;
       }
     } catch (e) {
-      AppLogger.info('Tier 6 YoutubeExplode error for $videoId: $e');
+      AppLogger.info('Tier 1 YoutubeExplode error for $videoId: $e');
     }
 
-    // Tier 7: Invidious / Piped Instances
+    // Tier 2: Invidious / Piped Instances (Fast unthrottled streaming)
     try {
       final invResult = await _extractFromInvidious(videoId);
       if (invResult != null) {
-        AppLogger.info('Extracted stream via Tier 7 Invidious for $videoId');
+        AppLogger.info('Extracted stream via Tier 2 Invidious for $videoId');
         _setCache(cacheKey, invResult);
         return invResult;
       }
     } catch (e) {
-      AppLogger.info('Tier 7 Invidious error for $videoId: $e');
+      AppLogger.info('Tier 2 Invidious error for $videoId: $e');
+    }
+
+    // Tier 3: TV Embedded Player
+    try {
+      final tvResult = await _extractFromTvEmbedded(videoId);
+      if (tvResult != null) {
+        AppLogger.info('Extracted stream via Tier 3 TV Embedded for $videoId');
+        if (!preferDownload) _setCache(cacheKey, tvResult);
+        return tvResult;
+      }
+    } catch (e) {
+      AppLogger.info('Tier 3 TV Embedded error for $videoId: $e');
+    }
+
+    // Tier 4: Mobile Web Client
+    try {
+      final mwebResult = await _extractFromMweb(videoId);
+      if (mwebResult != null) {
+        AppLogger.info('Extracted stream via Tier 4 MWEB for $videoId');
+        if (!preferDownload) _setCache(cacheKey, mwebResult);
+        return mwebResult;
+      }
+    } catch (e) {
+      AppLogger.info('Tier 4 MWEB error for $videoId: $e');
+    }
+
+    // Tier 5: Official Android YouTube App client
+    try {
+      final androidAppResult = await _extractFromAndroidApp(videoId);
+      if (androidAppResult != null) {
+        AppLogger.info('Extracted stream via Tier 5 Android App for $videoId');
+        if (!preferDownload) _setCache(cacheKey, androidAppResult);
+        return androidAppResult;
+      }
+    } catch (e) {
+      AppLogger.info('Tier 5 Android App error for $videoId: $e');
+    }
+
+    // Tier 6: Android Music Client
+    try {
+      final androidMusicResult = await _extractFromAndroidMusic(videoId);
+      if (androidMusicResult != null) {
+        AppLogger.info(
+            'Extracted stream via Tier 6 Android Music for $videoId');
+        if (!preferDownload) _setCache(cacheKey, androidMusicResult);
+        return androidMusicResult;
+      }
+    } catch (e) {
+      AppLogger.info('Tier 6 Android Music error for $videoId: $e');
+    }
+
+    // Tier 7: Official iOS App Client
+    try {
+      final iosResult = await _extractFromIosApp(videoId);
+      if (iosResult != null) {
+        AppLogger.info('Extracted stream via Tier 7 iOS App for $videoId');
+        if (!preferDownload) _setCache(cacheKey, iosResult);
+        return iosResult;
+      }
+    } catch (e) {
+      AppLogger.info('Tier 7 iOS App error for $videoId: $e');
     }
 
     AppLogger.error('All audio stream extraction tiers failed for $videoId');

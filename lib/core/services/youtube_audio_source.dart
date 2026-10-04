@@ -149,9 +149,15 @@ class YouTubeAudioSource extends StreamAudioSource {
             request.headers['Accept'] = '*/*';
           }
 
-          final rangeEnd = (targetEnd != null && targetEnd > 0)
-              ? (targetEnd - 1).toString()
-              : '';
+          // YouTube throttles/rejects range requests larger than ~450KB with HTTP 403.
+          // Chunking into safe 256KB blocks prevents HTTP 403 and enables smooth progressive streaming.
+          const int maxChunkSize = 256 * 1024;
+          final nextTarget = (targetEnd != null)
+              ? (currentPos + maxChunkSize < targetEnd
+                  ? currentPos + maxChunkSize
+                  : targetEnd)
+              : (currentPos + maxChunkSize);
+          final rangeEnd = (nextTarget > currentPos) ? (nextTarget - 1) : currentPos;
           request.headers['Range'] = 'bytes=$currentPos-$rangeEnd';
 
           final response =
@@ -159,10 +165,12 @@ class YouTubeAudioSource extends StreamAudioSource {
 
           if (response.statusCode == 200 || response.statusCode == 206) {
             retryAttempts = 0; // reset retry counter on successful connection
+            int bytesReceivedInChunk = 0;
             await for (final chunk
                 in response.stream.timeout(const Duration(seconds: 40))) {
               if (chunk.isNotEmpty) {
                 currentPos += chunk.length;
+                bytesReceivedInChunk += chunk.length;
                 if (cacheSink != null) {
                   cacheSink.add(chunk);
                 }
@@ -174,9 +182,10 @@ class YouTubeAudioSource extends StreamAudioSource {
             if (targetEnd != null && currentPos >= targetEnd) {
               break;
             }
-            // If the connection closed without reaching targetEnd, loop and reconnect from currentPos!
-            AppLogger.info(
-                'Stream socket finished at byte $currentPos of $targetEnd, auto-reconnecting...');
+            if (bytesReceivedInChunk == 0) {
+              retryAttempts++;
+              await Future.delayed(Duration(milliseconds: 200 * retryAttempts));
+            }
           } else if (response.statusCode == 403 || response.statusCode == 410) {
             // Stream URL expired or rate limited. Refresh it!
             AppLogger.warning(
