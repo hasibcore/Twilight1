@@ -90,13 +90,17 @@ class SearchProvider extends ChangeNotifier {
       if (res.statusCode == 200) {
         final decoded = jsonDecode(res.body) as List;
         if (decoded.length > 1 && decoded[1] is List) {
-          final apiList = (decoded[1] as List).map((e) => e.toString()).toList();
+          final apiList =
+              (decoded[1] as List).map((e) => e.toString()).toList();
           // Combine matching history + live suggestions without duplicates
           final combined = <String>[...matchingHistory];
           for (final s in apiList) {
             if (!combined.any((c) => c.toLowerCase() == s.toLowerCase())) {
               combined.add(s);
             }
+          }
+          if (_suggestCache.length >= 100) {
+            _suggestCache.remove(_suggestCache.keys.first);
           }
           _suggestions = combined;
           _suggestCache[lower] = combined;
@@ -187,5 +191,20 @@ class SearchProvider extends ChangeNotifier {
     await musicRepository.clearSearchHistory();
     _searchHistory = [];
     notifyListeners();
+  }
+
+  bool _isDisposed = false;
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

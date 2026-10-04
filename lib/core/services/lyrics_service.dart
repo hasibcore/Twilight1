@@ -26,9 +26,14 @@ class LyricsService {
   static String cleanTitle(String title) {
     var cleaned = title;
     // Remove bracketed or parenthesized tags like [Official Music Video], (Audio), (Lyrics), etc.
-    cleaned = cleaned.replaceAll(RegExp(r'\s*[\(\[][^\)\]]*(?:official|video|audio|lyrics|hd|4k|mv|remastered|feat\.|ft\.)[^\)\]]*[\)\]]', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(
+        RegExp(
+            r'\s*[\(\[][^\)\]]*(?:official|video|audio|lyrics|hd|4k|mv|remastered|feat\.|ft\.)[^\)\]]*[\)\]]',
+            caseSensitive: false),
+        '');
     // Remove "feat. ..." or "ft. ..."
-    cleaned = cleaned.replaceAll(RegExp(r'\s*(?:feat\.|ft\.)\s+[^,;]+', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(
+        RegExp(r'\s*(?:feat\.|ft\.)\s+[^,;]+', caseSensitive: false), '');
     // Remove trailing dashes or extra spaces
     cleaned = cleaned.replaceAll(RegExp(r'[\s\-]+$'), '').trim();
     return cleaned.isNotEmpty ? cleaned : title;
@@ -37,7 +42,8 @@ class LyricsService {
   static String cleanArtist(String artist) {
     var cleaned = artist;
     // Remove "- Topic", "VEVO", etc.
-    cleaned = cleaned.replaceAll(RegExp(r'\s*-\s*Topic', caseSensitive: false), '');
+    cleaned =
+        cleaned.replaceAll(RegExp(r'\s*-\s*Topic', caseSensitive: false), '');
     cleaned = cleaned.replaceAll(RegExp(r'\s*VEVO', caseSensitive: false), '');
     cleaned = cleaned.trim();
     return cleaned.isNotEmpty ? cleaned : artist;
@@ -64,7 +70,10 @@ class LyricsService {
 
       final res = await client.get(
         getUri,
-        headers: {'User-Agent': 'TwilightMusic/1.0 (https://github.com/hasibcore/Twilight)'},
+        headers: {
+          'User-Agent':
+              'TwilightMusic/1.0 (https://github.com/hasibcore/Twilight)'
+        },
       ).timeout(const Duration(seconds: 4));
 
       if (res.statusCode == 200) {
@@ -72,7 +81,8 @@ class LyricsService {
         final plain = data['plainLyrics'] as String?;
         final synced = data['syncedLyrics'] as String?;
 
-        if ((plain != null && plain.isNotEmpty) || (synced != null && synced.isNotEmpty)) {
+        if ((plain != null && plain.isNotEmpty) ||
+            (synced != null && synced.isNotEmpty)) {
           final result = LyricsResult(
             plainLyrics: plain,
             syncedLyrics: synced,
@@ -90,7 +100,10 @@ class LyricsService {
 
       final searchRes = await client.get(
         searchUri,
-        headers: {'User-Agent': 'TwilightMusic/1.0 (https://github.com/hasibcore/Twilight)'},
+        headers: {
+          'User-Agent':
+              'TwilightMusic/1.0 (https://github.com/hasibcore/Twilight)'
+        },
       ).timeout(const Duration(seconds: 4));
 
       if (searchRes.statusCode == 200) {
@@ -99,7 +112,8 @@ class LyricsService {
           final first = list.first as Map<String, dynamic>;
           final plain = first['plainLyrics'] as String?;
           final synced = first['syncedLyrics'] as String?;
-          if ((plain != null && plain.isNotEmpty) || (synced != null && synced.isNotEmpty)) {
+          if ((plain != null && plain.isNotEmpty) ||
+              (synced != null && synced.isNotEmpty)) {
             final result = LyricsResult(
               plainLyrics: plain,
               syncedLyrics: synced,

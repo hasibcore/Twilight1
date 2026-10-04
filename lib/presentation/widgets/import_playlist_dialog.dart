@@ -51,7 +51,8 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
       if (songs.isEmpty) {
         setState(() {
           _isLoading = false;
-          _statusMessage = 'Could not find tracks at this link. Please verify the URL.';
+          _statusMessage =
+              'Could not find tracks at this link. Please verify the URL.';
         });
         return;
       }
@@ -68,7 +69,8 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
       }
 
       // Automatically create a playlist in user's library
-      final playlistTitle = trimmed.contains('spotify') ? 'Spotify Import' : 'Web Playlist';
+      final playlistTitle =
+          trimmed.contains('spotify') ? 'Spotify Import' : 'Web Playlist';
       final newPlaylist = await playlistProv.createPlaylist(
         '$playlistTitle (${DateTime.now().month}/${DateTime.now().day})',
         description: 'Imported from $trimmed',
@@ -115,7 +117,8 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
                     color: AppColors.primaryAccent.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.link_rounded, color: AppColors.primaryAccent, size: 24),
+                  child: const Icon(Icons.link_rounded,
+                      color: AppColors.primaryAccent, size: 24),
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
@@ -149,10 +152,13 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
               style: const TextStyle(color: Colors.white, fontSize: 13),
               decoration: InputDecoration(
                 hintText: 'Paste track, album or playlist URL...',
-                hintStyle: const TextStyle(color: AppColors.textTertiaryDark, fontSize: 12),
-                prefixIcon: const Icon(Icons.music_note, color: AppColors.textSecondaryDark, size: 18),
+                hintStyle: const TextStyle(
+                    color: AppColors.textTertiaryDark, fontSize: 12),
+                prefixIcon: const Icon(Icons.music_note,
+                    color: AppColors.textSecondaryDark, size: 18),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.paste_rounded, color: AppColors.primaryAccent, size: 20),
+                  icon: const Icon(Icons.paste_rounded,
+                      color: AppColors.primaryAccent, size: 20),
                   tooltip: 'Paste from clipboard',
                   onPressed: _pasteFromClipboard,
                 ),
@@ -175,9 +181,12 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
               spacing: 8,
               runSpacing: 6,
               children: [
-                _buildPresetChip('Top 50 Global', 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'),
-                _buildPresetChip('Viral Hits', 'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq'),
-                _buildPresetChip('Chill Acoustic', 'https://open.spotify.com/playlist/37i9dQZF1DXatOAcAub419'),
+                _buildPresetChip('Top 50 Global',
+                    'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'),
+                _buildPresetChip('Viral Hits',
+                    'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq'),
+                _buildPresetChip('Chill Acoustic',
+                    'https://open.spotify.com/playlist/37i9dQZF1DXatOAcAub419'),
               ],
             ),
 
@@ -186,7 +195,8 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
               Text(
                 _statusMessage!,
                 style: TextStyle(
-                  color: _statusMessage!.contains('Error') || _statusMessage!.contains('Could not')
+                  color: _statusMessage!.contains('Error') ||
+                          _statusMessage!.contains('Could not')
                       ? Colors.redAccent
                       : const Color(0xFF00E676),
                   fontSize: 12,
@@ -199,26 +209,33 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-                  child: const Text('Cancel', style: TextStyle(color: Colors.white70)),
+                  onPressed:
+                      _isLoading ? null : () => Navigator.of(context).pop(),
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.white70)),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryAccent,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                   ),
                   icon: _isLoading
                       ? const SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.play_arrow_rounded, size: 20),
                   label: Text(_isLoading ? 'Importing...' : 'Import & Play'),
-                  onPressed: _isLoading ? null : () => _processImport(_urlController.text),
+                  onPressed: _isLoading
+                      ? null
+                      : () => _processImport(_urlController.text),
                 ),
               ],
             ),
@@ -231,8 +248,10 @@ class _ImportPlaylistDialogState extends State<ImportPlaylistDialog> {
   Widget _buildPresetChip(String label, String url) {
     return ActionChip(
       backgroundColor: AppColors.surfaceVariantDark,
-      label: Text(label, style: const TextStyle(color: Colors.white, fontSize: 11)),
-      avatar: const Icon(Icons.flash_on_rounded, color: AppColors.primaryAccent, size: 14),
+      label: Text(label,
+          style: const TextStyle(color: Colors.white, fontSize: 11)),
+      avatar: const Icon(Icons.flash_on_rounded,
+          color: AppColors.primaryAccent, size: 14),
       onPressed: _isLoading
           ? null
           : () {

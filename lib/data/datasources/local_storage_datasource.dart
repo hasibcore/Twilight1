@@ -12,13 +12,16 @@ class LocalStorageDatasource {
   // Recently Played
   Future<List<SongModel>> getRecentlyPlayed() async {
     final list = LocalStorageService.getStringList(_keyRecentlyPlayed);
-    return list.map((item) {
-      try {
-        return SongModel.fromJson(jsonDecode(item));
-      } catch (_) {
-        return null;
-      }
-    }).whereType<SongModel>().toList();
+    return list
+        .map((item) {
+          try {
+            return SongModel.fromJson(jsonDecode(item));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<SongModel>()
+        .toList();
   }
 
   Future<void> addRecentlyPlayed(SongModel song) async {
@@ -40,13 +43,16 @@ class LocalStorageDatasource {
   // Favorites
   Future<List<SongModel>> getFavorites() async {
     final list = LocalStorageService.getStringList(_keyFavorites);
-    return list.map((item) {
-      try {
-        return SongModel.fromJson(jsonDecode(item));
-      } catch (_) {
-        return null;
-      }
-    }).whereType<SongModel>().toList();
+    return list
+        .map((item) {
+          try {
+            return SongModel.fromJson(jsonDecode(item));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<SongModel>()
+        .toList();
   }
 
   Future<void> toggleFavorite(SongModel song) async {
@@ -80,7 +86,8 @@ class LocalStorageDatasource {
       for (final item in list) {
         if (item is Map) {
           try {
-            final model = PlaylistModel.fromJson(Map<String, dynamic>.from(item));
+            final model =
+                PlaylistModel.fromJson(Map<String, dynamic>.from(item));
             if (!demoIds.contains(model.id)) {
               playlists.add(model);
             }

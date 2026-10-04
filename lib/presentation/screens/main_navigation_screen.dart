@@ -80,7 +80,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight,
+                bottom: MediaQuery.of(context).padding.bottom +
+                    kBottomNavigationBarHeight,
                 child: const MiniPlayerWidget(),
               ),
           ],

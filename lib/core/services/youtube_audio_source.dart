@@ -38,7 +38,8 @@ class YouTubeAudioSource extends StreamAudioSource {
   })  : _streamInfo = streamInfo,
         _streamUrl = streamInfo.url.toString(),
         _headers = const {
-          'User-Agent': 'com.google.android.youtube/20.10.38 (Linux; U; Android 11) gzip',
+          'User-Agent':
+              'com.google.android.youtube/20.10.38 (Linux; U; Android 11) gzip',
           'Accept': '*/*',
         },
         _totalBytes = streamInfo.size.totalBytes > 0
@@ -131,7 +132,8 @@ class YouTubeAudioSource extends StreamAudioSource {
     }
 
     try {
-      while ((targetEnd == null || currentPos < targetEnd) && retryAttempts < maxRetries) {
+      while ((targetEnd == null || currentPos < targetEnd) &&
+          retryAttempts < maxRetries) {
         http.Client? client;
         try {
           client = http.Client();
@@ -152,11 +154,13 @@ class YouTubeAudioSource extends StreamAudioSource {
               : '';
           request.headers['Range'] = 'bytes=$currentPos-$rangeEnd';
 
-          final response = await client.send(request).timeout(const Duration(seconds: 25));
+          final response =
+              await client.send(request).timeout(const Duration(seconds: 25));
 
           if (response.statusCode == 200 || response.statusCode == 206) {
             retryAttempts = 0; // reset retry counter on successful connection
-            await for (final chunk in response.stream.timeout(const Duration(seconds: 40))) {
+            await for (final chunk
+                in response.stream.timeout(const Duration(seconds: 40))) {
               if (chunk.isNotEmpty) {
                 currentPos += chunk.length;
                 if (cacheSink != null) {
@@ -171,14 +175,17 @@ class YouTubeAudioSource extends StreamAudioSource {
               break;
             }
             // If the connection closed without reaching targetEnd, loop and reconnect from currentPos!
-            AppLogger.info('Stream socket finished at byte $currentPos of $targetEnd, auto-reconnecting...');
+            AppLogger.info(
+                'Stream socket finished at byte $currentPos of $targetEnd, auto-reconnecting...');
           } else if (response.statusCode == 403 || response.statusCode == 410) {
             // Stream URL expired or rate limited. Refresh it!
-            AppLogger.warning('Stream URL status ${response.statusCode} at $currentPos. Refreshing stream...');
+            AppLogger.warning(
+                'Stream URL status ${response.statusCode} at $currentPos. Refreshing stream...');
             final cleanId = _mediaItem.id.trim();
             if (cleanId.isNotEmpty) {
               AudioStreamExtractor.invalidateCache(cleanId);
-              final fresh = await AudioStreamExtractor.extractAudioStream(cleanId);
+              final fresh =
+                  await AudioStreamExtractor.extractAudioStream(cleanId);
               if (fresh != null) {
                 _streamUrl = fresh.url;
                 _headers = fresh.headers;
@@ -190,10 +197,12 @@ class YouTubeAudioSource extends StreamAudioSource {
             await Future.delayed(Duration(milliseconds: 300 * retryAttempts));
           } else if (response.statusCode == 416) {
             // Reached end of stream (range not satisfiable = file completely delivered)
-            AppLogger.info('Reached end of stream (HTTP 416) at byte $currentPos');
+            AppLogger.info(
+                'Reached end of stream (HTTP 416) at byte $currentPos');
             break;
           } else {
-            AppLogger.warning('Stream HTTP status ${response.statusCode} at byte $currentPos');
+            AppLogger.warning(
+                'Stream HTTP status ${response.statusCode} at byte $currentPos');
             retryAttempts++;
             await Future.delayed(Duration(milliseconds: 400 * retryAttempts));
           }
@@ -214,14 +223,16 @@ class YouTubeAudioSource extends StreamAudioSource {
 
         // Promote to verified progressive cache if complete
         if (partFile != null && partFile.existsSync()) {
-          final minExpected = _totalBytes > 0 ? (_totalBytes * 0.90).toInt() : 400000;
+          final minExpected =
+              _totalBytes > 0 ? (_totalBytes * 0.90).toInt() : 400000;
           if (partFile.lengthSync() >= minExpected && _cacheFile != null) {
             try {
               if (_cacheFile!.existsSync()) _cacheFile!.deleteSync();
               await partFile.rename(_cacheFile!.path);
               final doneFile = File('${_cacheFile!.path}.done');
               await doneFile.writeAsString('1');
-              AppLogger.info('Progressive cache complete: ${_cacheFile!.path} (${_cacheFile!.lengthSync()} bytes)');
+              AppLogger.info(
+                  'Progressive cache complete: ${_cacheFile!.path} (${_cacheFile!.lengthSync()} bytes)');
             } catch (e) {
               AppLogger.warning('Failed to promote cache file: $e');
             }
@@ -256,16 +267,21 @@ class YouTubeAudioSource extends StreamAudioSource {
     final webMediaItem = MediaItem(
       id: cleanId.isNotEmpty ? cleanId : 'twilight_track',
       album: 'Twilight Music',
-      title: song.title.trim().isNotEmpty ? song.title.trim() : 'Twilight Track',
-      artist: song.artist.trim().isNotEmpty ? song.artist.trim() : 'Twilight Artist',
+      title:
+          song.title.trim().isNotEmpty ? song.title.trim() : 'Twilight Track',
+      artist: song.artist.trim().isNotEmpty
+          ? song.artist.trim()
+          : 'Twilight Artist',
       artUri: Uri.tryParse(song.thumbnailUrl),
       duration: Duration(seconds: fallbackSecs),
     );
 
     if (kIsWeb) {
-      final streamResult = await AudioStreamExtractor.extractAudioStream(cleanId);
+      final streamResult =
+          await AudioStreamExtractor.extractAudioStream(cleanId);
       if (streamResult != null) {
-        AppLogger.info('Web playing "${song.title}" via direct AudioSource.uri');
+        AppLogger.info(
+            'Web playing "${song.title}" via direct AudioSource.uri');
         return AudioSource.uri(
           Uri.parse(streamResult.url),
           tag: webMediaItem,
@@ -273,11 +289,14 @@ class YouTubeAudioSource extends StreamAudioSource {
       }
 
       try {
-        final manifest = await yt.videos.streamsClient.getManifest(cleanId).timeout(const Duration(seconds: 8));
+        final manifest = await yt.videos.streamsClient
+            .getManifest(cleanId)
+            .timeout(const Duration(seconds: 8));
         final audioStreams = manifest.audioOnly.toList();
         if (audioStreams.isNotEmpty) {
           final bestStream = audioStreams.withHighestBitrate();
-          AppLogger.info('Web playing "${song.title}" via YoutubeExplode AudioSource.uri');
+          AppLogger.info(
+              'Web playing "${song.title}" via YoutubeExplode AudioSource.uri');
           return AudioSource.uri(
             Uri.parse(bestStream.url.toString()),
             tag: webMediaItem,
@@ -287,7 +306,8 @@ class YouTubeAudioSource extends StreamAudioSource {
         AppLogger.info('Web direct manifest fallback failed: $e');
       }
 
-      throw Exception('No playable web audio stream available for "${song.title}"');
+      throw Exception(
+          'No playable web audio stream available for "${song.title}"');
     }
 
     // 1. Check permanent offline downloads (uses in-memory cache, refreshes every 30s)
@@ -305,26 +325,34 @@ class YouTubeAudioSource extends StreamAudioSource {
     MediaItem buildMediaItem(Uri? art) => MediaItem(
           id: cleanId.isNotEmpty ? cleanId : 'twilight_track',
           album: 'Twilight Music',
-          title: song.title.trim().isNotEmpty ? song.title.trim() : 'Twilight Track',
-          artist: song.artist.trim().isNotEmpty ? song.artist.trim() : 'Twilight Artist',
+          title: song.title.trim().isNotEmpty
+              ? song.title.trim()
+              : 'Twilight Track',
+          artist: song.artist.trim().isNotEmpty
+              ? song.artist.trim()
+              : 'Twilight Artist',
           artUri: art,
           duration: Duration(seconds: fallbackSecs),
         );
 
     for (final d in _downloadsCacheSnapshot!) {
-      if ((d.song.id == cleanId || d.song.id == song.id) && File(d.localFilePath).existsSync()) {
+      if ((d.song.id == cleanId || d.song.id == song.id) &&
+          File(d.localFilePath).existsSync()) {
         // For offline playback, we need the local artwork — fetch it (fast, local FS only)
         artUri = await ArtworkService.getArtworkUri(
           thumbnailUrl: song.thumbnailUrl,
           songId: cleanId,
         );
-        AppLogger.info('Playing "${song.title}" from permanent offline downloads');
+        AppLogger.info(
+            'Playing "${song.title}" from permanent offline downloads');
         final mediaItem = buildMediaItem(artUri);
         return AudioSource.file(
           d.localFilePath,
           tag: mediaItem.copyWith(
             album: 'Twilight Offline',
-            artUri: (d.localThumbnailPath != null && d.localThumbnailPath!.isNotEmpty && File(d.localThumbnailPath!).existsSync())
+            artUri: (d.localThumbnailPath != null &&
+                    d.localThumbnailPath!.isNotEmpty &&
+                    File(d.localThumbnailPath!).existsSync())
                 ? Uri.file(d.localThumbnailPath!)
                 : mediaItem.artUri,
           ),
@@ -339,29 +367,42 @@ class YouTubeAudioSource extends StreamAudioSource {
     final doneM4a = File('${tempDir.path}/twilight_cache_$cleanId.m4a.done');
     final doneWebm = File('${tempDir.path}/twilight_cache_$cleanId.webm.done');
 
-    if (cacheFileM4a.existsSync() && doneM4a.existsSync() && cacheFileM4a.lengthSync() > 100000) {
-      artUri = await ArtworkService.getArtworkUri(thumbnailUrl: song.thumbnailUrl, songId: cleanId);
-      AppLogger.info('Playing "${song.title}" from verified local progressive cache (m4a)');
+    if (cacheFileM4a.existsSync() &&
+        doneM4a.existsSync() &&
+        cacheFileM4a.lengthSync() > 100000) {
+      artUri = await ArtworkService.getArtworkUri(
+          thumbnailUrl: song.thumbnailUrl, songId: cleanId);
+      AppLogger.info(
+          'Playing "${song.title}" from verified local progressive cache (m4a)');
       return AudioSource.file(cacheFileM4a.path, tag: buildMediaItem(artUri));
     }
-    if (cacheFileWebm.existsSync() && doneWebm.existsSync() && cacheFileWebm.lengthSync() > 100000) {
-      artUri = await ArtworkService.getArtworkUri(thumbnailUrl: song.thumbnailUrl, songId: cleanId);
-      AppLogger.info('Playing "${song.title}" from verified local progressive cache (webm)');
+    if (cacheFileWebm.existsSync() &&
+        doneWebm.existsSync() &&
+        cacheFileWebm.lengthSync() > 100000) {
+      artUri = await ArtworkService.getArtworkUri(
+          thumbnailUrl: song.thumbnailUrl, songId: cleanId);
+      AppLogger.info(
+          'Playing "${song.title}" from verified local progressive cache (webm)');
       return AudioSource.file(cacheFileWebm.path, tag: buildMediaItem(artUri));
     }
     // Clean up any unverified or corrupt cache file
     if (cacheFileM4a.existsSync() && !doneM4a.existsSync()) {
-      try { cacheFileM4a.deleteSync(); } catch (_) {}
+      try {
+        cacheFileM4a.deleteSync();
+      } catch (_) {}
     }
     if (cacheFileWebm.existsSync() && !doneWebm.existsSync()) {
-      try { cacheFileWebm.deleteSync(); } catch (_) {}
+      try {
+        cacheFileWebm.deleteSync();
+      } catch (_) {}
     }
 
     // 3. NETWORK PATH: Run stream resolution & artwork fetch IN PARALLEL
     // Stream resolution (300-500ms Tier1) and thumbnail HTTP download no longer block each other.
     final results = await Future.wait([
       AudioStreamExtractor.extractAudioStream(cleanId),
-      ArtworkService.getArtworkUri(thumbnailUrl: song.thumbnailUrl, songId: cleanId),
+      ArtworkService.getArtworkUri(
+          thumbnailUrl: song.thumbnailUrl, songId: cleanId),
     ]);
 
     final streamResult = results[0] as AudioStreamResult?;
@@ -369,10 +410,12 @@ class YouTubeAudioSource extends StreamAudioSource {
     final mediaItem = buildMediaItem(artUri);
 
     if (streamResult != null) {
-      AppLogger.info('Streaming "${song.title}" via YouTubeAudioSource proxy (${streamResult.mimeType}, ${streamResult.bitrate}bps)');
+      AppLogger.info(
+          'Streaming "${song.title}" via YouTubeAudioSource proxy (${streamResult.mimeType}, ${streamResult.bitrate}bps)');
       final isMp4 = streamResult.mimeType.toLowerCase().contains('mp4') ||
           streamResult.mimeType.toLowerCase().contains('m4a');
-      final cacheFile = File('${tempDir.path}/twilight_cache_$cleanId.${isMp4 ? "m4a" : "webm"}');
+      final cacheFile = File(
+          '${tempDir.path}/twilight_cache_$cleanId.${isMp4 ? "m4a" : "webm"}');
       return YouTubeAudioSource.fromUrl(
         streamUrl: streamResult.url,
         headers: streamResult.headers,
@@ -385,25 +428,31 @@ class YouTubeAudioSource extends StreamAudioSource {
 
     // 4. Secondary Fallback: Direct YoutubeExplode streamsClient with fast 8s timeout
     try {
-      final manifest = await yt.videos.streamsClient.getManifest(
-        cleanId,
-      ).timeout(const Duration(seconds: 8));
+      final manifest = await yt.videos.streamsClient
+          .getManifest(
+            cleanId,
+          )
+          .timeout(const Duration(seconds: 8));
 
       final audioStreams = manifest.audioOnly.toList();
       if (audioStreams.isNotEmpty) {
-        final mp4Streams = audioStreams.where((s) =>
-            s.container.name.toLowerCase().contains('mp4') ||
-            s.container.name.toLowerCase().contains('m4a')).toList();
+        final mp4Streams = audioStreams
+            .where((s) =>
+                s.container.name.toLowerCase().contains('mp4') ||
+                s.container.name.toLowerCase().contains('m4a'))
+            .toList();
 
         final bestStream = mp4Streams.isNotEmpty
             ? mp4Streams.withHighestBitrate()
             : audioStreams.withHighestBitrate();
 
-        AppLogger.info('Streaming "${song.title}" via YouTubeAudioSource.fromStreamInfo (${bestStream.container.name}, ${bestStream.bitrate})');
+        AppLogger.info(
+            'Streaming "${song.title}" via YouTubeAudioSource.fromStreamInfo (${bestStream.container.name}, ${bestStream.bitrate})');
 
         final isMp4 = bestStream.container.name.toLowerCase().contains('mp4') ||
             bestStream.container.name.toLowerCase().contains('m4a');
-        final cacheFile = File('${tempDir.path}/twilight_cache_$cleanId.${isMp4 ? "m4a" : "webm"}');
+        final cacheFile = File(
+            '${tempDir.path}/twilight_cache_$cleanId.${isMp4 ? "m4a" : "webm"}');
 
         return YouTubeAudioSource.fromStreamInfo(
           yt: yt,

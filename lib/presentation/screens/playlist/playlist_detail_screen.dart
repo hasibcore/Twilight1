@@ -59,14 +59,16 @@ class PlaylistDetailScreen extends StatelessWidget {
                         width: 180,
                         height: 180,
                         color: AppColors.surfaceVariantDark,
-                        child: const Icon(Icons.queue_music, size: 60, color: Colors.white38),
+                        child: const Icon(Icons.queue_music,
+                            size: 60, color: Colors.white38),
                       ),
                     )
                   : Container(
                       width: 180,
                       height: 180,
                       color: AppColors.surfaceVariantDark,
-                      child: const Icon(Icons.queue_music, size: 60, color: Colors.white38),
+                      child: const Icon(Icons.queue_music,
+                          size: 60, color: Colors.white38),
                     ),
             ),
             const SizedBox(height: 16),
@@ -74,13 +76,17 @@ class PlaylistDetailScreen extends StatelessWidget {
             Text(
               currentPl.title,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary(context)),
+              style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary(context)),
             ),
             const SizedBox(height: 4),
             Text(
               '${currentPl.songCount} songs • ${currentPl.description}',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13),
+              style: TextStyle(
+                  color: AppColors.textSecondary(context), fontSize: 13),
             ),
             const SizedBox(height: 20),
 
@@ -95,10 +101,12 @@ class PlaylistDetailScreen extends StatelessWidget {
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
                       ),
                       icon: const Icon(Icons.play_arrow),
-                      label: const Text('Play All', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text('Play All',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       onPressed: currentPl.songs.isEmpty
                           ? null
                           : () {
@@ -114,16 +122,21 @@ class PlaylistDetailScreen extends StatelessWidget {
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textPrimary(context),
-                        side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.3)),
+                        side: BorderSide(
+                            color: Theme.of(context)
+                                .dividerColor
+                                .withValues(alpha: 0.3)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
                       ),
                       icon: const Icon(Icons.shuffle),
                       label: const Text('Shuffle'),
                       onPressed: currentPl.songs.isEmpty
                           ? null
                           : () {
-                              final shuffled = List<Song>.from(currentPl.songs)..shuffle();
+                              final shuffled = List<Song>.from(currentPl.songs)
+                                ..shuffle();
                               context.read<PlayerProvider>().playSong(
                                     shuffled.first,
                                     newQueue: shuffled,
@@ -135,7 +148,8 @@ class PlaylistDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
+            Divider(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
 
             // Songs List
             if (currentPl.songs.isEmpty)
@@ -144,7 +158,8 @@ class PlaylistDetailScreen extends StatelessWidget {
                 child: Text(
                   'This playlist is empty.\nAdd songs using the three-dot menu on any track.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.textSecondary(context), height: 1.4),
+                  style: TextStyle(
+                      color: AppColors.textSecondary(context), height: 1.4),
                 ),
               )
             else
@@ -164,7 +179,8 @@ class PlaylistDetailScreen extends StatelessWidget {
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
                     onDismissed: (_) {
-                      playlistProv.removeSongFromPlaylist(currentPl.id, song.id);
+                      playlistProv.removeSongFromPlaylist(
+                          currentPl.id, song.id);
                     },
                     child: SongCard(
                       song: song,
@@ -197,7 +213,8 @@ class PlaylistDetailScreen extends StatelessWidget {
           decoration: const InputDecoration(labelText: 'New Title'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
               final val = controller.text.trim();
@@ -221,7 +238,8 @@ class PlaylistDetailScreen extends StatelessWidget {
         title: const Text('Delete Playlist'),
         content: Text('Are you sure you want to delete "${pl.title}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             onPressed: () {

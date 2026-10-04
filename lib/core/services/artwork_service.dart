@@ -22,9 +22,11 @@ class ArtworkService {
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/twilight_notification_logo.png');
       if (!file.existsSync() || file.lengthSync() < 1000) {
-        final byteData = await rootBundle.load('assets/images/twilight_icon.png');
+        final byteData =
+            await rootBundle.load('assets/images/twilight_icon.png');
         await file.writeAsBytes(
-          byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+          byteData.buffer
+              .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
           flush: true,
         );
         AppLogger.info('Wrote default notification logo to: ${file.path}');
@@ -57,7 +59,9 @@ class ArtworkService {
         ? Uri.file(logoPath)
         : null;
 
-    if (thumbnailUrl == null || thumbnailUrl.trim().isEmpty || !thumbnailUrl.startsWith('http')) {
+    if (thumbnailUrl == null ||
+        thumbnailUrl.trim().isEmpty ||
+        !thumbnailUrl.startsWith('http')) {
       return cleanLogoUri;
     }
 
@@ -84,7 +88,8 @@ class ArtworkService {
   static void _cacheThumbnailInBackground(String url, File targetFile) {
     () async {
       try {
-        final res = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 6));
+        final res =
+            await http.get(Uri.parse(url)).timeout(const Duration(seconds: 6));
         if (res.statusCode == 200 && res.bodyBytes.isNotEmpty) {
           await targetFile.writeAsBytes(res.bodyBytes, flush: true);
         }

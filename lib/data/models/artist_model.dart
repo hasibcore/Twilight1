@@ -30,7 +30,8 @@ class ArtistModel {
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? 'Unknown Artist',
       thumbnailUrl: json['thumbnailUrl'] as String? ?? '',
-      subscriberCountFormatted: json['subscriberCountFormatted'] as String? ?? '',
+      subscriberCountFormatted:
+          json['subscriberCountFormatted'] as String? ?? '',
       description: json['description'] as String? ?? '',
     );
   }

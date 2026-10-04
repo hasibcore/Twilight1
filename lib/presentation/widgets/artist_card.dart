@@ -17,13 +17,14 @@ class ArtistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ?? () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => SearchScreen(initialQuery: artist.name),
-          ),
-        );
-      },
+      onTap: onTap ??
+          () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => SearchScreen(initialQuery: artist.name),
+              ),
+            );
+          },
       child: Container(
         width: 110,
         margin: const EdgeInsets.only(right: 14),
@@ -40,14 +41,16 @@ class ArtistCard extends StatelessWidget {
                         width: 100,
                         height: 100,
                         color: AppColors.surfaceVariantDark,
-                        child: const Icon(Icons.person, color: Colors.white54, size: 40),
+                        child: const Icon(Icons.person,
+                            color: Colors.white54, size: 40),
                       ),
                     )
                   : Container(
                       width: 100,
                       height: 100,
                       color: AppColors.surfaceVariantDark,
-                      child: const Icon(Icons.person, color: Colors.white54, size: 40),
+                      child: const Icon(Icons.person,
+                          color: Colors.white54, size: 40),
                     ),
             ),
             const SizedBox(height: 8),

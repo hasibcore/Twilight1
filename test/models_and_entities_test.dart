@@ -101,7 +101,9 @@ void main() {
   });
 
   group('AudioStreamResult Tests', () {
-    test('Stores tier, URL, totalBytes, bitrate and direct download flags accurately', () {
+    test(
+        'Stores tier, URL, totalBytes, bitrate and direct download flags accurately',
+        () {
       final stream = AudioStreamResult(
         url: 'https://inv.nadeko.net/stream/audio.m4a',
         totalBytes: 4449529,

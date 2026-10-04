@@ -25,31 +25,32 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.surfaceDark,
-      title: const Text('Create Playlist', style: TextStyle(color: Colors.white)),
+      title:
+          const Text('Create Playlist', style: TextStyle(color: Colors.white)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _titleController,
-            autofocus: true,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
-              labelText: 'Playlist Name',
-              hintText: 'e.g. Chill Beats, Gym Motivation',
+          children: [
+            TextField(
+              controller: _titleController,
+              autofocus: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Playlist Name',
+                hintText: 'e.g. Chill Beats, Gym Motivation',
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _descController,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
-              labelText: 'Description (optional)',
+            const SizedBox(height: 12),
+            TextField(
+              controller: _descController,
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration(
+                labelText: 'Description (optional)',
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),

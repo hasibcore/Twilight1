@@ -10,9 +10,13 @@ import 'package:melody_tube/core/services/music_import_service.dart';
 void main() {
   group('Formatters Tests', () {
     test('Formats duration correctly for mm:ss and hh:mm:ss', () {
-      expect(Formatters.formatDuration(const Duration(minutes: 3, seconds: 45)), '03:45');
+      expect(Formatters.formatDuration(const Duration(minutes: 3, seconds: 45)),
+          '03:45');
       expect(Formatters.formatDuration(const Duration(seconds: 9)), '00:09');
-      expect(Formatters.formatDuration(const Duration(hours: 1, minutes: 23, seconds: 45)), '1:23:45');
+      expect(
+          Formatters.formatDuration(
+              const Duration(hours: 1, minutes: 23, seconds: 45)),
+          '1:23:45');
     });
 
     test('Formats integer seconds correctly', () {
@@ -86,7 +90,8 @@ void main() {
   });
 
   group('ErrorViewWidget Tests', () {
-    testWidgets('Renders message and triggers onRetry callback', (WidgetTester tester) async {
+    testWidgets('Renders message and triggers onRetry callback',
+        (WidgetTester tester) async {
       bool retried = false;
 
       await tester.pumpWidget(
@@ -115,17 +120,28 @@ void main() {
   group('MusicImportService Tests', () {
     test('Correctly identifies Spotify and YouTube URLs', () {
       final service = MusicImportService();
-      expect(service.isSpotifyUrl('https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT'), isTrue);
-      expect(service.isSpotifyUrl('https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'), isTrue);
+      expect(
+          service.isSpotifyUrl(
+              'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT'),
+          isTrue);
+      expect(
+          service.isSpotifyUrl(
+              'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'),
+          isTrue);
       expect(service.isSpotifyUrl('https://spotify.link/abc123xyz'), isTrue);
       expect(service.isSpotifyUrl('https://soundcloud.com/track'), isFalse);
 
-      expect(service.isYouTubeUrl('https://www.youtube.com/watch?v=J7s72-X-VyM'), isTrue);
+      expect(
+          service.isYouTubeUrl('https://www.youtube.com/watch?v=J7s72-X-VyM'),
+          isTrue);
       expect(service.isYouTubeUrl('https://youtu.be/J7s72-X-VyM'), isTrue);
-      expect(service.isYouTubeUrl('https://youtube.com/playlist?list=PL12345'), isTrue);
-      expect(service.isYouTubeUrl('https://open.spotify.com/track/123'), isFalse);
+      expect(service.isYouTubeUrl('https://youtube.com/playlist?list=PL12345'),
+          isTrue);
+      expect(
+          service.isYouTubeUrl('https://open.spotify.com/track/123'), isFalse);
 
-      expect(service.isSupportedUrl('https://open.spotify.com/track/123'), isTrue);
+      expect(
+          service.isSupportedUrl('https://open.spotify.com/track/123'), isTrue);
       expect(service.isSupportedUrl('https://youtu.be/J7s72-X-VyM'), isTrue);
       expect(service.isSupportedUrl('random search query'), isFalse);
     });

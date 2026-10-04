@@ -79,7 +79,8 @@ class _TwilightLogoPainter extends CustomPainter {
         end: Alignment.bottomCenter,
       ).createShader(rect);
 
-    final RRect rrect = RRect.fromRectAndRadius(rect, Radius.circular(size.width * 0.26));
+    final RRect rrect =
+        RRect.fromRectAndRadius(rect, Radius.circular(size.width * 0.26));
     canvas.drawRRect(rrect, bgPaint);
 
     // 2. Horizontal Sound Wave Lines
@@ -90,9 +91,12 @@ class _TwilightLogoPainter extends CustomPainter {
 
     final wavePath = Path();
     wavePath.moveTo(w * 0.08, center.dy);
-    wavePath.quadraticBezierTo(w * 0.25, center.dy - w * 0.06, w * 0.4, center.dy);
-    wavePath.quadraticBezierTo(w * 0.6, center.dy + w * 0.06, w * 0.75, center.dy);
-    wavePath.quadraticBezierTo(w * 0.88, center.dy - w * 0.04, w * 0.92, center.dy);
+    wavePath.quadraticBezierTo(
+        w * 0.25, center.dy - w * 0.06, w * 0.4, center.dy);
+    wavePath.quadraticBezierTo(
+        w * 0.6, center.dy + w * 0.06, w * 0.75, center.dy);
+    wavePath.quadraticBezierTo(
+        w * 0.88, center.dy - w * 0.04, w * 0.92, center.dy);
     canvas.drawPath(wavePath, wavePaint);
 
     // 3. Glowing Crescent Moon
@@ -100,9 +104,12 @@ class _TwilightLogoPainter extends CustomPainter {
     final moonRadius = w * 0.32;
 
     final moonPath = Path();
-    moonPath.addArc(Rect.fromCircle(center: moonCenter, radius: moonRadius), -2.2, 3.4);
+    moonPath.addArc(
+        Rect.fromCircle(center: moonCenter, radius: moonRadius), -2.2, 3.4);
     moonPath.arcTo(
-      Rect.fromCircle(center: Offset(moonCenter.dx + w * 0.14, moonCenter.dy - w * 0.05), radius: moonRadius * 0.85),
+      Rect.fromCircle(
+          center: Offset(moonCenter.dx + w * 0.14, moonCenter.dy - w * 0.05),
+          radius: moonRadius * 0.85),
       1.2,
       -3.4,
       false,
@@ -125,9 +132,11 @@ class _TwilightLogoPainter extends CustomPainter {
     final nY = center.dy - w * 0.14;
 
     // Left Note Head
-    notePath.addOval(Rect.fromCircle(center: Offset(nX, nY + w * 0.28), radius: w * 0.08));
+    notePath.addOval(
+        Rect.fromCircle(center: Offset(nX, nY + w * 0.28), radius: w * 0.08));
     // Right Note Head
-    notePath.addOval(Rect.fromCircle(center: Offset(nX + w * 0.22, nY + w * 0.22), radius: w * 0.08));
+    notePath.addOval(Rect.fromCircle(
+        center: Offset(nX + w * 0.22, nY + w * 0.22), radius: w * 0.08));
 
     // Stems & Beam
     notePath.moveTo(nX + w * 0.06, nY + w * 0.28);
@@ -159,10 +168,14 @@ class _TwilightLogoPainter extends CustomPainter {
     canvas.drawPath(beamPath, noteStroke);
 
     // 5. Sparkle Stars
-    _drawStar(canvas, Offset(w * 0.2, w * 0.2), w * 0.025, const Color(0xFFE8FFB7));
-    _drawStar(canvas, Offset(w * 0.8, w * 0.22), w * 0.03, const Color(0xFF80FFEA));
-    _drawStar(canvas, Offset(w * 0.88, w * 0.55), w * 0.02, const Color(0xFFFFFFFF));
-    _drawStar(canvas, Offset(w * 0.15, w * 0.72), w * 0.02, const Color(0xFF80FFEA));
+    _drawStar(
+        canvas, Offset(w * 0.2, w * 0.2), w * 0.025, const Color(0xFFE8FFB7));
+    _drawStar(
+        canvas, Offset(w * 0.8, w * 0.22), w * 0.03, const Color(0xFF80FFEA));
+    _drawStar(
+        canvas, Offset(w * 0.88, w * 0.55), w * 0.02, const Color(0xFFFFFFFF));
+    _drawStar(
+        canvas, Offset(w * 0.15, w * 0.72), w * 0.02, const Color(0xFF80FFEA));
   }
 
   void _drawStar(Canvas canvas, Offset pos, double r, Color color) {

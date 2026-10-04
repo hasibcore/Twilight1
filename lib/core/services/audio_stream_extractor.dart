@@ -27,7 +27,8 @@ class AudioStreamExtractor {
   // iOS App InnerTube Client — Returns direct (non-ciphered) stream URLs reliably
   static const Map<String, String> _iosAppHeaders = {
     'Content-Type': 'application/json',
-    'User-Agent': 'com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 17_5_1 like Mac OS X; en_US)',
+    'User-Agent':
+        'com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 17_5_1 like Mac OS X; en_US)',
     'X-YouTube-Client-Name': '5',
     'X-YouTube-Client-Version': '19.45.4',
     'Accept': '*/*',
@@ -37,7 +38,8 @@ class AudioStreamExtractor {
   // Mobile Web InnerTube Client
   static const Map<String, String> _mwebHeaders = {
     'Content-Type': 'application/json',
-    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
+    'User-Agent':
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
     'X-YouTube-Client-Name': '2',
     'X-YouTube-Client-Version': '2.20240920.01.00',
     'Accept': '*/*',
@@ -49,7 +51,8 @@ class AudioStreamExtractor {
 
   static const Map<String, String> _tvHeaders = {
     'Content-Type': 'application/json',
-    'User-Agent': 'Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/538.1 (KHTML, like Gecko) Version/6.0 TV Safari/538.1',
+    'User-Agent':
+        'Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/538.1 (KHTML, like Gecko) Version/6.0 TV Safari/538.1',
     'Accept': '*/*',
     'Accept-Language': 'en-US,en;q=0.9',
     'Origin': 'https://www.youtube.com',
@@ -59,7 +62,8 @@ class AudioStreamExtractor {
   // Android Music client
   static const Map<String, String> _androidMusicHeaders = {
     'Content-Type': 'application/json',
-    'User-Agent': 'com.google.android.apps.youtube.music/7.27.52 (Linux; U; Android 14) gzip',
+    'User-Agent':
+        'com.google.android.apps.youtube.music/7.27.52 (Linux; U; Android 14) gzip',
     'X-YouTube-Client-Name': '21',
     'X-YouTube-Client-Version': '7.27.52',
     'Accept': '*/*',
@@ -69,7 +73,8 @@ class AudioStreamExtractor {
   // Official Android YouTube App client
   static const Map<String, String> _androidAppHeaders = {
     'Content-Type': 'application/json',
-    'User-Agent': 'com.google.android.youtube/20.10.38 (Linux; U; Android 14) gzip',
+    'User-Agent':
+        'com.google.android.youtube/20.10.38 (Linux; U; Android 14) gzip',
     'X-YouTube-Client-Name': '3',
     'X-YouTube-Client-Version': '20.10.38',
     'Accept': '*/*',
@@ -95,7 +100,8 @@ class AudioStreamExtractor {
 
   static void _setCache(String key, AudioStreamResult result) {
     if (_cache.length >= _maxCacheSize) {
-      final oldest = _cacheTime.entries.reduce((a, b) => a.value.isBefore(b.value) ? a : b);
+      final oldest = _cacheTime.entries
+          .reduce((a, b) => a.value.isBefore(b.value) ? a : b);
       _cache.remove(oldest.key);
       _cacheTime.remove(oldest.key);
     }
@@ -117,12 +123,14 @@ class AudioStreamExtractor {
   }) async {
     final cacheKey = '${videoId}_$preferDownload';
     if (_cache.containsKey(cacheKey)) {
-      final age = DateTime.now().difference(_cacheTime[cacheKey] ?? DateTime(2000));
+      final age =
+          DateTime.now().difference(_cacheTime[cacheKey] ?? DateTime(2000));
       if (age < _cacheTTL) {
         AppLogger.info('Cache hit for $videoId (age: ${age.inSeconds}s)');
         return _cache[cacheKey];
       } else {
-        AppLogger.info('Cache expired for $videoId (age: ${age.inSeconds}s), re-fetching');
+        AppLogger.info(
+            'Cache expired for $videoId (age: ${age.inSeconds}s), re-fetching');
         _cache.remove(cacheKey);
         _cacheTime.remove(cacheKey);
       }
@@ -168,7 +176,8 @@ class AudioStreamExtractor {
     try {
       final androidMusicResult = await _extractFromAndroidMusic(videoId);
       if (androidMusicResult != null) {
-        AppLogger.info('Extracted stream via Tier 4 Android Music for $videoId');
+        AppLogger.info(
+            'Extracted stream via Tier 4 Android Music for $videoId');
         if (!preferDownload) _setCache(cacheKey, androidMusicResult);
         return androidMusicResult;
       }
@@ -192,22 +201,34 @@ class AudioStreamExtractor {
     try {
       final manifest = await _yt.videos.streamsClient.getManifest(
         videoId,
-        ytClients: [YoutubeApiClient.tv, YoutubeApiClient.mweb, YoutubeApiClient.ios],
+        ytClients: [
+          YoutubeApiClient.tv,
+          YoutubeApiClient.mweb,
+          YoutubeApiClient.ios
+        ],
       ).timeout(const Duration(seconds: 8));
       final audioStreams = manifest.audioOnly;
       if (audioStreams.isNotEmpty) {
-        final m4a = audioStreams.where((s) =>
-            s.container.name.toLowerCase().contains('mp4') ||
-            s.container.name.toLowerCase().contains('m4a')).toList();
-        final best = m4a.isNotEmpty ? m4a.withHighestBitrate() : audioStreams.withHighestBitrate();
-        AppLogger.info('Extracted stream via Tier 6 YoutubeExplode for $videoId');
+        final m4a = audioStreams
+            .where((s) =>
+                s.container.name.toLowerCase().contains('mp4') ||
+                s.container.name.toLowerCase().contains('m4a'))
+            .toList();
+        final best = m4a.isNotEmpty
+            ? m4a.withHighestBitrate()
+            : audioStreams.withHighestBitrate();
+        AppLogger.info(
+            'Extracted stream via Tier 6 YoutubeExplode for $videoId');
         final result = AudioStreamResult(
           url: best.url.toString(),
           totalBytes: best.size.totalBytes,
-          mimeType: best.container.name.toLowerCase().contains('mp4') ? 'audio/mp4' : 'audio/webm',
+          mimeType: best.container.name.toLowerCase().contains('mp4')
+              ? 'audio/mp4'
+              : 'audio/webm',
           bitrate: best.bitrate.bitsPerSecond,
           headers: const {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15',
+            'User-Agent':
+                'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15',
           },
         );
         _setCache(cacheKey, result);
@@ -235,7 +256,8 @@ class AudioStreamExtractor {
 
   /// Extracts audio via official YouTube iOS App client
   static Future<AudioStreamResult?> _extractFromIosApp(String videoId) async {
-    final uri = Uri.parse('https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
+    final uri = Uri.parse(
+        'https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
 
     final payload = {
       'context': {
@@ -254,16 +276,19 @@ class AudioStreamExtractor {
     };
 
     AppLogger.info('iOS App Innertube requesting for $videoId...');
-    final res = await http.post(
-      uri,
-      headers: _iosAppHeaders,
-      body: jsonEncode(payload),
-    ).timeout(const Duration(seconds: 8));
+    final res = await http
+        .post(
+          uri,
+          headers: _iosAppHeaders,
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 8));
 
     if (res.statusCode != 200) return null;
 
     final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final playStatus = (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
+    final playStatus =
+        (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
     if (playStatus != 'OK') return null;
 
     final streamingData = data['streamingData'] as Map<String, dynamic>?;
@@ -272,7 +297,8 @@ class AudioStreamExtractor {
     return _pickBestAudioFormat(
       streamingData,
       headers: const {
-        'User-Agent': 'com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 17_5_1 like Mac OS X; en_US)',
+        'User-Agent':
+            'com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 17_5_1 like Mac OS X; en_US)',
       },
       clientName: 'iOS App',
     );
@@ -280,7 +306,8 @@ class AudioStreamExtractor {
 
   /// Extracts audio via Mobile Web InnerTube client
   static Future<AudioStreamResult?> _extractFromMweb(String videoId) async {
-    final uri = Uri.parse('https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
+    final uri = Uri.parse(
+        'https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
 
     final payload = {
       'context': {
@@ -296,16 +323,19 @@ class AudioStreamExtractor {
     };
 
     AppLogger.info('MWEB Innertube requesting for $videoId...');
-    final res = await http.post(
-      uri,
-      headers: _mwebHeaders,
-      body: jsonEncode(payload),
-    ).timeout(const Duration(seconds: 8));
+    final res = await http
+        .post(
+          uri,
+          headers: _mwebHeaders,
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 8));
 
     if (res.statusCode != 200) return null;
 
     final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final playStatus = (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
+    final playStatus =
+        (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
     if (playStatus != 'OK') return null;
 
     final streamingData = data['streamingData'] as Map<String, dynamic>?;
@@ -314,14 +344,16 @@ class AudioStreamExtractor {
     return _pickBestAudioFormat(
       streamingData,
       headers: const {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
+        'User-Agent':
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
       },
       clientName: 'MWEB',
     );
   }
 
   /// Extracts unthrottled audio stream via public Invidious / Piped instances
-  static Future<AudioStreamResult?> _extractFromInvidious(String videoId) async {
+  static Future<AudioStreamResult?> _extractFromInvidious(
+      String videoId) async {
     for (final inst in _invidiousInstances) {
       try {
         final uri = Uri.parse('$inst/api/v1/videos/$videoId');
@@ -360,8 +392,10 @@ class AudioStreamExtractor {
             final url = audio['url'] as String?;
             if (url != null && url.isNotEmpty) {
               final clen = int.tryParse(audio['clen']?.toString() ?? '') ?? 0;
-              final bitrate = int.tryParse(audio['bitrate']?.toString() ?? '') ?? 128000;
-              final mime = (audio['type'] as String? ?? 'audio/mp4').split(';').first;
+              final bitrate =
+                  int.tryParse(audio['bitrate']?.toString() ?? '') ?? 128000;
+              final mime =
+                  (audio['type'] as String? ?? 'audio/mp4').split(';').first;
 
               return AudioStreamResult(
                 url: url,
@@ -384,7 +418,8 @@ class AudioStreamExtractor {
   }
 
   /// Extracts audio stream via YouTube TV Embedded Player InnerTube endpoint.
-  static Future<AudioStreamResult?> _extractFromTvEmbedded(String videoId) async {
+  static Future<AudioStreamResult?> _extractFromTvEmbedded(
+      String videoId) async {
     final uri = Uri.parse(
         'https://www.youtube.com/youtubei/v1/player?key=$_tvApiKey&prettyPrint=false');
 
@@ -409,16 +444,19 @@ class AudioStreamExtractor {
       },
     };
 
-    final res = await http.post(
-      uri,
-      headers: _tvHeaders,
-      body: jsonEncode(payload),
-    ).timeout(const Duration(seconds: 8));
+    final res = await http
+        .post(
+          uri,
+          headers: _tvHeaders,
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 8));
 
     if (res.statusCode != 200) return null;
 
     final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final playStatus = (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
+    final playStatus =
+        (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
     if (playStatus != 'OK') return null;
 
     final streamingData = data['streamingData'] as Map<String, dynamic>?;
@@ -427,7 +465,8 @@ class AudioStreamExtractor {
     return _pickBestAudioFormat(
       streamingData,
       headers: const {
-        'User-Agent': 'Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/538.1 (KHTML, like Gecko) Version/6.0 TV Safari/538.1',
+        'User-Agent':
+            'Mozilla/5.0 (SMART-TV; Linux; Tizen 6.0) AppleWebKit/538.1 (KHTML, like Gecko) Version/6.0 TV Safari/538.1',
         'Referer': 'https://www.youtube.com/',
         'Origin': 'https://www.youtube.com',
       },
@@ -436,8 +475,10 @@ class AudioStreamExtractor {
   }
 
   /// Extracts audio via Android Music client
-  static Future<AudioStreamResult?> _extractFromAndroidMusic(String videoId) async {
-    final uri = Uri.parse('https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
+  static Future<AudioStreamResult?> _extractFromAndroidMusic(
+      String videoId) async {
+    final uri = Uri.parse(
+        'https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
 
     final payload = {
       'context': {
@@ -453,16 +494,19 @@ class AudioStreamExtractor {
       'videoId': videoId,
     };
 
-    final res = await http.post(
-      uri,
-      headers: _androidMusicHeaders,
-      body: jsonEncode(payload),
-    ).timeout(const Duration(seconds: 8));
+    final res = await http
+        .post(
+          uri,
+          headers: _androidMusicHeaders,
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 8));
 
     if (res.statusCode != 200) return null;
 
     final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final playStatus = (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
+    final playStatus =
+        (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
     if (playStatus != 'OK') return null;
 
     final streamingData = data['streamingData'] as Map<String, dynamic>?;
@@ -471,15 +515,18 @@ class AudioStreamExtractor {
     return _pickBestAudioFormat(
       streamingData,
       headers: const {
-        'User-Agent': 'com.google.android.apps.youtube.music/7.27.52 (Linux; U; Android 14) gzip',
+        'User-Agent':
+            'com.google.android.apps.youtube.music/7.27.52 (Linux; U; Android 14) gzip',
       },
       clientName: 'Android Music',
     );
   }
 
   /// Extracts audio via official YouTube Android App client
-  static Future<AudioStreamResult?> _extractFromAndroidApp(String videoId) async {
-    final uri = Uri.parse('https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
+  static Future<AudioStreamResult?> _extractFromAndroidApp(
+      String videoId) async {
+    final uri = Uri.parse(
+        'https://www.youtube.com/youtubei/v1/player?prettyPrint=false');
 
     final payload = {
       'context': {
@@ -495,16 +542,19 @@ class AudioStreamExtractor {
       'videoId': videoId,
     };
 
-    final res = await http.post(
-      uri,
-      headers: _androidAppHeaders,
-      body: jsonEncode(payload),
-    ).timeout(const Duration(seconds: 8));
+    final res = await http
+        .post(
+          uri,
+          headers: _androidAppHeaders,
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 8));
 
     if (res.statusCode != 200) return null;
 
     final data = jsonDecode(res.body) as Map<String, dynamic>;
-    final playStatus = (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
+    final playStatus =
+        (data['playabilityStatus'] as Map<String, dynamic>?)?['status'];
     if (playStatus != 'OK') return null;
 
     final streamingData = data['streamingData'] as Map<String, dynamic>?;
@@ -513,7 +563,8 @@ class AudioStreamExtractor {
     return _pickBestAudioFormat(
       streamingData,
       headers: const {
-        'User-Agent': 'com.google.android.youtube/20.10.38 (Linux; U; Android 14) gzip',
+        'User-Agent':
+            'com.google.android.youtube/20.10.38 (Linux; U; Android 14) gzip',
       },
       clientName: 'Android App',
     );

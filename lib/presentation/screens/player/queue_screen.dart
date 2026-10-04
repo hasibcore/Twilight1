@@ -67,21 +67,24 @@ class QueueScreen extends StatelessWidget {
                           width: 50,
                           height: 50,
                           color: AppColors.surfaceVariantDark,
-                          child: const Icon(Icons.music_note, color: Colors.white38),
+                          child: const Icon(Icons.music_note,
+                              color: Colors.white38),
                         ),
                       )
                     : Container(
                         width: 50,
                         height: 50,
                         color: AppColors.surfaceVariantDark,
-                        child: const Icon(Icons.music_note, color: Colors.white38),
+                        child:
+                            const Icon(Icons.music_note, color: Colors.white38),
                       ),
               ),
               title: Text(
                 currentSong.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.white),
               ),
               subtitle: Text(
                 currentSong.artist,
@@ -89,7 +92,8 @@ class QueueScreen extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(color: AppColors.textSecondaryDark),
               ),
-              trailing: const Icon(Icons.graphic_eq, color: AppColors.primaryAccent),
+              trailing:
+                  const Icon(Icons.graphic_eq, color: AppColors.primaryAccent),
             ),
             const Divider(color: Colors.white10),
           ],
@@ -110,7 +114,8 @@ class QueueScreen extends StatelessWidget {
           Expanded(
             child: queue.isEmpty
                 ? const Center(
-                    child: Text('Queue is empty', style: TextStyle(color: Colors.white38)),
+                    child: Text('Queue is empty',
+                        style: TextStyle(color: Colors.white38)),
                   )
                 : ReorderableListView.builder(
                     itemCount: queue.length,
@@ -146,14 +151,16 @@ class QueueScreen extends StatelessWidget {
                                       width: 44,
                                       height: 44,
                                       color: AppColors.surfaceVariantDark,
-                                      child: const Icon(Icons.music_note, color: Colors.white38),
+                                      child: const Icon(Icons.music_note,
+                                          color: Colors.white38),
                                     ),
                                   )
                                 : Container(
                                     width: 44,
                                     height: 44,
                                     color: AppColors.surfaceVariantDark,
-                                    child: const Icon(Icons.music_note, color: Colors.white38),
+                                    child: const Icon(Icons.music_note,
+                                        color: Colors.white38),
                                   ),
                           ),
                           title: Text(
@@ -161,17 +168,24 @@ class QueueScreen extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: isCurrent ? AppColors.primaryAccent : Colors.white,
-                              fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                              color: isCurrent
+                                  ? AppColors.primaryAccent
+                                  : Colors.white,
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                           subtitle: Text(
                             item.artist,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                            style: const TextStyle(
+                                color: AppColors.textSecondaryDark,
+                                fontSize: 12),
                           ),
-                          trailing: const Icon(Icons.drag_handle, color: Colors.white38),
+                          trailing: const Icon(Icons.drag_handle,
+                              color: Colors.white38),
                           onTap: () {
                             player.playSong(item, queueIndex: index);
                           },
@@ -194,12 +208,16 @@ class QueueScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: player.isAutoplay ? AppColors.primaryAccent.withValues(alpha: 0.15) : Colors.white10,
+                  color: player.isAutoplay
+                      ? AppColors.primaryAccent.withValues(alpha: 0.15)
+                      : Colors.white10,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.autorenew_rounded,
-                  color: player.isAutoplay ? AppColors.primaryAccent : Colors.white54,
+                  color: player.isAutoplay
+                      ? AppColors.primaryAccent
+                      : Colors.white54,
                   size: 22,
                 ),
               ),
@@ -211,11 +229,15 @@ class QueueScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Autoplay Similar Tracks',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13),
                     ),
                     Text(
                       'Keep music playing when queue ends',
-                      style: TextStyle(color: AppColors.textSecondaryDark, fontSize: 11),
+                      style: TextStyle(
+                          color: AppColors.textSecondaryDark, fontSize: 11),
                     ),
                   ],
                 ),
@@ -227,7 +249,8 @@ class QueueScreen extends StatelessWidget {
                   player.toggleAutoplay(value: val);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(val ? 'Autoplay Enabled' : 'Autoplay Disabled'),
+                      content:
+                          Text(val ? 'Autoplay Enabled' : 'Autoplay Disabled'),
                       duration: const Duration(seconds: 1),
                     ),
                   );
@@ -270,7 +293,8 @@ class QueueScreen extends StatelessWidget {
               if (title.isNotEmpty) {
                 final playlistProv = context.read<PlaylistProvider>();
                 final player = context.read<PlayerProvider>();
-                final created = await playlistProv.createPlaylist(title, description: 'Saved from music queue');
+                final created = await playlistProv.createPlaylist(title,
+                    description: 'Saved from music queue');
                 for (final s in player.queue) {
                   await playlistProv.addSongToPlaylist(created.id, s);
                 }

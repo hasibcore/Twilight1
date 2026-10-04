@@ -82,7 +82,9 @@ class MusicRepositoryImpl implements MusicRepository {
         id: target.id,
         title: target.title,
         description: target.description,
-        thumbnailUrl: song.thumbnailUrl.isNotEmpty ? song.thumbnailUrl : target.thumbnailUrl,
+        thumbnailUrl: song.thumbnailUrl.isNotEmpty
+            ? song.thumbnailUrl
+            : target.thumbnailUrl,
         songs: existingSongs,
         isUserCreated: target.isUserCreated,
         updatedAt: DateTime.now(),

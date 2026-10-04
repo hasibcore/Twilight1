@@ -18,7 +18,8 @@ class DownloadProvider extends ChangeNotifier {
   String? get lastError => _lastError;
 
   bool isDownloaded(String songId) {
-    return _downloads.any((d) => d.song.id == songId || d.localFilePath.contains(songId));
+    return _downloads
+        .any((d) => d.song.id == songId || d.localFilePath.contains(songId));
   }
 
   bool isDownloading(String songId) {
@@ -31,7 +32,8 @@ class DownloadProvider extends ChangeNotifier {
 
   DownloadItem? getDownloadItem(String songId) {
     try {
-      return _downloads.firstWhere((d) => d.song.id == songId || d.localFilePath.contains(songId));
+      return _downloads.firstWhere(
+          (d) => d.song.id == songId || d.localFilePath.contains(songId));
     } catch (_) {
       return null;
     }
@@ -53,11 +55,16 @@ class DownloadProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      int lastNotifyMs = 0;
       final item = await DownloadService.downloadTrack(
         song: song,
         onProgress: (progress) {
           _downloadProgress[song.id] = progress;
-          notifyListeners();
+          final nowMs = DateTime.now().millisecondsSinceEpoch;
+          if (nowMs - lastNotifyMs >= 150 || progress >= 0.99) {
+            lastNotifyMs = nowMs;
+            notifyListeners();
+          }
         },
       );
 
@@ -82,7 +89,23 @@ class DownloadProvider extends ChangeNotifier {
 
   Future<void> deleteDownload(String songId) async {
     await DownloadService.deleteTrack(songId);
-    _downloads.removeWhere((d) => d.song.id == songId || d.localFilePath.contains(songId));
+    _downloads.removeWhere(
+        (d) => d.song.id == songId || d.localFilePath.contains(songId));
     notifyListeners();
+  }
+
+  bool _isDisposed = false;
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

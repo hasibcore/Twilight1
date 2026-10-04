@@ -12,7 +12,8 @@ void main() {
   });
 
   group('UserDatabaseService Table & Authentication Tests', () {
-    test('Registers a new user into persistent table and retrieves it', () async {
+    test('Registers a new user into persistent table and retrieves it',
+        () async {
       final user = await UserDatabaseService.registerUser(
         email: 'hasan@twilight.app',
         password: 'securePassword123',
@@ -45,7 +46,9 @@ void main() {
       );
     });
 
-    test('Authenticates successfully when typed login info matches stored database info', () async {
+    test(
+        'Authenticates successfully when typed login info matches stored database info',
+        () async {
       await UserDatabaseService.registerUser(
         email: 'login_test@twilight.app',
         password: 'mySecretPassword',
@@ -61,7 +64,9 @@ void main() {
       expect(authenticated['displayName'], equals('Login Tester'));
     });
 
-    test('Fails authentication when typed password does not match database record', () async {
+    test(
+        'Fails authentication when typed password does not match database record',
+        () async {
       await UserDatabaseService.registerUser(
         email: 'wrong_pass@twilight.app',
         password: 'correctPassword',

@@ -37,9 +37,12 @@ class SongCard extends StatelessWidget {
     final isCurrent = player.currentSong?.id == song.id;
 
     return GestureDetector(
-      onTap: onTap ?? () {
-        context.read<PlayerProvider>().playSong(song, newQueue: queueContext);
-      },
+      onTap: onTap ??
+          () {
+            context
+                .read<PlayerProvider>()
+                .playSong(song, newQueue: queueContext);
+          },
       child: Container(
         width: 145,
         margin: const EdgeInsets.only(right: 14),
@@ -62,21 +65,24 @@ class SongCard extends StatelessWidget {
                             height: 145,
                             color: AppColors.surfaceVariantDark,
                             child: const Center(
-                              child: Icon(Icons.music_note, color: Colors.white24),
+                              child:
+                                  Icon(Icons.music_note, color: Colors.white24),
                             ),
                           ),
                           errorWidget: (_, __, ___) => Container(
                             width: 145,
                             height: 145,
                             color: AppColors.surfaceVariantDark,
-                            child: const Icon(Icons.broken_image, color: Colors.white24),
+                            child: const Icon(Icons.broken_image,
+                                color: Colors.white24),
                           ),
                         )
                       : Container(
                           width: 145,
                           height: 145,
                           color: AppColors.surfaceVariantDark,
-                          child: const Icon(Icons.music_note, color: Colors.white24),
+                          child: const Icon(Icons.music_note,
+                              color: Colors.white24),
                         ),
                 ),
                 if (isCurrent)
@@ -104,7 +110,9 @@ class SongCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: isCurrent ? AppColors.primaryAccent : AppColors.textPrimary(context),
+                color: isCurrent
+                    ? AppColors.primaryAccent
+                    : AppColors.textPrimary(context),
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 height: 1.2,
@@ -148,14 +156,16 @@ class SongCard extends StatelessWidget {
                       width: 52,
                       height: 52,
                       color: AppColors.surfaceVariant(context),
-                      child: Icon(Icons.music_note, color: AppColors.iconMuted(context)),
+                      child: Icon(Icons.music_note,
+                          color: AppColors.iconMuted(context)),
                     ),
                   )
                 : Container(
                     width: 52,
                     height: 52,
                     color: AppColors.surfaceVariant(context),
-                    child: Icon(Icons.music_note, color: AppColors.iconMuted(context)),
+                    child: Icon(Icons.music_note,
+                        color: AppColors.iconMuted(context)),
                   ),
           ),
           if (isCurrent)
@@ -166,7 +176,8 @@ class SongCard extends StatelessWidget {
                 color: Colors.black.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Icon(Icons.graphic_eq_rounded, color: AppColors.primaryAccent, size: 24),
+              child: const Icon(Icons.graphic_eq_rounded,
+                  color: AppColors.primaryAccent, size: 24),
             ),
         ],
       ),
@@ -175,7 +186,9 @@ class SongCard extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: isCurrent ? AppColors.primaryAccent : AppColors.textPrimary(context),
+          color: isCurrent
+              ? AppColors.primaryAccent
+              : AppColors.textPrimary(context),
           fontSize: 14,
           fontWeight: FontWeight.w600,
         ),
@@ -193,9 +206,12 @@ class SongCard extends StatelessWidget {
         icon: Icon(Icons.more_vert, color: AppColors.textSecondary(context)),
         onPressed: () => _showContextMenu(context),
       ),
-      onTap: onTap ?? () {
-        context.read<PlayerProvider>().playSong(song, newQueue: queueContext);
-      },
+      onTap: onTap ??
+          () {
+            context
+                .read<PlayerProvider>()
+                .playSong(song, newQueue: queueContext);
+          },
     );
   }
 
@@ -227,14 +243,16 @@ class SongCard extends StatelessWidget {
                             width: 44,
                             height: 44,
                             color: AppColors.surfaceVariantDark,
-                            child: const Icon(Icons.music_note, color: Colors.white38),
+                            child: const Icon(Icons.music_note,
+                                color: Colors.white38),
                           ),
                         )
                       : Container(
                           width: 44,
                           height: 44,
                           color: AppColors.surfaceVariantDark,
-                          child: const Icon(Icons.music_note, color: Colors.white38),
+                          child: const Icon(Icons.music_note,
+                              color: Colors.white38),
                         ),
                 ),
                 title: Text(
@@ -278,14 +296,16 @@ class SongCard extends StatelessWidget {
                   isFav ? Icons.favorite : Icons.favorite_border,
                   color: isFav ? AppColors.primaryAccent : Colors.white,
                 ),
-                title: Text(isFav ? 'Remove from Favorites' : 'Add to Favorites'),
+                title:
+                    Text(isFav ? 'Remove from Favorites' : 'Add to Favorites'),
                 onTap: () {
                   playlistProv.toggleFavorite(song);
                   Navigator.pop(sheetContext);
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.add_to_photos_outlined, color: Colors.white),
+                leading: const Icon(Icons.add_to_photos_outlined,
+                    color: Colors.white),
                 title: const Text('Add to Playlist'),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -308,13 +328,18 @@ class SongCard extends StatelessWidget {
                             ),
                           )
                         : Icon(
-                            isDownloaded ? Icons.delete_outline : Icons.download_rounded,
-                            color: isDownloaded ? Colors.redAccent : Colors.white,
+                            isDownloaded
+                                ? Icons.delete_outline
+                                : Icons.download_rounded,
+                            color:
+                                isDownloaded ? Colors.redAccent : Colors.white,
                           ),
                     title: Text(
                       isDownloaded
                           ? 'Remove from Downloads'
-                          : (isDownloading ? 'Downloading...' : 'Download Song'),
+                          : (isDownloading
+                              ? 'Downloading...'
+                              : 'Download Song'),
                       style: TextStyle(
                         color: isDownloaded ? Colors.redAccent : Colors.white,
                       ),
@@ -328,21 +353,24 @@ class SongCard extends StatelessWidget {
                         );
                       } else if (!isDownloading) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Downloading "${song.title}"...')),
+                          SnackBar(
+                              content: Text('Downloading "${song.title}"...')),
                         );
                         final ok = await downloadProv.startDownload(song);
                         if (context.mounted) {
                           if (ok) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Downloaded "${song.title}" for offline playback!'),
+                                content: Text(
+                                    'Downloaded "${song.title}" for offline playback!'),
                                 backgroundColor: const Color(0xFF00E676),
                               ),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(downloadProv.lastError ?? 'Download failed'),
+                                content: Text(downloadProv.lastError ??
+                                    'Download failed'),
                                 backgroundColor: Colors.redAccent,
                               ),
                             );
@@ -386,7 +414,10 @@ class SongCard extends StatelessWidget {
                         children: [
                           const Text(
                             'Add to playlist',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                           TextButton.icon(
                             icon: const Icon(Icons.add, size: 18),
@@ -404,18 +435,23 @@ class SongCard extends StatelessWidget {
                     const Divider(color: Colors.white10),
                     if (playlistProv.playlists.isEmpty)
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                         child: Center(
                           child: Column(
                             children: [
-                              Icon(Icons.queue_music, size: 40, color: Colors.white30),
+                              Icon(Icons.queue_music,
+                                  size: 40, color: Colors.white30),
                               SizedBox(height: 8),
-                              Text('No playlists yet', style: TextStyle(color: Colors.white70)),
+                              Text('No playlists yet',
+                                  style: TextStyle(color: Colors.white70)),
                               SizedBox(height: 4),
                               Text(
                                 'Tap "+ New" above to create your first playlist.',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                                style: TextStyle(
+                                    color: AppColors.textSecondaryDark,
+                                    fontSize: 12),
                               ),
                             ],
                           ),
@@ -428,14 +464,19 @@ class SongCard extends StatelessWidget {
                           itemBuilder: (_, index) {
                             final pl = playlistProv.playlists[index];
                             return ListTile(
-                              leading: const Icon(Icons.queue_music, color: AppColors.primaryAccent),
-                              title: Text(pl.title, style: const TextStyle(color: Colors.white)),
-                              subtitle: Text('${pl.songCount} songs', style: const TextStyle(color: AppColors.textSecondaryDark)),
+                              leading: const Icon(Icons.queue_music,
+                                  color: AppColors.primaryAccent),
+                              title: Text(pl.title,
+                                  style: const TextStyle(color: Colors.white)),
+                              subtitle: Text('${pl.songCount} songs',
+                                  style: const TextStyle(
+                                      color: AppColors.textSecondaryDark)),
                               onTap: () {
                                 playlistProv.addSongToPlaylist(pl.id, song);
                                 Navigator.pop(ctx);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Added to ${pl.title}')),
+                                  SnackBar(
+                                      content: Text('Added to ${pl.title}')),
                                 );
                               },
                             );

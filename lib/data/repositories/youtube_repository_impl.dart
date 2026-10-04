@@ -23,20 +23,23 @@ class YouTubeRepositoryImpl implements YouTubeRepository {
   }
 
   @override
-  Future<List<Artist>> searchArtists(String query, {int maxResults = 10}) async {
+  Future<List<Artist>> searchArtists(String query,
+      {int maxResults = 10}) async {
     final res = await remoteDatasource.searchAll(query);
     return res.artists.map((a) => a.toEntity()).toList();
   }
 
   @override
-  Future<List<Playlist>> searchPlaylists(String query, {int maxResults = 10}) async {
+  Future<List<Playlist>> searchPlaylists(String query,
+      {int maxResults = 10}) async {
     final res = await remoteDatasource.searchAll(query);
     return res.playlists.map((p) => p.toEntity()).toList();
   }
 
   @override
   Future<List<Song>> getTrendingMusic({String regionCode = 'US'}) async {
-    final list = await remoteDatasource.getTrendingMusic(regionCode: regionCode);
+    final list =
+        await remoteDatasource.getTrendingMusic(regionCode: regionCode);
     return list.map((m) => m.toEntity()).toList();
   }
 

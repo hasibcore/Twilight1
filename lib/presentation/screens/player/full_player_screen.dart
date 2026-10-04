@@ -18,7 +18,8 @@ class FullPlayerScreen extends StatefulWidget {
   State<FullPlayerScreen> createState() => _FullPlayerScreenState();
 }
 
-class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerProviderStateMixin {
+class _FullPlayerScreenState extends State<FullPlayerScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animController;
   bool _isDraggingSlider = false;
   double _dragValue = 0.0;
@@ -69,9 +70,9 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
     final isDownloading = downloadProv.isDownloading(currentSong.id);
     final downloadProgress = downloadProv.getProgress(currentSong.id);
 
-
     final currentSecs = player.currentPosition.inSeconds.toDouble();
-    final totalSecs = player.totalDuration.inSeconds.toDouble().clamp(1.0, 86400.0);
+    final totalSecs =
+        player.totalDuration.inSeconds.toDouble().clamp(1.0, 86400.0);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -84,12 +85,14 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
             children: [
               // Top Bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.keyboard_arrow_down, size: 34, color: Colors.white),
+                      icon: const Icon(Icons.keyboard_arrow_down,
+                          size: 34, color: Colors.white),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Column(
@@ -104,9 +107,13 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                           ),
                         ),
                         Text(
-                          isDownloaded ? 'Offline Mode (Downloaded)' : player.audioQuality,
+                          isDownloaded
+                              ? 'Offline Mode (Downloaded)'
+                              : player.audioQuality,
                           style: TextStyle(
-                            color: isDownloaded ? const Color(0xFF00E676) : Colors.white70,
+                            color: isDownloaded
+                                ? const Color(0xFF00E676)
+                                : Colors.white70,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -120,17 +127,22 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         IconButton(
                           icon: Icon(
                             Icons.timer_outlined,
-                            color: player.hasActiveSleepTimer ? AppColors.primaryAccent : Colors.white70,
+                            color: player.hasActiveSleepTimer
+                                ? AppColors.primaryAccent
+                                : Colors.white70,
                             size: 22,
                           ),
                           tooltip: player.hasActiveSleepTimer
                               ? 'Timer: ${player.sleepTimerFormatted}'
                               : 'Sleep Timer',
-                          onPressed: () => _showSleepTimerSheet(context, player),
+                          onPressed: () =>
+                              _showSleepTimerSheet(context, player),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.more_vert, color: Colors.white),
-                          onPressed: () => _showContextMenu(context, currentSong, downloadProv, player),
+                          icon:
+                              const Icon(Icons.more_vert, color: Colors.white),
+                          onPressed: () => _showContextMenu(
+                              context, currentSong, downloadProv, player),
                         ),
                       ],
                     ),
@@ -210,7 +222,9 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                               width: 22,
                               height: 22,
                               child: CircularProgressIndicator(
-                                value: downloadProgress > 0.05 ? downloadProgress : null,
+                                value: downloadProgress > 0.05
+                                    ? downloadProgress
+                                    : null,
                                 strokeWidth: 2.5,
                                 color: AppColors.primaryAccent,
                               ),
@@ -219,15 +233,21 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                               isDownloaded
                                   ? Icons.download_done_rounded
                                   : Icons.download_rounded,
-                              color: isDownloaded ? const Color(0xFF00E676) : Colors.white,
+                              color: isDownloaded
+                                  ? const Color(0xFF00E676)
+                                  : Colors.white,
                               size: 26,
                             ),
-                      tooltip: isDownloaded ? 'Downloaded' : 'Download for offline playback',
-                      onPressed: () => _handleDownloadTap(context, currentSong, downloadProv),
+                      tooltip: isDownloaded
+                          ? 'Downloaded'
+                          : 'Download for offline playback',
+                      onPressed: () => _handleDownloadTap(
+                          context, currentSong, downloadProv),
                     ),
                     // Add to playlist
                     IconButton(
-                      icon: const Icon(Icons.playlist_add, color: Colors.white, size: 26),
+                      icon: const Icon(Icons.playlist_add,
+                          color: Colors.white, size: 26),
                       onPressed: () => _showAddToPlaylist(context, currentSong),
                     ),
                   ],
@@ -243,8 +263,10 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         trackHeight: 3,
-                        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                        overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                        thumbShape:
+                            const RoundSliderThumbShape(enabledThumbRadius: 6),
+                        overlayShape:
+                            const RoundSliderOverlayShape(overlayRadius: 14),
                         activeTrackColor: AppColors.primaryAccent,
                         inactiveTrackColor: Colors.white24,
                         thumbColor: Colors.white,
@@ -281,13 +303,19 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         children: [
                           Text(
                             _isDraggingSlider
-                                ? Formatters.formatDuration(Duration(seconds: _dragValue.toInt()))
-                                : Formatters.formatDuration(player.currentPosition),
-                            style: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                                ? Formatters.formatDuration(
+                                    Duration(seconds: _dragValue.toInt()))
+                                : Formatters.formatDuration(
+                                    player.currentPosition),
+                            style: const TextStyle(
+                                color: AppColors.textSecondaryDark,
+                                fontSize: 12),
                           ),
                           Text(
                             Formatters.formatDuration(player.totalDuration),
-                            style: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                            style: const TextStyle(
+                                color: AppColors.textSecondaryDark,
+                                fontSize: 12),
                           ),
                         ],
                       ),
@@ -306,13 +334,16 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     IconButton(
                       icon: Icon(
                         Icons.shuffle,
-                        color: player.isShuffle ? AppColors.primaryAccent : Colors.white60,
+                        color: player.isShuffle
+                            ? AppColors.primaryAccent
+                            : Colors.white60,
                         size: 26,
                       ),
                       onPressed: () => player.toggleShuffle(),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.skip_previous_rounded, color: Colors.white, size: 40),
+                      icon: const Icon(Icons.skip_previous_rounded,
+                          color: Colors.white, size: 40),
                       onPressed: () => player.previous(),
                     ),
                     // Large Play/Pause button
@@ -351,7 +382,9 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                                       size: 38,
                                     )
                                   : Icon(
-                                      player.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                      player.isPlaying
+                                          ? Icons.pause_rounded
+                                          : Icons.play_arrow_rounded,
                                       color: Colors.black,
                                       size: 40,
                                     ),
@@ -359,13 +392,16 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.skip_next_rounded, color: Colors.white, size: 40),
+                      icon: const Icon(Icons.skip_next_rounded,
+                          color: Colors.white, size: 40),
                       onPressed: () => player.next(),
                     ),
                     IconButton(
                       icon: Icon(
                         Icons.repeat,
-                        color: player.isRepeat ? AppColors.primaryAccent : Colors.white60,
+                        color: player.isRepeat
+                            ? AppColors.primaryAccent
+                            : Colors.white60,
                         size: 26,
                       ),
                       onPressed: () => player.toggleRepeat(),
@@ -377,7 +413,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
 
               // Spotify Features Row (Speed, Autoplay, Lyrics, Queue)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -385,7 +422,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     GestureDetector(
                       onTap: () => _showSpeedSelectorSheet(context, player),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceVariantDark,
                           borderRadius: BorderRadius.circular(12),
@@ -394,11 +432,15 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.speed, size: 14, color: Colors.white70),
+                            const Icon(Icons.speed,
+                                size: 14, color: Colors.white70),
                             const SizedBox(width: 4),
                             Text(
                               '${player.playbackSpeed}x',
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -414,12 +456,18 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                             content: Row(
                               children: [
                                 Icon(
-                                  player.isAutoplay ? Icons.autorenew_rounded : Icons.pause_circle_outline,
-                                  color: player.isAutoplay ? AppColors.primaryAccent : Colors.white70,
+                                  player.isAutoplay
+                                      ? Icons.autorenew_rounded
+                                      : Icons.pause_circle_outline,
+                                  color: player.isAutoplay
+                                      ? AppColors.primaryAccent
+                                      : Colors.white70,
                                   size: 18,
                                 ),
                                 const SizedBox(width: 8),
-                                Text(player.isAutoplay ? 'Autoplay: ON (Endless Playback)' : 'Autoplay: OFF'),
+                                Text(player.isAutoplay
+                                    ? 'Autoplay: ON (Endless Playback)'
+                                    : 'Autoplay: OFF'),
                               ],
                             ),
                             duration: const Duration(seconds: 1),
@@ -427,11 +475,17 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         );
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: player.isAutoplay ? AppColors.primaryAccent.withValues(alpha: 0.2) : AppColors.surfaceVariantDark,
+                          color: player.isAutoplay
+                              ? AppColors.primaryAccent.withValues(alpha: 0.2)
+                              : AppColors.surfaceVariantDark,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: player.isAutoplay ? AppColors.primaryAccent : Colors.white12),
+                          border: Border.all(
+                              color: player.isAutoplay
+                                  ? AppColors.primaryAccent
+                                  : Colors.white12),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -439,13 +493,17 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                             Icon(
                               Icons.autorenew_rounded,
                               size: 14,
-                              color: player.isAutoplay ? AppColors.primaryAccent : Colors.white70,
+                              color: player.isAutoplay
+                                  ? AppColors.primaryAccent
+                                  : Colors.white70,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               player.isAutoplay ? 'Auto ON' : 'Auto OFF',
                               style: TextStyle(
-                                color: player.isAutoplay ? AppColors.primaryAccent : Colors.white70,
+                                color: player.isAutoplay
+                                    ? AppColors.primaryAccent
+                                    : Colors.white70,
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -459,7 +517,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     GestureDetector(
                       onTap: () => _showLyricsSheet(context, currentSong),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: AppColors.surfaceVariantDark,
                           borderRadius: BorderRadius.circular(12),
@@ -468,11 +527,15 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.lyrics_outlined, size: 14, color: Colors.white70),
+                            Icon(Icons.lyrics_outlined,
+                                size: 14, color: Colors.white70),
                             SizedBox(width: 4),
                             Text(
                               'Lyrics',
-                              style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -484,14 +547,18 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.surfaceVariantDark,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
                       ),
                       icon: const Icon(Icons.queue_music, size: 15),
-                      label: Text('Queue (${player.queue.length})', style: const TextStyle(fontSize: 11)),
+                      label: Text('Queue (${player.queue.length})',
+                          style: const TextStyle(fontSize: 11)),
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const QueueScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const QueueScreen()),
                         );
                       },
                     ),
@@ -506,7 +573,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildArtworkWidget(dynamic currentSong, DownloadProvider downloadProv) {
+  Widget _buildArtworkWidget(
+      dynamic currentSong, DownloadProvider downloadProv) {
     final downloadedItem = downloadProv.getDownloadItem(currentSong.id);
     if (downloadedItem != null &&
         downloadedItem.localThumbnailPath != null &&
@@ -540,13 +608,15 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
     );
   }
 
-  void _handleDownloadTap(BuildContext context, dynamic currentSong, DownloadProvider downloadProv) async {
+  void _handleDownloadTap(BuildContext context, dynamic currentSong,
+      DownloadProvider downloadProv) async {
     if (downloadProv.isDownloaded(currentSong.id)) {
       _showDeleteDownloadConfirm(context, currentSong, downloadProv);
     } else if (!downloadProv.isDownloading(currentSong.id)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Downloading "${currentSong.title}" for offline playback...'),
+          content: Text(
+              'Downloading "${currentSong.title}" for offline playback...'),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -571,13 +641,15 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
     }
   }
 
-  void _showDeleteDownloadConfirm(BuildContext context, dynamic song, DownloadProvider downloadProv) {
+  void _showDeleteDownloadConfirm(
+      BuildContext context, dynamic song, DownloadProvider downloadProv) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppColors.surfaceDark,
         title: const Text('Delete Download'),
-        content: Text('Are you sure you want to remove "${song.title}" from offline downloads?'),
+        content: Text(
+            'Are you sure you want to remove "${song.title}" from offline downloads?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -591,14 +663,16 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                 const SnackBar(content: Text('Download removed')),
               );
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.redAccent)),
+            child:
+                const Text('Delete', style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
     );
   }
 
-  void _showContextMenu(BuildContext context, dynamic song, DownloadProvider downloadProv, PlayerProvider player) {
+  void _showContextMenu(BuildContext context, dynamic song,
+      DownloadProvider downloadProv, PlayerProvider player) {
     final isDownloaded = downloadProv.isDownloaded(song.id);
 
     showModalBottomSheet(
@@ -614,13 +688,19 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
             ListTile(
               leading: Icon(
                 Icons.timer_outlined,
-                color: player.hasActiveSleepTimer ? AppColors.primaryAccent : Colors.white,
+                color: player.hasActiveSleepTimer
+                    ? AppColors.primaryAccent
+                    : Colors.white,
               ),
               title: const Text('Sleep Timer'),
               subtitle: Text(
-                player.hasActiveSleepTimer ? 'Active: ${player.sleepTimerFormatted}' : 'Turn off playback automatically',
+                player.hasActiveSleepTimer
+                    ? 'Active: ${player.sleepTimerFormatted}'
+                    : 'Turn off playback automatically',
                 style: TextStyle(
-                  color: player.hasActiveSleepTimer ? AppColors.primaryAccent : AppColors.textSecondaryDark,
+                  color: player.hasActiveSleepTimer
+                      ? AppColors.primaryAccent
+                      : AppColors.textSecondaryDark,
                   fontSize: 12,
                 ),
               ),
@@ -634,7 +714,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
               title: const Text('Playback Speed'),
               subtitle: Text(
                 'Current: ${player.playbackSpeed}x',
-                style: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                style: const TextStyle(
+                    color: AppColors.textSecondaryDark, fontSize: 12),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -646,7 +727,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
               title: const Text('Audio Streaming Quality'),
               subtitle: Text(
                 player.audioQuality,
-                style: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                style: const TextStyle(
+                    color: AppColors.textSecondaryDark, fontSize: 12),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -658,7 +740,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                 isDownloaded ? Icons.delete_outline : Icons.download_rounded,
                 color: isDownloaded ? Colors.redAccent : Colors.white,
               ),
-              title: Text(isDownloaded ? 'Remove from Downloads' : 'Download Song'),
+              title: Text(
+                  isDownloaded ? 'Remove from Downloads' : 'Download Song'),
               onTap: () {
                 Navigator.pop(context);
                 if (isDownloaded) {
@@ -708,18 +791,23 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         player.cancelSleepTimer();
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sleep timer turned off')),
+                          const SnackBar(
+                              content: Text('Sleep timer turned off')),
                         );
                       },
-                      child: const Text('Turn Off', style: TextStyle(color: Colors.redAccent)),
+                      child: const Text('Turn Off',
+                          style: TextStyle(color: Colors.redAccent)),
                     ),
                 ],
               ),
             ),
             const Divider(color: Colors.white10),
-            _timerOption(ctx, player, '15 minutes', const Duration(minutes: 15)),
-            _timerOption(ctx, player, '30 minutes', const Duration(minutes: 30)),
-            _timerOption(ctx, player, '45 minutes', const Duration(minutes: 45)),
+            _timerOption(
+                ctx, player, '15 minutes', const Duration(minutes: 15)),
+            _timerOption(
+                ctx, player, '30 minutes', const Duration(minutes: 30)),
+            _timerOption(
+                ctx, player, '45 minutes', const Duration(minutes: 45)),
             _timerOption(ctx, player, '1 hour', const Duration(hours: 1)),
             _timerOption(
               ctx,
@@ -735,7 +823,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
     );
   }
 
-  Widget _timerOption(BuildContext ctx, PlayerProvider player, String title, Duration duration) {
+  Widget _timerOption(BuildContext ctx, PlayerProvider player, String title,
+      Duration duration) {
     return ListTile(
       title: Text(title, style: const TextStyle(color: Colors.white)),
       trailing: const Icon(Icons.chevron_right, color: Colors.white38),
@@ -776,7 +865,9 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
               children: speeds.map((s) {
                 final isSelected = player.playbackSpeed == s;
                 return ChoiceChip(
-                  label: Text('${s}x', style: TextStyle(color: isSelected ? Colors.black : Colors.white)),
+                  label: Text('${s}x',
+                      style: TextStyle(
+                          color: isSelected ? Colors.black : Colors.white)),
                   selected: isSelected,
                   selectedColor: Colors.white,
                   backgroundColor: AppColors.surfaceVariantDark,
@@ -829,7 +920,10 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Text(
                     'Audio & Sound Settings (Spotify Enhanced)',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                 ),
                 const Divider(color: Colors.white10),
@@ -849,8 +943,16 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                   final isSelected = player.audioQuality == q;
                   return ListTile(
                     dense: true,
-                    title: Text(q, style: TextStyle(color: isSelected ? AppColors.primaryAccent : Colors.white, fontSize: 13)),
-                    trailing: isSelected ? const Icon(Icons.check, color: AppColors.primaryAccent) : null,
+                    title: Text(q,
+                        style: TextStyle(
+                            color: isSelected
+                                ? AppColors.primaryAccent
+                                : Colors.white,
+                            fontSize: 13)),
+                    trailing: isSelected
+                        ? const Icon(Icons.check,
+                            color: AppColors.primaryAccent)
+                        : null,
                     onTap: () {
                       player.setAudioQuality(q);
                       setSheetState(() {});
@@ -874,14 +976,25 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                   final isSelected = player.equalizerPreset == eq;
                   return ListTile(
                     dense: true,
-                    leading: const Icon(Icons.graphic_eq_rounded, color: AppColors.textSecondaryDark, size: 20),
-                    title: Text(eq, style: TextStyle(color: isSelected ? AppColors.primaryAccent : Colors.white, fontSize: 13)),
-                    trailing: isSelected ? const Icon(Icons.check, color: AppColors.primaryAccent) : null,
+                    leading: const Icon(Icons.graphic_eq_rounded,
+                        color: AppColors.textSecondaryDark, size: 20),
+                    title: Text(eq,
+                        style: TextStyle(
+                            color: isSelected
+                                ? AppColors.primaryAccent
+                                : Colors.white,
+                            fontSize: 13)),
+                    trailing: isSelected
+                        ? const Icon(Icons.check,
+                            color: AppColors.primaryAccent)
+                        : null,
                     onTap: () {
                       player.setEqualizerPreset(eq);
                       setSheetState(() {});
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Equalizer preset applied: $eq'), duration: const Duration(seconds: 1)),
+                        SnackBar(
+                            content: Text('Equalizer preset applied: $eq'),
+                            duration: const Duration(seconds: 1)),
                       );
                     },
                   );
@@ -889,8 +1002,12 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                 const Divider(color: Colors.white10),
                 SwitchListTile(
                   dense: true,
-                  title: const Text('Autoplay / Song Radio', style: TextStyle(color: Colors.white, fontSize: 14)),
-                  subtitle: const Text('Keep playing similar songs when queue ends', style: TextStyle(color: AppColors.textSecondaryDark, fontSize: 12)),
+                  title: const Text('Autoplay / Song Radio',
+                      style: TextStyle(color: Colors.white, fontSize: 14)),
+                  subtitle: const Text(
+                      'Keep playing similar songs when queue ends',
+                      style: TextStyle(
+                          color: AppColors.textSecondaryDark, fontSize: 12)),
                   value: player.isAutoplay,
                   activeThumbColor: AppColors.primaryAccent,
                   onChanged: (val) {
@@ -938,7 +1055,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -948,13 +1066,18 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         children: [
                           const Text(
                             'Lyrics',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                           Text(
                             '${song.title} • ${song.artist}',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryDark),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: AppColors.textSecondaryDark),
                           ),
                         ],
                       ),
@@ -969,18 +1092,21 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
               const Divider(color: Colors.white10),
               Expanded(
                 child: FutureBuilder<LyricsResult>(
-                  future: LyricsService().getLyrics(title: song.title, artist: song.artist),
+                  future: LyricsService()
+                      .getLyrics(title: song.title, artist: song.artist),
                   builder: (ctx, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator(color: AppColors.primaryAccent),
+                            CircularProgressIndicator(
+                                color: AppColors.primaryAccent),
                             SizedBox(height: 16),
                             Text(
                               'Finding lyrics...',
-                              style: TextStyle(color: Colors.white70, fontSize: 13),
+                              style: TextStyle(
+                                  color: Colors.white70, fontSize: 13),
                             ),
                           ],
                         ),
@@ -988,10 +1114,14 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     }
 
                     final lyricsData = snapshot.data;
-                    final hasLyrics = lyricsData != null && lyricsData.hasLyrics && lyricsData.plainLyrics != null && lyricsData.plainLyrics!.trim().isNotEmpty;
+                    final hasLyrics = lyricsData != null &&
+                        lyricsData.hasLyrics &&
+                        lyricsData.plainLyrics != null &&
+                        lyricsData.plainLyrics!.trim().isNotEmpty;
 
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1019,7 +1149,8 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                               children: [
                                 const Text(
                                   'Synchronized lyrics unavailable for this track.\n',
-                                  style: TextStyle(color: Colors.white54, fontSize: 14),
+                                  style: TextStyle(
+                                      color: Colors.white54, fontSize: 14),
                                 ),
                                 Text(
                                   'Enjoy the acoustic flow and melody of ${song.artist}.\n\n'
@@ -1072,7 +1203,10 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                         children: [
                           const Text(
                             'Save to Playlist',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
                           TextButton.icon(
                             icon: const Icon(Icons.add, size: 18),
@@ -1090,18 +1224,23 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     const Divider(color: Colors.white10),
                     if (playlistProv.playlists.isEmpty)
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 32, horizontal: 24),
                         child: Center(
                           child: Column(
                             children: [
-                              Icon(Icons.queue_music, size: 40, color: Colors.white30),
+                              Icon(Icons.queue_music,
+                                  size: 40, color: Colors.white30),
                               SizedBox(height: 8),
-                              Text('No playlists yet', style: TextStyle(color: Colors.white70)),
+                              Text('No playlists yet',
+                                  style: TextStyle(color: Colors.white70)),
                               SizedBox(height: 4),
                               Text(
                                 'Tap "+ New" above to create your first playlist.',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: AppColors.textSecondaryDark, fontSize: 12),
+                                style: TextStyle(
+                                    color: AppColors.textSecondaryDark,
+                                    fontSize: 12),
                               ),
                             ],
                           ),
@@ -1114,14 +1253,19 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                           itemBuilder: (_, index) {
                             final pl = playlistProv.playlists[index];
                             return ListTile(
-                              leading: const Icon(Icons.queue_music, color: AppColors.primaryAccent),
-                              title: Text(pl.title, style: const TextStyle(color: Colors.white)),
-                              subtitle: Text('${pl.songCount} songs', style: const TextStyle(color: AppColors.textSecondaryDark)),
+                              leading: const Icon(Icons.queue_music,
+                                  color: AppColors.primaryAccent),
+                              title: Text(pl.title,
+                                  style: const TextStyle(color: Colors.white)),
+                              subtitle: Text('${pl.songCount} songs',
+                                  style: const TextStyle(
+                                      color: AppColors.textSecondaryDark)),
                               onTap: () {
                                 playlistProv.addSongToPlaylist(pl.id, song);
                                 Navigator.pop(ctx);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Added to ${pl.title}')),
+                                  SnackBar(
+                                      content: Text('Added to ${pl.title}')),
                                 );
                               },
                             );

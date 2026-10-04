@@ -69,7 +69,9 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Robustness & Bug Hardening Tests', () {
-    test('SongModel.fromJson safely handles doubles, strings, and missing fields without casting errors', () {
+    test(
+        'SongModel.fromJson safely handles doubles, strings, and missing fields without casting errors',
+        () {
       final json = {
         'id': 'abc12345678',
         'title': 'Test Song',
@@ -91,7 +93,9 @@ void main() {
       expect(song.isFavorite, isTrue);
     });
 
-    test('PlaylistModel.fromJson safely filters corrupted or non-map entries without crashing', () {
+    test(
+        'PlaylistModel.fromJson safely filters corrupted or non-map entries without crashing',
+        () {
       final json = {
         'id': 'pl_test',
         'title': 'My Playlist',
@@ -115,9 +119,15 @@ void main() {
       expect(playlist.songs[1].id, 'song_2');
     });
 
-    test('DownloadItem.fromJson safely handles malformed nested song and double numbers', () {
+    test(
+        'DownloadItem.fromJson safely handles malformed nested song and double numbers',
+        () {
       final json = {
-        'song': {'id': 'dl_1', 'title': 'Downloaded Track', 'durationSeconds': 180.0},
+        'song': {
+          'id': 'dl_1',
+          'title': 'Downloaded Track',
+          'durationSeconds': 180.0
+        },
         'localFilePath': '/data/user/0/app/track.m4a',
         'localThumbnailPath': null,
         'downloadedAtMillis': 1727337600000.0, // double instead of int
@@ -130,12 +140,35 @@ void main() {
       expect(item.downloadedAtMillis, 1727337600000);
     });
 
-    test('PlayerProvider reorderItem clamps targetIndex when reordering to list end without RangeError', () {
+    test(
+        'PlayerProvider reorderItem clamps targetIndex when reordering to list end without RangeError',
+        () {
       final mockRepo = TestMockMusicRepository();
       final player = PlayerProvider(musicRepository: mockRepo);
-      const s1 = Song(id: 's1', title: 'Song 1', artist: 'A1', channelId: 'c1', thumbnailUrl: '', durationSeconds: 100, durationFormatted: '01:40');
-      const s2 = Song(id: 's2', title: 'Song 2', artist: 'A2', channelId: 'c2', thumbnailUrl: '', durationSeconds: 200, durationFormatted: '03:20');
-      const s3 = Song(id: 's3', title: 'Song 3', artist: 'A3', channelId: 'c3', thumbnailUrl: '', durationSeconds: 300, durationFormatted: '05:00');
+      const s1 = Song(
+          id: 's1',
+          title: 'Song 1',
+          artist: 'A1',
+          channelId: 'c1',
+          thumbnailUrl: '',
+          durationSeconds: 100,
+          durationFormatted: '01:40');
+      const s2 = Song(
+          id: 's2',
+          title: 'Song 2',
+          artist: 'A2',
+          channelId: 'c2',
+          thumbnailUrl: '',
+          durationSeconds: 200,
+          durationFormatted: '03:20');
+      const s3 = Song(
+          id: 's3',
+          title: 'Song 3',
+          artist: 'A3',
+          channelId: 'c3',
+          thumbnailUrl: '',
+          durationSeconds: 300,
+          durationFormatted: '05:00');
 
       player.addToQueue(s1);
       player.addToQueue(s2);
@@ -151,29 +184,77 @@ void main() {
 
     test('MusicImportService recognizes YouTube shorts and embed URLs', () {
       final service = MusicImportService();
-      expect(service.isYouTubeUrl('https://www.youtube.com/shorts/dQw4w9WgXcQ'), isTrue);
-      expect(service.isYouTubeUrl('https://www.youtube.com/embed/dQw4w9WgXcQ'), isTrue);
+      expect(service.isYouTubeUrl('https://www.youtube.com/shorts/dQw4w9WgXcQ'),
+          isTrue);
+      expect(service.isYouTubeUrl('https://www.youtube.com/embed/dQw4w9WgXcQ'),
+          isTrue);
       expect(service.isYouTubeUrl('https://youtu.be/dQw4w9WgXcQ'), isTrue);
-      expect(service.isSupportedUrl('https://open.spotify.com/track/12345'), isTrue);
+      expect(service.isSupportedUrl('https://open.spotify.com/track/12345'),
+          isTrue);
     });
 
-    test('PlayerProvider playSong with queueIndex selects exact index even with duplicate songs', () async {
+    test(
+        'PlayerProvider playSong with queueIndex selects exact index even with duplicate songs',
+        () async {
       final mockRepo = TestMockMusicRepository();
       final player = PlayerProvider(musicRepository: mockRepo);
-      const s1 = Song(id: 's_dup', title: 'Dup Song', artist: 'Artist', channelId: 'c1', thumbnailUrl: '', durationSeconds: 120, durationFormatted: '02:00');
-      const s2 = Song(id: 's_other', title: 'Other Song', artist: 'Artist', channelId: 'c2', thumbnailUrl: '', durationSeconds: 150, durationFormatted: '02:30');
-      const s3 = Song(id: 's_dup', title: 'Dup Song', artist: 'Artist', channelId: 'c1', thumbnailUrl: '', durationSeconds: 120, durationFormatted: '02:00');
+      const s1 = Song(
+          id: 's_dup',
+          title: 'Dup Song',
+          artist: 'Artist',
+          channelId: 'c1',
+          thumbnailUrl: '',
+          durationSeconds: 120,
+          durationFormatted: '02:00');
+      const s2 = Song(
+          id: 's_other',
+          title: 'Other Song',
+          artist: 'Artist',
+          channelId: 'c2',
+          thumbnailUrl: '',
+          durationSeconds: 150,
+          durationFormatted: '02:30');
+      const s3 = Song(
+          id: 's_dup',
+          title: 'Dup Song',
+          artist: 'Artist',
+          channelId: 'c1',
+          thumbnailUrl: '',
+          durationSeconds: 120,
+          durationFormatted: '02:00');
 
       await player.playSong(s1, newQueue: [s1, s2, s3], queueIndex: 2);
       expect(player.currentIndex, 2);
     });
 
-    test('PlayerProvider reorderItem properly drops items between other items', () {
+    test('PlayerProvider reorderItem properly drops items between other items',
+        () {
       final mockRepo = TestMockMusicRepository();
       final player = PlayerProvider(musicRepository: mockRepo);
-      const s1 = Song(id: 's1', title: 'Song 1', artist: 'A1', channelId: 'c1', thumbnailUrl: '', durationSeconds: 100, durationFormatted: '01:40');
-      const s2 = Song(id: 's2', title: 'Song 2', artist: 'A2', channelId: 'c2', thumbnailUrl: '', durationSeconds: 200, durationFormatted: '03:20');
-      const s3 = Song(id: 's3', title: 'Song 3', artist: 'A3', channelId: 'c3', thumbnailUrl: '', durationSeconds: 300, durationFormatted: '05:00');
+      const s1 = Song(
+          id: 's1',
+          title: 'Song 1',
+          artist: 'A1',
+          channelId: 'c1',
+          thumbnailUrl: '',
+          durationSeconds: 100,
+          durationFormatted: '01:40');
+      const s2 = Song(
+          id: 's2',
+          title: 'Song 2',
+          artist: 'A2',
+          channelId: 'c2',
+          thumbnailUrl: '',
+          durationSeconds: 200,
+          durationFormatted: '03:20');
+      const s3 = Song(
+          id: 's3',
+          title: 'Song 3',
+          artist: 'A3',
+          channelId: 'c3',
+          thumbnailUrl: '',
+          durationSeconds: 300,
+          durationFormatted: '05:00');
 
       player.addToQueue(s1);
       player.addToQueue(s2);

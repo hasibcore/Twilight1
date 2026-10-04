@@ -25,7 +25,8 @@ class MockMusicRepository implements MusicRepository {
   Future<List<Song>> getFavorites() async => favorites;
 
   @override
-  Future<bool> isFavorite(String songId) async => favorites.any((s) => s.id == songId);
+  Future<bool> isFavorite(String songId) async =>
+      favorites.any((s) => s.id == songId);
 
   @override
   Future<void> toggleFavorite(Song song) async {
@@ -126,7 +127,9 @@ void main() {
   });
 
   group('Phase 2 — Song Switching & Instant UI Synchronization', () {
-    test('Song A -> Song B immediately switches currentSong, 0:00 position, and duration', () async {
+    test(
+        'Song A -> Song B immediately switches currentSong, 0:00 position, and duration',
+        () async {
       await player.playSong(songA, newQueue: [songA, songB]);
       expect(player.currentSong?.id, equals('song_alpha_01'));
       expect(player.currentIndex, equals(0));
@@ -145,7 +148,9 @@ void main() {
       expect(player.currentSong?.id, equals('song_beta_02'));
     });
 
-    test('Rapid consecutive song selection (A -> B -> C) results in final song C playing', () async {
+    test(
+        'Rapid consecutive song selection (A -> B -> C) results in final song C playing',
+        () async {
       await player.playSong(songA, newQueue: [songA, songB, songC]);
 
       // Rapidly fire songB then songC without awaiting songB
@@ -182,11 +187,20 @@ void main() {
       expect(player.currentSong?.id, equals(songD.id));
     });
 
-    test('toggleShuffle on shuffles queue, toggleShuffle off restores original queue sequence', () async {
+    test(
+        'toggleShuffle on shuffles queue, toggleShuffle off restores original queue sequence',
+        () async {
       await player.playSong(songA, newQueue: [songA, songB, songC, songD]);
 
       expect(player.isShuffle, isFalse);
-      expect(player.queue.map((s) => s.id).toList(), equals(['song_alpha_01', 'song_beta_02', 'song_gamma_03', 'song_delta_04']));
+      expect(
+          player.queue.map((s) => s.id).toList(),
+          equals([
+            'song_alpha_01',
+            'song_beta_02',
+            'song_gamma_03',
+            'song_delta_04'
+          ]));
 
       // Toggle Shuffle ON
       player.toggleShuffle();
@@ -197,12 +211,21 @@ void main() {
       // Toggle Shuffle OFF -> Must restore original playlist order
       player.toggleShuffle();
       expect(player.isShuffle, isFalse);
-      expect(player.queue.map((s) => s.id).toList(), equals(['song_alpha_01', 'song_beta_02', 'song_gamma_03', 'song_delta_04']));
+      expect(
+          player.queue.map((s) => s.id).toList(),
+          equals([
+            'song_alpha_01',
+            'song_beta_02',
+            'song_gamma_03',
+            'song_delta_04'
+          ]));
       expect(player.currentIndex, equals(0));
       expect(player.currentSong?.id, equals(songA.id));
     });
 
-    test('removeFromQueue correctly clamps index and plays next song when current is deleted', () async {
+    test(
+        'removeFromQueue correctly clamps index and plays next song when current is deleted',
+        () async {
       await player.playSong(songA, newQueue: [songA, songB, songC]);
       expect(player.currentIndex, equals(0));
 
@@ -216,7 +239,8 @@ void main() {
   });
 
   group('Phase 7 — Auto Next & Double-Trigger Prevention', () {
-    test('Concurrent onTrackEnded calls only advance to next song once', () async {
+    test('Concurrent onTrackEnded calls only advance to next song once',
+        () async {
       await player.playSong(songA, newQueue: [songA, songB, songC]);
       expect(player.currentIndex, equals(0));
 
@@ -231,7 +255,9 @@ void main() {
       expect(player.currentSong?.id, equals('song_beta_02'));
     });
 
-    test('previous() restarts track if position > 3s, or goes to previous if position <= 3s', () async {
+    test(
+        'previous() restarts track if position > 3s, or goes to previous if position <= 3s',
+        () async {
       await player.playSong(songB, newQueue: [songA, songB, songC]);
       expect(player.currentIndex, equals(1));
 
@@ -248,6 +274,39 @@ void main() {
       await player.previous();
       expect(player.currentIndex, equals(0));
       expect(player.currentSong?.id, equals('song_alpha_01'));
+    });
+
+    test(
+        'seekTo clamps negative positions and positions exceeding totalDuration',
+        () async {
+      await player.playSong(songA);
+      final total = player.totalDuration;
+      expect(total.inSeconds, greaterThan(0));
+
+      // Negative seek -> Clamped to Duration.zero
+      player.seekTo(const Duration(seconds: -10));
+      expect(player.currentPosition, equals(Duration.zero));
+
+      // Over seek -> Clamped to totalDuration
+      player.seekTo(Duration(seconds: total.inSeconds + 500));
+      expect(player.currentPosition, equals(total));
+    });
+
+    test('Queue addition during shuffle keeps unshuffled queue synchronized',
+        () async {
+      await player.playSong(songA, newQueue: [songA, songB]);
+      player.toggleShuffle();
+      expect(player.isShuffle, isTrue);
+
+      // Add song C while shuffled
+      player.addToQueue(songC);
+      expect(player.queue.any((s) => s.id == songC.id), isTrue);
+
+      // Toggle shuffle off -> Song C must still exist in restored queue
+      player.toggleShuffle();
+      expect(player.isShuffle, isFalse);
+      expect(player.queue.any((s) => s.id == songC.id), isTrue);
+      expect(player.queue.length, equals(3));
     });
   });
 }

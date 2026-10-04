@@ -88,7 +88,8 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> registerWithEmail(String email, String password, String name) async {
+  Future<bool> registerWithEmail(
+      String email, String password, String name) async {
     _isLoading = true;
     _errorMessage = null;
     _successMessage = null;
@@ -117,7 +118,8 @@ class AuthProvider extends ChangeNotifier {
         _successMessage = 'Password reset instructions sent to $email';
         return true;
       } else {
-        _errorMessage = 'Could not send password reset email. Please verify the email.';
+        _errorMessage =
+            'Could not send password reset email. Please verify the email.';
         return false;
       }
     } catch (e) {

@@ -71,12 +71,15 @@ class PlayerProvider extends ChangeNotifier {
 
   String? _errorMessage;
 
-  bool get _isTest => !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
+  bool get _isTest =>
+      !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
 
   PlayerProvider({required this.musicRepository}) {
     _isAutoplay = LocalStorageService.getBool('mt_autoplay') ?? true;
-    _audioQuality = LocalStorageService.getString('mt_audio_quality') ?? 'High (256 kbps - Enhanced AAC)';
-    _equalizerPreset = LocalStorageService.getString('mt_equalizer_preset') ?? 'Flat (Studio Reference)';
+    _audioQuality = LocalStorageService.getString('mt_audio_quality') ??
+        'High (256 kbps - Enhanced AAC)';
+    _equalizerPreset = LocalStorageService.getString('mt_equalizer_preset') ??
+        'Flat (Studio Reference)';
     _initAudioPlayer();
   }
 
@@ -87,7 +90,7 @@ class PlayerProvider extends ChangeNotifier {
       _playerStateSub = _audioPlayer!.playerStateStream.listen((state) {
         if (_isResolvingSong &&
             (state.processingState == ProcessingState.idle ||
-             state.processingState == ProcessingState.completed)) {
+                state.processingState == ProcessingState.completed)) {
           // While resolving & buffering a new track, suppress premature idle/completed events
           return;
         }
@@ -116,16 +119,20 @@ class PlayerProvider extends ChangeNotifier {
         if (state.processingState == ProcessingState.completed) {
           // A song is ONLY naturally completed if it played near its expected duration
           final bool isNearEnd = _totalDuration.inSeconds > 20 &&
-              (_currentPosition.inSeconds >= (_totalDuration.inSeconds * 0.85).toInt() ||
-               (_totalDuration - _currentPosition).inSeconds <= 15);
+              (_currentPosition.inSeconds >=
+                      (_totalDuration.inSeconds * 0.85).toInt() ||
+                  (_totalDuration - _currentPosition).inSeconds <= 15);
 
           if (isNearEnd) {
             onTrackEnded();
           } else {
             // Premature stream completion (unexpected network drop)
-            AppLogger.warning('Interrupted stream at ${_currentPosition.inSeconds}s of ${_totalDuration.inSeconds}s. Attempting auto-recovery...');
+            AppLogger.warning(
+                'Interrupted stream at ${_currentPosition.inSeconds}s of ${_totalDuration.inSeconds}s. Attempting auto-recovery...');
             final pos = _currentPosition;
-            if (_currentSong != null && pos.inSeconds > 0 && !_isAutoRecovering) {
+            if (_currentSong != null &&
+                pos.inSeconds > 0 &&
+                !_isAutoRecovering) {
               _autoRecoverPlayback(pos);
             } else {
               _isLoading = false;
@@ -240,7 +247,8 @@ class PlayerProvider extends ChangeNotifier {
     return [];
   }
 
-  Future<void> playSong(Song song, {List<Song>? newQueue, int? queueIndex}) async {
+  Future<void> playSong(Song song,
+      {List<Song>? newQueue, int? queueIndex}) async {
     final currentRequestId = ++_playRequestId;
 
     try {
@@ -278,7 +286,9 @@ class PlayerProvider extends ChangeNotifier {
           targetIndex = newQueue.indexWhere((s) => s.id == song.id);
           if (targetIndex == -1) {
             targetIndex = newQueue.indexWhere(
-              (s) => s.title.toLowerCase().trim() == song.title.toLowerCase().trim(),
+              (s) =>
+                  s.title.toLowerCase().trim() ==
+                  song.title.toLowerCase().trim(),
             );
           }
         }
@@ -319,13 +329,15 @@ class PlayerProvider extends ChangeNotifier {
           effectiveSong.channelId == 'spotify' ||
           cleanId.length != 11) {
         try {
-          final resolved = await MusicImportService().resolveStreamTrack(effectiveSong);
+          final resolved =
+              await MusicImportService().resolveStreamTrack(effectiveSong);
           if (resolved != null && !resolved.id.startsWith('sp_')) {
             effectiveSong = resolved;
             try {
               cleanId = VideoId(effectiveSong.id.trim()).value;
             } catch (_) {
-              cleanId = effectiveSong.id.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
+              cleanId =
+                  effectiveSong.id.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
             }
           }
         } catch (e) {
@@ -346,8 +358,10 @@ class PlayerProvider extends ChangeNotifier {
         if (cleanId.length != 11) {
           final client = http.Client();
           try {
-            final ytDatasource = YouTubeRemoteDatasource(client: client, apiKey: '');
-            final searchResult = await ytDatasource.searchAll('${effectiveSong.title} ${effectiveSong.artist}');
+            final ytDatasource =
+                YouTubeRemoteDatasource(client: client, apiKey: '');
+            final searchResult = await ytDatasource
+                .searchAll('${effectiveSong.title} ${effectiveSong.artist}');
             if (searchResult.songs.isNotEmpty) {
               cleanId = searchResult.songs.first.id;
             }
@@ -379,7 +393,8 @@ class PlayerProvider extends ChangeNotifier {
       if (_currentIndex >= 0 && _currentIndex < _queue.length) {
         _queue[_currentIndex] = targetSong;
       }
-      final fallbackSecs = targetSong.durationSeconds > 0 ? targetSong.durationSeconds : 210;
+      final fallbackSecs =
+          targetSong.durationSeconds > 0 ? targetSong.durationSeconds : 210;
       _totalDuration = Duration(seconds: fallbackSecs);
       notifyListeners();
 
@@ -422,7 +437,8 @@ class PlayerProvider extends ChangeNotifier {
         await _audioPlayer!.setAudioSource(source);
       } catch (primaryErr) {
         if (currentRequestId != _playRequestId) return;
-        AppLogger.warning('Primary audio source failed for "${targetSong.title}": $primaryErr. Trying resilient stream fallback...');
+        AppLogger.warning(
+            'Primary audio source failed for "${targetSong.title}": $primaryErr. Trying resilient stream fallback...');
 
         final fallbackResult = await AudioStreamExtractor.extractAudioStream(
           targetSong.id,
@@ -497,7 +513,8 @@ class PlayerProvider extends ChangeNotifier {
   Future<void> _autoRecoverPlayback(Duration resumePos) async {
     if (_isAutoRecovering || _currentSong == null) return;
     if (_autoRecoveryAttempts >= 1) {
-      AppLogger.warning('Max auto-recovery attempts reached for "${_currentSong!.title}". Halting.');
+      AppLogger.warning(
+          'Max auto-recovery attempts reached for "${_currentSong!.title}". Halting.');
       _isLoading = false;
       _isPlaying = false;
       _errorMessage = 'Playback paused. Tap to resume.';
@@ -507,7 +524,8 @@ class PlayerProvider extends ChangeNotifier {
     _autoRecoveryAttempts++;
     _isAutoRecovering = true;
     try {
-      AppLogger.info('Auto-recovering playback for "${_currentSong!.title}" at ${resumePos.inSeconds}s (attempt $_autoRecoveryAttempts)...');
+      AppLogger.info(
+          'Auto-recovering playback for "${_currentSong!.title}" at ${resumePos.inSeconds}s (attempt $_autoRecoveryAttempts)...');
       AudioStreamExtractor.invalidateCache(_currentSong!.id);
       _errorMessage = null;
       await playSong(_currentSong!, queueIndex: _currentIndex);
@@ -568,9 +586,14 @@ class PlayerProvider extends ChangeNotifier {
   }
 
   void seekTo(Duration position) {
-    _currentPosition = position;
+    final safePosition = position.isNegative
+        ? Duration.zero
+        : (_totalDuration > Duration.zero && position > _totalDuration
+            ? _totalDuration
+            : position);
+    _currentPosition = safePosition;
     if (!_isTest) {
-      _audioPlayer?.seek(position).catchError((_) {});
+      _audioPlayer?.seek(safePosition).catchError((_) {});
     }
     notifyListeners();
   }
@@ -606,7 +629,8 @@ class PlayerProvider extends ChangeNotifier {
         final query = _currentSong != null
             ? '${_currentSong!.title} ${_currentSong!.artist} music'
             : 'popular music hits';
-        final searchResults = await _yt.search.search(query).timeout(const Duration(seconds: 4));
+        final searchResults =
+            await _yt.search.search(query).timeout(const Duration(seconds: 4));
         if (searchResults.isNotEmpty) {
           final newTracks = searchResults
               .where((v) => !_queue.any((q) => q.id == v.id.value))
@@ -617,7 +641,8 @@ class PlayerProvider extends ChangeNotifier {
                     channelId: v.channelId.value,
                     thumbnailUrl: v.thumbnails.highResUrl,
                     durationSeconds: v.duration?.inSeconds ?? 210,
-                    durationFormatted: Formatters.formatDuration(v.duration ?? const Duration(seconds: 210)),
+                    durationFormatted: Formatters.formatDuration(
+                        v.duration ?? const Duration(seconds: 210)),
                     viewCount: v.engagement.viewCount,
                     publishedAt: v.uploadDate,
                   ))
@@ -722,6 +747,10 @@ class PlayerProvider extends ChangeNotifier {
 
   void addToQueue(Song song) {
     _queue.add(song);
+    if (_unshuffledQueue != null &&
+        !_unshuffledQueue!.any((s) => s.id == song.id)) {
+      _unshuffledQueue!.add(song);
+    }
     notifyListeners();
   }
 
@@ -731,12 +760,19 @@ class PlayerProvider extends ChangeNotifier {
     } else {
       _queue.add(song);
     }
+    if (_unshuffledQueue != null &&
+        !_unshuffledQueue!.any((s) => s.id == song.id)) {
+      _unshuffledQueue!.add(song);
+    }
     notifyListeners();
   }
 
   Future<void> removeFromQueue(int index) async {
     if (index >= 0 && index < _queue.length) {
-      _queue.removeAt(index);
+      final removed = _queue.removeAt(index);
+      if (_unshuffledQueue != null) {
+        _unshuffledQueue!.removeWhere((s) => s.id == removed.id);
+      }
       if (index < _currentIndex) {
         _currentIndex--;
       } else if (index == _currentIndex) {
@@ -761,6 +797,8 @@ class PlayerProvider extends ChangeNotifier {
     final item = _queue.removeAt(oldIndex);
     final targetIndex = newIndex.clamp(0, _queue.length);
     _queue.insert(targetIndex, item);
+    // If queue is manually reordered, reset unshuffled baseline to new order
+    _unshuffledQueue = null;
     if (_currentSong != null) {
       if (oldIndex == _currentIndex) {
         _currentIndex = targetIndex;
@@ -782,6 +820,7 @@ class PlayerProvider extends ChangeNotifier {
 
   void clearQueue() {
     _unshuffledQueue = null;
+    _isShuffle = false;
     if (_currentSong != null) {
       _queue = [_currentSong!];
       _currentIndex = 0;
@@ -824,8 +863,18 @@ class PlayerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isDisposed = false;
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) {
+      super.notifyListeners();
+    }
+  }
+
   @override
   void dispose() {
+    _isDisposed = true;
     _loadingWatchdog?.cancel();
     _errorSkipTimer?.cancel();
     _sleepTimer?.cancel();

@@ -18,7 +18,8 @@ class LibraryScreen extends StatefulWidget {
   State<LibraryScreen> createState() => _LibraryScreenState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProviderStateMixin {
+class _LibraryScreenState extends State<LibraryScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -37,10 +38,12 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
   Widget build(BuildContext context) {
     final playlistProv = context.watch<PlaylistProvider>();
     final downloadProv = context.watch<DownloadProvider>();
-    final hasCurrentSong = context.select<PlayerProvider, bool>((p) => p.currentSong != null);
+    final hasCurrentSong =
+        context.select<PlayerProvider, bool>((p) => p.currentSong != null);
     final bottomPadding = hasCurrentSong ? 100.0 : 40.0;
 
-    final currentSongId = context.select<PlayerProvider, String?>((p) => p.currentSong?.id);
+    final currentSongId =
+        context.select<PlayerProvider, String?>((p) => p.currentSong?.id);
 
     return Scaffold(
       appBar: AppBar(
@@ -83,7 +86,8 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                   if (downloadProv.count > 0) ...[
                     const SizedBox(width: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: const Color(0xFF00E676).withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
@@ -125,7 +129,8 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildDownloadsTab(DownloadProvider downloadProv, String? currentSongId) {
+  Widget _buildDownloadsTab(
+      DownloadProvider downloadProv, String? currentSongId) {
     final downloads = downloadProv.downloads;
 
     if (downloads.isEmpty) {
@@ -135,17 +140,24 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.download_for_offline_outlined, size: 64, color: AppColors.textTertiary(context)),
+              Icon(Icons.download_for_offline_outlined,
+                  size: 64, color: AppColors.textTertiary(context)),
               const SizedBox(height: 16),
               Text(
                 'No downloaded songs',
-                style: TextStyle(color: AppColors.textPrimary(context), fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.textPrimary(context),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 'Tap the download icon on any song to save it for offline playback without internet.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13, height: 1.4),
+                style: TextStyle(
+                    color: AppColors.textSecondary(context),
+                    fontSize: 13,
+                    height: 1.4),
               ),
             ],
           ),
@@ -163,21 +175,28 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
             children: [
               Text(
                 '${downloads.length} Offline Tracks',
-                style: const TextStyle(color: Color(0xFF00E676), fontSize: 13, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: Color(0xFF00E676),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600),
               ),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryAccent,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 ),
                 icon: const Icon(Icons.play_arrow_rounded, size: 20),
                 label: const Text('Play All'),
                 onPressed: () {
                   final downloadedSongs = downloadProv.downloadedSongs;
                   if (downloadedSongs.isNotEmpty) {
-                    context.read<PlayerProvider>().playSong(downloadedSongs.first, newQueue: downloadedSongs);
+                    context.read<PlayerProvider>().playSong(
+                        downloadedSongs.first,
+                        newQueue: downloadedSongs);
                   }
                 },
               ),
@@ -197,7 +216,8 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: item.localThumbnailPath != null && File(item.localThumbnailPath!).existsSync()
+                      child: item.localThumbnailPath != null &&
+                              File(item.localThumbnailPath!).existsSync()
                           ? Image.file(
                               File(item.localThumbnailPath!),
                               width: 48,
@@ -214,14 +234,16 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                                     width: 48,
                                     height: 48,
                                     color: AppColors.surfaceVariantDark,
-                                    child: const Icon(Icons.music_note, color: Colors.white38),
+                                    child: const Icon(Icons.music_note,
+                                        color: Colors.white38),
                                   ),
                                 )
                               : Container(
                                   width: 48,
                                   height: 48,
                                   color: AppColors.surfaceVariantDark,
-                                  child: const Icon(Icons.music_note, color: Colors.white38),
+                                  child: const Icon(Icons.music_note,
+                                      color: Colors.white38),
                                 )),
                     ),
                     if (isCurrent)
@@ -231,7 +253,8 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                             color: Colors.black45,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.equalizer, color: AppColors.primaryAccent, size: 24),
+                          child: const Icon(Icons.equalizer,
+                              color: AppColors.primaryAccent, size: 24),
                         ),
                       ),
                   ],
@@ -242,21 +265,25 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isCurrent ? AppColors.primaryAccent : AppColors.textPrimary(context),
+                    color: isCurrent
+                        ? AppColors.primaryAccent
+                        : AppColors.textPrimary(context),
                   ),
                 ),
                 subtitle: Text(
                   '${item.song.artist} • $sizeMb MB',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12),
+                  style: TextStyle(
+                      color: AppColors.textSecondary(context), fontSize: 12),
                 ),
                 trailing: PopupMenuButton<String>(
                   icon: Icon(Icons.more_vert, color: AppColors.icon(context)),
                   color: AppColors.surface(context),
                   onSelected: (val) {
                     if (val == 'play') {
-                      context.read<PlayerProvider>().playSong(item.song, newQueue: downloadProv.downloadedSongs);
+                      context.read<PlayerProvider>().playSong(item.song,
+                          newQueue: downloadProv.downloadedSongs);
                     } else if (val == 'delete') {
                       downloadProv.deleteDownload(item.song.id);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -269,9 +296,12 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                       value: 'play',
                       child: Row(
                         children: [
-                          Icon(Icons.play_arrow, color: AppColors.icon(context)),
+                          Icon(Icons.play_arrow,
+                              color: AppColors.icon(context)),
                           const SizedBox(width: 8),
-                          Text('Play offline', style: TextStyle(color: AppColors.textPrimary(context))),
+                          Text('Play offline',
+                              style: TextStyle(
+                                  color: AppColors.textPrimary(context))),
                         ],
                       ),
                     ),
@@ -281,14 +311,16 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                         children: [
                           Icon(Icons.delete_outline, color: Colors.redAccent),
                           SizedBox(width: 8),
-                          Text('Delete download', style: TextStyle(color: Colors.redAccent)),
+                          Text('Delete download',
+                              style: TextStyle(color: Colors.redAccent)),
                         ],
                       ),
                     ),
                   ],
                 ),
                 onTap: () {
-                  context.read<PlayerProvider>().playSong(item.song, newQueue: downloadProv.downloadedSongs);
+                  context.read<PlayerProvider>().playSong(item.song,
+                      newQueue: downloadProv.downloadedSongs);
                 },
               );
             },
@@ -311,15 +343,19 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
               color: AppColors.surfaceVariant(context),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.add, color: AppColors.primaryAccent, size: 28),
+            child:
+                const Icon(Icons.add, color: AppColors.primaryAccent, size: 28),
           ),
           title: Text(
             AppStrings.createPlaylist,
-            style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: AppColors.textPrimary(context),
+                fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             'Create a new music collection',
-            style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12),
+            style: TextStyle(
+                color: AppColors.textSecondary(context), fontSize: 12),
           ),
           onTap: () {
             showDialog(
@@ -345,27 +381,33 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                         width: 48,
                         height: 48,
                         color: AppColors.surfaceVariant(context),
-                        child: Icon(Icons.queue_music, color: AppColors.iconMuted(context)),
+                        child: Icon(Icons.queue_music,
+                            color: AppColors.iconMuted(context)),
                       ),
                     )
                   : Container(
                       width: 48,
                       height: 48,
                       color: AppColors.surfaceVariant(context),
-                      child: Icon(Icons.queue_music, color: AppColors.iconMuted(context)),
+                      child: Icon(Icons.queue_music,
+                          color: AppColors.iconMuted(context)),
                     ),
             ),
             title: Text(
               playlist.title,
-              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary(context)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary(context)),
             ),
             subtitle: Text(
               '${playlist.songCount} songs • ${playlist.description}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12),
+              style: TextStyle(
+                  color: AppColors.textSecondary(context), fontSize: 12),
             ),
-            trailing: Icon(Icons.chevron_right, color: AppColors.iconMuted(context)),
+            trailing:
+                Icon(Icons.chevron_right, color: AppColors.iconMuted(context)),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -382,11 +424,22 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
             child: Center(
               child: Column(
                 children: [
-                  Icon(Icons.queue_music, size: 48, color: AppColors.textTertiary(context).withValues(alpha: 0.5)),
+                  Icon(Icons.queue_music,
+                      size: 48,
+                      color: AppColors.textTertiary(context)
+                          .withValues(alpha: 0.5)),
                   const SizedBox(height: 12),
-                  Text('No playlists yet', style: TextStyle(color: AppColors.textPrimary(context), fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('No playlists yet',
+                      style: TextStyle(
+                          color: AppColors.textPrimary(context),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text('Tap "+ New Playlist" above to create one.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13)),
+                  Text('Tap "+ New Playlist" above to create one.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: AppColors.textSecondary(context),
+                          fontSize: 13)),
                 ],
               ),
             ),
@@ -403,17 +456,22 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.favorite_border, size: 64, color: AppColors.textTertiary(context)),
+              Icon(Icons.favorite_border,
+                  size: 64, color: AppColors.textTertiary(context)),
               const SizedBox(height: 16),
               Text(
                 'No liked songs yet',
-                style: TextStyle(color: AppColors.textPrimary(context), fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.textPrimary(context),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 'Tap the heart icon while playing any song to save it here.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13),
+                style: TextStyle(
+                    color: AppColors.textSecondary(context), fontSize: 13),
               ),
             ],
           ),
@@ -442,17 +500,22 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.history, size: 64, color: AppColors.textTertiary(context)),
+              Icon(Icons.history,
+                  size: 64, color: AppColors.textTertiary(context)),
               const SizedBox(height: 16),
               Text(
                 'No listening history',
-                style: TextStyle(color: AppColors.textPrimary(context), fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.textPrimary(context),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
                 'Songs you listen to will automatically appear here.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13),
+                style: TextStyle(
+                    color: AppColors.textSecondary(context), fontSize: 13),
               ),
             ],
           ),
@@ -469,11 +532,13 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
             children: [
               Text(
                 '${prov.recentlyPlayed.length} Tracks',
-                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13),
+                style: TextStyle(
+                    color: AppColors.textSecondary(context), fontSize: 13),
               ),
               TextButton(
                 onPressed: () => prov.clearRecentlyPlayed(),
-                child: const Text('Clear History', style: TextStyle(color: AppColors.primaryAccent)),
+                child: const Text('Clear History',
+                    style: TextStyle(color: AppColors.primaryAccent)),
               ),
             ],
           ),

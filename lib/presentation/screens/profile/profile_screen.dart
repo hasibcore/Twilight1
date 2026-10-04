@@ -26,7 +26,10 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               'Edit Profile',
-              style: TextStyle(color: AppColors.textPrimary(context), fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppColors.textPrimary(context),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -36,7 +39,8 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Text(
               'Update your display name across Twilight Music:',
-              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13),
+              style: TextStyle(
+                  color: AppColors.textSecondary(context), fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -45,10 +49,14 @@ class ProfileScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Display Name',
                 labelStyle: TextStyle(color: AppColors.textSecondary(context)),
-                prefixIcon: const Icon(Icons.person_outline, color: AppColors.primaryAccent),
+                prefixIcon: const Icon(Icons.person_outline,
+                    color: AppColors.primaryAccent),
                 filled: true,
-                fillColor: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.04),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                fillColor: isDark
+                    ? Colors.white10
+                    : Colors.black.withValues(alpha: 0.04),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ],
@@ -56,7 +64,8 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary(context))),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary(context))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -74,7 +83,8 @@ class ProfileScreen extends StatelessWidget {
                 if (ctx.mounted) Navigator.pop(ctx);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile updated successfully!')),
+                    const SnackBar(
+                        content: Text('Profile updated successfully!')),
                   );
                 }
               }
@@ -88,7 +98,8 @@ class ProfileScreen extends StatelessWidget {
 
   void _showDatabaseDetailsDialog(BuildContext context, AuthProvider auth) {
     final user = auth.user;
-    final dbUser = user != null ? UserDatabaseService.findUserByEmail(user.email) : null;
+    final dbUser =
+        user != null ? UserDatabaseService.findUserByEmail(user.email) : null;
 
     showDialog(
       context: context,
@@ -101,7 +112,10 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               'Database Account Info',
-              style: TextStyle(color: AppColors.textPrimary(context), fontSize: 17, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppColors.textPrimary(context),
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -110,11 +124,20 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDbRow(context, 'Account UID', user?.uid ?? 'guest_uid'),
-            _buildDbRow(context, 'Database Email', user?.email ?? 'Not registered'),
-            _buildDbRow(context, 'Display Name', user?.name ?? 'Guest Listener'),
-            _buildDbRow(context, 'Role', dbUser?['role']?.toString() ?? 'listener'),
-            _buildDbRow(context, 'Auth Source', (user?.isGuest ?? true) ? 'Local Guest Session' : 'Firebase + Local Users Table'),
-            _buildDbRow(context, 'Created Date', dbUser?['createdAt']?.toString().split('T').first ?? 'Today'),
+            _buildDbRow(
+                context, 'Database Email', user?.email ?? 'Not registered'),
+            _buildDbRow(
+                context, 'Display Name', user?.name ?? 'Guest Listener'),
+            _buildDbRow(
+                context, 'Role', dbUser?['role']?.toString() ?? 'listener'),
+            _buildDbRow(
+                context,
+                'Auth Source',
+                (user?.isGuest ?? true)
+                    ? 'Local Guest Session'
+                    : 'Firebase + Local Users Table'),
+            _buildDbRow(context, 'Created Date',
+                dbUser?['createdAt']?.toString().split('T').first ?? 'Today'),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(10),
@@ -130,7 +153,10 @@ class ProfileScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Typed login credentials match stored database table records.',
-                      style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -141,7 +167,8 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Close', style: TextStyle(color: AppColors.textPrimary(context))),
+            child: Text('Close',
+                style: TextStyle(color: AppColors.textPrimary(context))),
           ),
         ],
       ),
@@ -158,13 +185,19 @@ class ProfileScreen extends StatelessWidget {
             width: 110,
             child: Text(
               '$label:',
-              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  color: AppColors.textSecondary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(color: AppColors.textPrimary(context), fontSize: 12, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppColors.textPrimary(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -226,7 +259,8 @@ class ProfileScreen extends StatelessWidget {
                           ? NetworkImage(user.avatarUrl)
                           : null,
                       child: user == null || user.avatarUrl.isEmpty
-                          ? const Icon(Icons.person, size: 38, color: Colors.white)
+                          ? const Icon(Icons.person,
+                              size: 38, color: Colors.white)
                           : null,
                     ),
                     const SizedBox(width: 16),
@@ -254,7 +288,8 @@ class ProfileScreen extends StatelessWidget {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: isGuest
                                       ? Colors.grey.withValues(alpha: 0.2)
@@ -270,17 +305,25 @@ class ProfileScreen extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      isGuest ? Icons.person_outline : Icons.verified_user_rounded,
+                                      isGuest
+                                          ? Icons.person_outline
+                                          : Icons.verified_user_rounded,
                                       size: 13,
-                                      color: isGuest ? AppColors.textSecondary(context) : Colors.green,
+                                      color: isGuest
+                                          ? AppColors.textSecondary(context)
+                                          : Colors.green,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      isGuest ? 'Guest Session' : 'Database Verified',
+                                      isGuest
+                                          ? 'Guest Session'
+                                          : 'Database Verified',
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
-                                        color: isGuest ? AppColors.textSecondary(context) : Colors.green,
+                                        color: isGuest
+                                            ? AppColors.textSecondary(context)
+                                            : Colors.green,
                                       ),
                                     ),
                                   ],
@@ -288,21 +331,29 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               InkWell(
-                                onTap: () => _showDatabaseDetailsDialog(context, auth),
+                                onTap: () =>
+                                    _showDatabaseDetailsDialog(context, auth),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary.withValues(alpha: 0.15),
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.info_outline, size: 13, color: AppColors.primaryAccent),
+                                      Icon(Icons.info_outline,
+                                          size: 13,
+                                          color: AppColors.primaryAccent),
                                       SizedBox(width: 4),
                                       Text(
                                         'DB Info',
-                                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primaryAccent),
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.primaryAccent),
                                       ),
                                     ],
                                   ),
@@ -315,7 +366,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     if (!isGuest)
                       IconButton(
-                        icon: Icon(Icons.edit_outlined, color: AppColors.icon(context)),
+                        icon: Icon(Icons.edit_outlined,
+                            color: AppColors.icon(context)),
                         tooltip: 'Edit Profile',
                         onPressed: () => _showEditProfileDialog(context, auth),
                       ),
@@ -329,9 +381,24 @@ class ProfileScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem(context, 'Favorites', '${playlistProv.favorites.length}', Icons.favorite, Colors.redAccent),
-                    _buildStatItem(context, 'Playlists', '${playlistProv.playlists.length}', Icons.queue_music, AppColors.primaryAccent),
-                    _buildStatItem(context, 'Downloads', '${downloadProv.count}', Icons.download_done, const Color(0xFF00E676)),
+                    _buildStatItem(
+                        context,
+                        'Favorites',
+                        '${playlistProv.favorites.length}',
+                        Icons.favorite,
+                        Colors.redAccent),
+                    _buildStatItem(
+                        context,
+                        'Playlists',
+                        '${playlistProv.playlists.length}',
+                        Icons.queue_music,
+                        AppColors.primaryAccent),
+                    _buildStatItem(
+                        context,
+                        'Downloads',
+                        '${downloadProv.count}',
+                        Icons.download_done,
+                        const Color(0xFF00E676)),
                   ],
                 ),
               ],
@@ -353,13 +420,15 @@ class ProfileScreen extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.primaryAccent.withValues(alpha: 0.4)),
+                border: Border.all(
+                    color: AppColors.primaryAccent.withValues(alpha: 0.4)),
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.cloud_sync_outlined, color: AppColors.primaryAccent, size: 28),
+                      const Icon(Icons.cloud_sync_outlined,
+                          color: AppColors.primaryAccent, size: 28),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -367,12 +436,17 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             Text(
                               'Save Your Music Library',
-                              style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.bold, fontSize: 15),
+                              style: TextStyle(
+                                  color: AppColors.textPrimary(context),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               'Create a verified database account to sync favorites & playlists across devices.',
-                              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12),
+                              style: TextStyle(
+                                  color: AppColors.textSecondary(context),
+                                  fontSize: 12),
                             ),
                           ],
                         ),
@@ -387,10 +461,12 @@ class ProfileScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(22)),
                       ),
                       icon: const Icon(Icons.login, size: 18),
-                      label: const Text('Sign In / Register Account', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text('Sign In / Register Account',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const AuthScreen()),
@@ -434,7 +510,9 @@ class ProfileScreen extends StatelessWidget {
             subtitle: '${playlistProv.recentlyPlayed.length} songs recorded',
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Access and manage your history in the Library tab.')),
+                const SnackBar(
+                    content: Text(
+                        'Access and manage your history in the Library tab.')),
               );
             },
           ),
@@ -460,10 +538,12 @@ class ProfileScreen extends StatelessWidget {
                 foregroundColor: AppColors.error,
                 side: const BorderSide(color: AppColors.error),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24)),
               ),
               icon: const Icon(Icons.logout),
-              label: const Text('Sign Out From Account', style: TextStyle(fontWeight: FontWeight.bold)),
+              label: const Text('Sign Out From Account',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               onPressed: () async {
                 await auth.signOut();
                 if (context.mounted) {
@@ -480,7 +560,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(BuildContext context, String label, String value,
+      IconData icon, Color color) {
     return Column(
       children: [
         Icon(icon, color: color, size: 22),
@@ -515,7 +596,10 @@ class ProfileScreen extends StatelessWidget {
       leading: Icon(icon, color: AppColors.icon(context)),
       title: Text(
         title,
-        style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600, fontSize: 14),
+        style: TextStyle(
+            color: AppColors.textPrimary(context),
+            fontWeight: FontWeight.w600,
+            fontSize: 14),
       ),
       subtitle: Text(
         subtitle,
@@ -541,12 +625,16 @@ class ProfileScreen extends StatelessWidget {
         ),
         content: Text(
           'Version 1.0.10\n\nHigh-Performance music streaming & offline download platform with persistent database user authentication, background audio playback, and dynamic live autocomplete search.',
-          style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13, height: 1.4),
+          style: TextStyle(
+              color: AppColors.textSecondary(context),
+              fontSize: 13,
+              height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK', style: TextStyle(color: AppColors.primaryAccent)),
+            child: const Text('OK',
+                style: TextStyle(color: AppColors.primaryAccent)),
           ),
         ],
       ),

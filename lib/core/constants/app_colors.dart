@@ -8,7 +8,7 @@ class AppColors {
   static const Color surfaceDark = Color(0xFF121212);
   static const Color surfaceVariantDark = Color(0xFF1E1E1E);
   static const Color cardDark = Color(0xFF242424);
-  
+
   // Light Theme Palette
   static const Color backgroundLight = Color(0xFFF9F9F9);
   static const Color surfaceLight = Color(0xFFFFFFFF);
@@ -16,7 +16,8 @@ class AppColors {
   static const Color cardLight = Color(0xFFF3F3F3);
 
   // Brand Accents
-  static const Color primary = Color(0xFFFF0033); // YouTube Red / Music Pink-Red
+  static const Color primary =
+      Color(0xFFFF0033); // YouTube Red / Music Pink-Red
   static const Color primaryAccent = Color(0xFFFF2A54);
   static const Color secondaryAccent = Color(0xFFFF5252);
 

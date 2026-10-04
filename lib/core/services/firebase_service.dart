@@ -60,12 +60,14 @@ class FirebaseService {
       return FirebaseAuthResult.failure('Please enter a valid email address.');
     }
     if (cleanPass.length < 6) {
-      return FirebaseAuthResult.failure('Password must be at least 6 characters.');
+      return FirebaseAuthResult.failure(
+          'Password must be at least 6 characters.');
     }
 
     if (!FirebaseConfig.isConfigured) {
       // Local fallback mode when Firebase custom key is not yet set
-      AppLogger.info('Firebase key not configured. Using local offline auth account.');
+      AppLogger.info(
+          'Firebase key not configured. Using local offline auth account.');
       final localUid = 'firebase_user_${cleanEmail.hashCode.abs()}';
       final name = displayName != null && displayName.isNotEmpty
           ? displayName
@@ -130,7 +132,8 @@ class FirebaseService {
       }
     } catch (e) {
       AppLogger.error('Firebase signUp error: $e');
-      return FirebaseAuthResult.failure('Connection error: Please check your internet connection.');
+      return FirebaseAuthResult.failure(
+          'Connection error: Please check your internet connection.');
     }
   }
 
@@ -150,7 +153,8 @@ class FirebaseService {
     }
 
     if (!FirebaseConfig.isConfigured) {
-      AppLogger.info('Firebase key not configured. Using local offline auth account.');
+      AppLogger.info(
+          'Firebase key not configured. Using local offline auth account.');
       final localUid = 'firebase_user_${cleanEmail.hashCode.abs()}';
       return FirebaseAuthResult.success(
         uid: localUid,
@@ -201,7 +205,8 @@ class FirebaseService {
       }
     } catch (e) {
       AppLogger.error('Firebase signIn error: $e');
-      return FirebaseAuthResult.failure('Connection error: Please check your internet connection.');
+      return FirebaseAuthResult.failure(
+          'Connection error: Please check your internet connection.');
     }
   }
 
@@ -337,7 +342,8 @@ class FirebaseService {
     if (code.contains('WEAK_PASSWORD')) {
       return 'Password must be at least 6 characters.';
     }
-    if (code.contains('EMAIL_NOT_FOUND') || code.contains('INVALID_LOGIN_CREDENTIALS')) {
+    if (code.contains('EMAIL_NOT_FOUND') ||
+        code.contains('INVALID_LOGIN_CREDENTIALS')) {
       return 'Invalid email or password. Please check your credentials.';
     }
     if (code.contains('INVALID_PASSWORD')) {

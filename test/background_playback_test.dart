@@ -28,7 +28,8 @@ class MockMusicRepository implements MusicRepository {
   Future<List<Song>> getFavorites() async => favorites;
 
   @override
-  Future<bool> isFavorite(String songId) async => favorites.any((s) => s.id == songId);
+  Future<bool> isFavorite(String songId) async =>
+      favorites.any((s) => s.id == songId);
 
   @override
   Future<void> toggleFavorite(Song song) async {
@@ -81,37 +82,53 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Background Playback Architecture & Configuration Tests', () {
-    test('Android Manifest specifies all mandatory background media playback permissions', () {
+    test(
+        'Android Manifest specifies all mandatory background media playback permissions',
+        () {
       final manifestFile = File('android/app/src/main/AndroidManifest.xml');
-      expect(manifestFile.existsSync(), isTrue, reason: 'AndroidManifest.xml must exist');
+      expect(manifestFile.existsSync(), isTrue,
+          reason: 'AndroidManifest.xml must exist');
 
       final content = manifestFile.readAsStringSync();
 
       // Core background playback permissions
       expect(content, contains('android.permission.WAKE_LOCK'),
-          reason: 'WAKE_LOCK is required to prevent CPU sleep during background playback');
+          reason:
+              'WAKE_LOCK is required to prevent CPU sleep during background playback');
       expect(content, contains('android.permission.FOREGROUND_SERVICE'),
-          reason: 'FOREGROUND_SERVICE is required for continuous audio service');
-      expect(content, contains('android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK'),
-          reason: 'FOREGROUND_SERVICE_MEDIA_PLAYBACK is required on Android 14+ (API 34+)');
+          reason:
+              'FOREGROUND_SERVICE is required for continuous audio service');
+      expect(content,
+          contains('android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK'),
+          reason:
+              'FOREGROUND_SERVICE_MEDIA_PLAYBACK is required on Android 14+ (API 34+)');
       expect(content, contains('android.permission.POST_NOTIFICATIONS'),
-          reason: 'POST_NOTIFICATIONS is required on Android 13+ (API 33+) for lockscreen controls');
+          reason:
+              'POST_NOTIFICATIONS is required on Android 13+ (API 33+) for lockscreen controls');
 
       // AudioService and MediaBrowserService declaration
       expect(content, contains('com.ryanheise.audioservice.AudioService'),
           reason: 'AudioService must be declared in AndroidManifest');
       expect(content, contains('android:foregroundServiceType="mediaPlayback"'),
-          reason: 'foregroundServiceType mediaPlayback is mandatory for Android 14+ background services');
-      expect(content, contains('com.ryanheise.audioservice.MediaButtonReceiver'),
-          reason: 'MediaButtonReceiver is required for headset / bluetooth controls');
+          reason:
+              'foregroundServiceType mediaPlayback is mandatory for Android 14+ background services');
+      expect(
+          content, contains('com.ryanheise.audioservice.MediaButtonReceiver'),
+          reason:
+              'MediaButtonReceiver is required for headset / bluetooth controls');
     });
 
-    test('Android status bar notification icon exists and is a valid XML vector drawable', () {
-      final iconFile = File('android/app/src/main/res/drawable/ic_stat_music.xml');
-      expect(iconFile.existsSync(), isTrue, reason: 'ic_stat_music.xml must exist in res/drawable/');
+    test(
+        'Android status bar notification icon exists and is a valid XML vector drawable',
+        () {
+      final iconFile =
+          File('android/app/src/main/res/drawable/ic_stat_music.xml');
+      expect(iconFile.existsSync(), isTrue,
+          reason: 'ic_stat_music.xml must exist in res/drawable/');
 
       final iconContent = iconFile.readAsStringSync();
-      expect(iconContent, contains('<vector'), reason: 'Icon must be a vector drawable');
+      expect(iconContent, contains('<vector'),
+          reason: 'Icon must be a vector drawable');
       expect(iconContent, contains('android:viewportWidth="24"'));
     });
 
@@ -123,10 +140,13 @@ void main() {
       expect(content, contains('<key>UIBackgroundModes</key>'),
           reason: 'UIBackgroundModes must be defined');
       expect(content, contains('<string>audio</string>'),
-          reason: 'audio background mode is mandatory for iOS background playback');
+          reason:
+              'audio background mode is mandatory for iOS background playback');
     });
 
-    test('MediaItem tag structures comply with just_audio_background requirements', () {
+    test(
+        'MediaItem tag structures comply with just_audio_background requirements',
+        () {
       const song = Song(
         id: 'dQw4w9WgXcQ',
         title: 'Never Gonna Give You Up',
@@ -154,7 +174,9 @@ void main() {
       expect(mediaItem.duration?.inSeconds, equals(212));
     });
 
-    test('ArtworkService generates valid fallback URI for background lockscreen art', () async {
+    test(
+        'ArtworkService generates valid fallback URI for background lockscreen art',
+        () async {
       final uri = await ArtworkService.getArtworkUri(
         thumbnailUrl: 'https://i.ytimg.com/vi/test/hqdefault.jpg',
         songId: 'test_song',
@@ -214,7 +236,8 @@ void main() {
       expect(playerProvider.isPlaying, isTrue);
     });
 
-    test('onTrackEnded automatically advances to next track in queue', () async {
+    test('onTrackEnded automatically advances to next track in queue',
+        () async {
       await playerProvider.playSong(track1, newQueue: [track1, track2]);
       expect(playerProvider.currentIndex, equals(0));
 
@@ -225,7 +248,8 @@ void main() {
       expect(playerProvider.isPlaying, isTrue);
     });
 
-    test('onTrackEnded repeats same track when repeat mode is enabled', () async {
+    test('onTrackEnded repeats same track when repeat mode is enabled',
+        () async {
       await playerProvider.playSong(track1, newQueue: [track1, track2]);
       playerProvider.toggleRepeat();
       expect(playerProvider.isRepeat, isTrue);
@@ -237,7 +261,9 @@ void main() {
       expect(playerProvider.currentPosition, equals(Duration.zero));
     });
 
-    test('Continuous autoplay ensures playback does not terminate when queue exhausts', () async {
+    test(
+        'Continuous autoplay ensures playback does not terminate when queue exhausts',
+        () async {
       await playerProvider.playSong(track1, newQueue: [track1]);
       expect(playerProvider.currentIndex, equals(0));
       playerProvider.toggleAutoplay(value: true);

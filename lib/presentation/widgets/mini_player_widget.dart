@@ -20,7 +20,9 @@ class MiniPlayerWidget extends StatelessWidget {
     // Calculate progress ratio
     double progress = 0.0;
     if (player.totalDuration.inSeconds > 0) {
-      progress = (player.currentPosition.inSeconds / player.totalDuration.inSeconds).clamp(0.0, 1.0);
+      progress =
+          (player.currentPosition.inSeconds / player.totalDuration.inSeconds)
+              .clamp(0.0, 1.0);
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -39,7 +41,8 @@ class MiniPlayerWidget extends StatelessWidget {
             transitionsBuilder: (context, anim, secAnim, child) {
               const begin = Offset(0.0, 1.0);
               const end = Offset.zero;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.easeOutCubic));
+              final tween = Tween(begin: begin, end: end)
+                  .chain(CurveTween(curve: Curves.easeOutCubic));
               return SlideTransition(position: anim.drive(tween), child: child);
             },
           ),
@@ -89,11 +92,13 @@ class MiniPlayerWidget extends StatelessWidget {
           children: [
             // Progress Bar Line at top of mini player
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
               child: LinearProgressIndicator(
                 value: progress,
                 backgroundColor: isDark ? Colors.white10 : Colors.black12,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryAccent),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.primaryAccent),
                 minHeight: 2.5,
               ),
             ),
@@ -113,15 +118,21 @@ class MiniPlayerWidget extends StatelessWidget {
                             errorWidget: (_, __, ___) => Container(
                               width: 44,
                               height: 44,
-                              color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
-                              child: Icon(Icons.music_note, color: secondaryTextColor),
+                              color: isDark
+                                  ? Colors.grey.shade900
+                                  : Colors.grey.shade200,
+                              child: Icon(Icons.music_note,
+                                  color: secondaryTextColor),
                             ),
                           )
                         : Container(
                             width: 44,
                             height: 44,
-                            color: isDark ? Colors.grey.shade900 : Colors.grey.shade200,
-                            child: Icon(Icons.music_note, color: secondaryTextColor),
+                            color: isDark
+                                ? Colors.grey.shade900
+                                : Colors.grey.shade200,
+                            child: Icon(Icons.music_note,
+                                color: secondaryTextColor),
                           ),
                   ),
                   const SizedBox(width: 12),
@@ -172,7 +183,9 @@ class MiniPlayerWidget extends StatelessWidget {
                                 size: 30,
                               )
                             : Icon(
-                                player.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                player.isPlaying
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
                                 color: iconColor,
                                 size: 32,
                               ),
@@ -186,7 +199,8 @@ class MiniPlayerWidget extends StatelessWidget {
                   ),
                   // Next Track Button
                   IconButton(
-                    icon: Icon(Icons.skip_next_rounded, color: iconColor, size: 28),
+                    icon: Icon(Icons.skip_next_rounded,
+                        color: iconColor, size: 28),
                     onPressed: () => player.next(),
                   ),
                 ],

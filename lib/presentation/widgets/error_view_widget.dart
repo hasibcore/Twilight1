@@ -19,7 +19,8 @@ class ErrorViewWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, size: 56, color: AppColors.error),
+            const Icon(Icons.error_outline_rounded,
+                size: 56, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               message,
@@ -33,7 +34,8 @@ class ErrorViewWidget extends StatelessWidget {
               label: const Text('Retry', style: TextStyle(color: Colors.white)),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.white38),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
               ),
             ),
           ],

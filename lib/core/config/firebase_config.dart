@@ -18,7 +18,8 @@ class FirebaseConfig {
   static String get authDomain => '$projectId.firebaseapp.com';
 
   /// Firebase Database URL
-  static String get databaseURL => 'https://$projectId-default-rtdb.firebaseio.com';
+  static String get databaseURL =>
+      'https://$projectId-default-rtdb.firebaseio.com';
 
   /// Firebase Storage Bucket
   static String get storageBucket => '$projectId.appspot.com';

@@ -35,7 +35,8 @@ class YouTubeRemoteDatasource {
 
   /// Checks if the configured API key is valid (not empty and not the default placeholder)
   bool get hasValidApiKey =>
-      apiKey.isNotEmpty && !apiKey.contains('YOUR_YOUTUBE_DATA_API_V3_KEY_HERE');
+      apiKey.isNotEmpty &&
+      !apiKey.contains('YOUR_YOUTUBE_DATA_API_V3_KEY_HERE');
 
   /// Searches for songs, artists, and playlists across all of YouTube.
   Future<SearchResultModel> searchAll(String query) async {
@@ -75,14 +76,16 @@ class YouTubeRemoteDatasource {
               artists.add(ArtistModel(
                 id: id['channelId'] as String? ?? '',
                 name: snippet['title'] as String? ?? 'Artist',
-                thumbnailUrl: snippet['thumbnails']?['high']?['url'] as String? ?? '',
+                thumbnailUrl:
+                    snippet['thumbnails']?['high']?['url'] as String? ?? '',
               ));
             } else if (kind.contains('playlist')) {
               playlists.add(PlaylistModel(
                 id: id['playlistId'] as String? ?? '',
                 title: snippet['title'] as String? ?? 'Playlist',
                 description: snippet['description'] as String? ?? '',
-                thumbnailUrl: snippet['thumbnails']?['high']?['url'] as String? ?? '',
+                thumbnailUrl:
+                    snippet['thumbnails']?['high']?['url'] as String? ?? '',
                 updatedAt: DateTime.now(),
               ));
             }
@@ -104,7 +107,9 @@ class YouTubeRemoteDatasource {
 
     // 2. Direct search across all of YouTube using YoutubeExplode (A to Z YouTube access)
     try {
-      final searchList = await _yt.search.search(cleanQuery).timeout(const Duration(seconds: 4));
+      final searchList = await _yt.search
+          .search(cleanQuery)
+          .timeout(const Duration(seconds: 4));
       final List<SongModel> songs = [];
       final List<ArtistModel> artists = [];
       final Set<String> seenArtists = {};
@@ -135,7 +140,8 @@ class YouTubeRemoteDatasource {
             channelId: video.channelId.value,
             thumbnailUrl: thumb,
             durationSeconds: durationSecs,
-            durationFormatted: Formatters.formatDuration(video.duration ?? Duration.zero),
+            durationFormatted:
+                Formatters.formatDuration(video.duration ?? Duration.zero),
             viewCount: views,
             publishedAt: uploadDate,
           );
@@ -216,7 +222,9 @@ class YouTubeRemoteDatasource {
 
     // Live trending music via YouTube search
     try {
-      final searchList = await _yt.search.search('trending music songs').timeout(const Duration(seconds: 4));
+      final searchList = await _yt.search
+          .search('trending music songs')
+          .timeout(const Duration(seconds: 4));
       final List<SongModel> songs = [];
       for (final video in searchList.take(20)) {
         try {
@@ -243,7 +251,8 @@ class YouTubeRemoteDatasource {
             channelId: video.channelId.value,
             thumbnailUrl: thumb,
             durationSeconds: video.duration?.inSeconds ?? 0,
-            durationFormatted: Formatters.formatDuration(video.duration ?? Duration.zero),
+            durationFormatted:
+                Formatters.formatDuration(video.duration ?? Duration.zero),
             viewCount: views,
             publishedAt: uploadDate,
           ));
@@ -303,7 +312,8 @@ class YouTubeRemoteDatasource {
         channelId: video.channelId.value,
         thumbnailUrl: thumb,
         durationSeconds: durationSecs,
-        durationFormatted: Formatters.formatDuration(video.duration ?? Duration.zero),
+        durationFormatted:
+            Formatters.formatDuration(video.duration ?? Duration.zero),
         viewCount: views,
         publishedAt: video.uploadDate,
       );
@@ -324,25 +334,28 @@ class YouTubeRemoteDatasource {
 
   Future<SearchResultModel> _searchWebFallback(String query) async {
     try {
-      final uri = Uri.parse('https://www.youtube.com/youtubei/v1/search?prettyPrint=false');
-      final resp = await client.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        },
-        body: jsonEncode({
-          'context': {
-            'client': {
-              'hl': 'en',
-              'gl': 'US',
-              'clientName': 'WEB',
-              'clientVersion': '2.20240920.01.00',
-            }
-          },
-          'query': query,
-        }),
-      ).timeout(const Duration(seconds: 5));
+      final uri = Uri.parse(
+          'https://www.youtube.com/youtubei/v1/search?prettyPrint=false');
+      final resp = await client
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            },
+            body: jsonEncode({
+              'context': {
+                'client': {
+                  'hl': 'en',
+                  'gl': 'US',
+                  'clientName': 'WEB',
+                  'clientVersion': '2.20240920.01.00',
+                }
+              },
+              'query': query,
+            }),
+          )
+          .timeout(const Duration(seconds: 5));
 
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
@@ -353,10 +366,14 @@ class YouTubeRemoteDatasource {
         String? extractText(dynamic node) {
           if (node == null) return null;
           if (node is Map<String, dynamic>) {
-            if (node['simpleText'] is String) return node['simpleText'] as String;
+            if (node['simpleText'] is String) {
+              return node['simpleText'] as String;
+            }
             final runs = node['runs'];
             if (runs is List && runs.isNotEmpty) {
-              return runs.map((r) => r is Map ? (r['text'] ?? '').toString() : '').join();
+              return runs
+                  .map((r) => r is Map ? (r['text'] ?? '').toString() : '')
+                  .join();
             }
           }
           if (node is String) return node;
@@ -369,7 +386,9 @@ class YouTubeRemoteDatasource {
               final vr = node['videoRenderer'] as Map<String, dynamic>;
               final videoId = vr['videoId'] as String?;
               final title = extractText(vr['title']);
-              final author = extractText(vr['ownerText']) ?? extractText(vr['shortBylineText']) ?? 'YouTube Artist';
+              final author = extractText(vr['ownerText']) ??
+                  extractText(vr['shortBylineText']) ??
+                  'YouTube Artist';
               final durationText = extractText(vr['lengthText']) ?? '03:30';
 
               if (videoId != null && title != null && videoId.length == 11) {
@@ -379,7 +398,8 @@ class YouTubeRemoteDatasource {
                   artist: author,
                   channelId: 'yt_$videoId',
                   thumbnailUrl: 'https://i.ytimg.com/vi/$videoId/hqdefault.jpg',
-                  durationSeconds: Formatters.parseFormattedDuration(durationText),
+                  durationSeconds:
+                      Formatters.parseFormattedDuration(durationText),
                   durationFormatted: durationText,
                   viewCount: 100000,
                   publishedAt: null,
@@ -391,7 +411,8 @@ class YouTubeRemoteDatasource {
                   artists.add(ArtistModel(
                     id: 'channel_$videoId',
                     name: author,
-                    thumbnailUrl: 'https://i.ytimg.com/vi/$videoId/hqdefault.jpg',
+                    thumbnailUrl:
+                        'https://i.ytimg.com/vi/$videoId/hqdefault.jpg',
                   ));
                 }
               }
