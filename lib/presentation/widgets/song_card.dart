@@ -314,9 +314,9 @@ class SongCard extends StatelessWidget {
                     title: Text(
                       isDownloaded
                           ? 'Remove from Downloads'
-                          : (isDownloading ? 'Downloading...' : 'Download Song'),
+                          : (isDownloading ? 'Cancel Download' : 'Download Song'),
                       style: TextStyle(
-                        color: isDownloaded ? Colors.redAccent : Colors.white,
+                        color: isDownloaded ? Colors.redAccent : (isDownloading ? Colors.orangeAccent : Colors.white),
                       ),
                     ),
                     onTap: () async {
@@ -326,7 +326,12 @@ class SongCard extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Download removed')),
                         );
-                      } else if (!isDownloading) {
+                      } else if (isDownloading) {
+                        downloadProv.cancelDownload(song.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Cancelled download of "${song.title}"')),
+                        );
+                      } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Downloading "${song.title}"...')),
                         );

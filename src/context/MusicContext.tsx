@@ -608,6 +608,19 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (prev.some((s) => s.id === song.id)) return prev;
       return [{ ...song }, ...prev];
     });
+
+    // Instant browser file download via /api/download
+    try {
+      const downloadUrl = `/api/download/${encodeURIComponent(song.id)}?title=${encodeURIComponent(song.title)}`;
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.setAttribute('download', `${song.title}.mp3`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      console.warn('Browser direct download initiation error:', e);
+    }
   };
 
   const removeDownload = (songId: string) => {

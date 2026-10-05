@@ -284,11 +284,11 @@ export const AudioPlayer: React.FC = () => {
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => (isDown ? null : downloadSong(currentSong))}
+                  onClick={() => downloadSong(currentSong)}
                   className={`p-2.5 rounded-full hover:bg-white/10 transition-colors ${
                     isDown ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-400 hover:text-white'
                   }`}
-                  title={isDown ? 'Downloaded Offline' : 'Save Offline'}
+                  title={isDown ? 'Saved to Offline Downloads (Click to download .mp3 again)' : 'Download Track (.mp3)'}
                 >
                   {isDown ? <Check className="w-5 h-5" /> : <Download className="w-5 h-5" />}
                 </button>

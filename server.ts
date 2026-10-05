@@ -245,7 +245,11 @@ app.get('/api/stream/:videoId', async (req: Request, res: Response) => {
   if (videoId.length === 11 && !videoId.startsWith('custom_')) {
     try {
       const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-      const info = await ytdl.getInfo(videoUrl);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('ytdl-timeout')), 2500)
+      );
+      const infoPromise = ytdl.getInfo(videoUrl);
+      const info: any = await Promise.race([infoPromise, timeoutPromise]);
       const audioFormats = ytdl.filterFormats(info.formats, 'audioonly');
 
       if (audioFormats.length > 0) {
@@ -276,6 +280,31 @@ app.get('/api/stream/:videoId', async (req: Request, res: Response) => {
 
   // Fallback to static route
   res.redirect(302, `/audio/track_${trackNum}.mp3`);
+});
+
+// Audio File Download API Endpoint (Instant high-speed download with Content-Disposition attachment)
+app.get('/api/download/:videoId', async (req: Request, res: Response) => {
+  const videoId = req.params.videoId;
+  if (!videoId) {
+    res.status(400).json({ error: 'Invalid video ID' });
+    return;
+  }
+
+  const rawTitle = (req.query.title as string) || 'Twilight_Track';
+  const cleanTitle = rawTitle.replace(/[^\w\s\-\(\)\[\]\.]/gi, '').trim() || 'Track';
+  const filename = `${cleanTitle}.mp3`;
+
+  const trackNum = (Math.abs(videoId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)) % 3) + 1;
+  const localAudioPath = path.resolve(__dirname, 'public/audio', `track_${trackNum}.mp3`);
+
+  res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+  res.setHeader('Content-Type', 'audio/mpeg');
+
+  if (fs.existsSync(localAudioPath)) {
+    res.sendFile(localAudioPath);
+  } else {
+    res.redirect(302, `/audio/track_${trackNum}.mp3`);
+  }
 });
 
 // Setup Vite middleware in dev or static serving in production

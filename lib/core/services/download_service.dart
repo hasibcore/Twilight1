@@ -50,6 +50,19 @@ class DownloadItem {
 
 class DownloadService {
   static const String _storageKey = 'twilight_downloaded_tracks';
+  static final Set<String> _cancelledDownloads = <String>{};
+
+  static void cancelDownload(String songId) {
+    _cancelledDownloads.add(songId);
+    try {
+      final cleanId = songId.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
+      _cancelledDownloads.add(cleanId);
+    } catch (_) {}
+  }
+
+  static bool isDownloadCancelled(String songId) {
+    return _cancelledDownloads.contains(songId);
+  }
 
   static Future<Directory> getDownloadsDirectory() async {
     final appDir = await getApplicationDocumentsDirectory();
@@ -94,7 +107,6 @@ class DownloadService {
   }) async {
     String? tmpFilePath;
     try {
-      onProgress(0.05);
       Song targetSong = song;
       if (song.id.startsWith('sp_')) {
         final resolved = await MusicImportService().resolveStreamTrack(song);
@@ -108,6 +120,12 @@ class DownloadService {
       } catch (_) {
         cleanId = cleanId.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '');
       }
+
+      _cancelledDownloads.remove(song.id);
+      _cancelledDownloads.remove(cleanId);
+
+      onProgress(0.08);
+
       final dir = await getDownloadsDirectory();
       final audioFilePath = '${dir.path}/$cleanId.m4a';
       final thumbFilePath = '${dir.path}/$cleanId.jpg';
@@ -134,115 +152,97 @@ class DownloadService {
         finalFileSize = sourceCached.lengthSync();
         onProgress(0.90);
       } else {
-        // 2. Download audio stream directly via YoutubeExplode streamsClient with resilient fallback
+        // 2. Resolve audio stream URL with multi-tiered extractor priority
         onProgress(0.15);
-        bool downloadSuccess = false;
+        String? streamUrl;
+        Map<String, String> streamHeaders = {};
+        int streamTotalBytes = 0;
 
+        // Try Tier A: AudioStreamExtractor (Fast direct iOS/TV clients without throttle)
         try {
-          final manifest = await _yt.videos.streamsClient.getManifest(
-            cleanId,
-            ytClients: [YoutubeApiClient.android, YoutubeApiClient.androidSdkless],
-          );
-          final audios = manifest.audioOnly.toList();
-          if (audios.isNotEmpty) {
-            final mp4s = audios.where((s) =>
-                s.container.name.toLowerCase().contains('mp4') ||
-                s.container.name.toLowerCase().contains('m4a')).toList();
-            final bestStream = mp4s.isNotEmpty
-                ? mp4s.withHighestBitrate()
-                : audios.withHighestBitrate();
-
-            final totalBytes = bestStream.size.totalBytes;
-            int downloadedBytes = 0;
-
-            final file = File(tmpFilePath);
-            final sink = file.openWrite();
-
-            final stream = _yt.videos.streamsClient.get(bestStream);
-            await for (final chunk in stream) {
-              sink.add(chunk);
-              downloadedBytes += chunk.length;
-              if (totalBytes > 0) {
-                final progress = 0.15 + (0.75 * (downloadedBytes / totalBytes));
-                onProgress(progress.clamp(0.15, 0.90));
-              }
-            }
-
-            await sink.flush();
-            await sink.close();
-
-            final finalAudioFile = File(audioFilePath);
-            if (await finalAudioFile.exists()) {
-              await finalAudioFile.delete();
-            }
-            await file.rename(audioFilePath);
-            finalFileSize = downloadedBytes;
-            downloadSuccess = true;
-          }
-        } catch (e) {
-          AppLogger.info('Direct streamsClient download error, attempting stream extractor fallback: $e');
-        }
-
-        // Fallback: extract audio stream via multi-tiered extractor (Invidious / iOS client)
-        if (!downloadSuccess) {
           final streamResult = await AudioStreamExtractor.extractAudioStream(
             cleanId,
             preferDownload: true,
-          );
-          if (streamResult == null) {
-            throw Exception('Could not resolve playable audio stream for "${song.title}"');
+          ).timeout(const Duration(seconds: 8));
+          if (streamResult != null && streamResult.url.isNotEmpty) {
+            streamUrl = streamResult.url;
+            streamHeaders = streamResult.headers;
+            streamTotalBytes = streamResult.totalBytes;
           }
+        } catch (e) {
+          AppLogger.info('AudioStreamExtractor download resolution error: $e');
+        }
 
-          final client = http.Client();
+        // Try Tier B: YoutubeExplode TV / MWEB clients fallback
+        if (streamUrl == null) {
           try {
-            final request = http.Request('GET', Uri.parse(streamResult.url));
-            if (streamResult.headers.isNotEmpty) {
-              request.headers.addAll(streamResult.headers);
+            final manifest = await _yt.videos.streamsClient.getManifest(
+              cleanId,
+              ytClients: [YoutubeApiClient.tv, YoutubeApiClient.mweb, YoutubeApiClient.ios],
+            ).timeout(const Duration(seconds: 9));
+            final audios = manifest.audioOnly.toList();
+            if (audios.isNotEmpty) {
+              final mp4s = audios.where((s) =>
+                  s.container.name.toLowerCase().contains('mp4') ||
+                  s.container.name.toLowerCase().contains('m4a')).toList();
+              final bestStream = mp4s.isNotEmpty
+                  ? mp4s.withHighestBitrate()
+                  : audios.withHighestBitrate();
+              streamUrl = bestStream.url.toString();
+              streamTotalBytes = bestStream.size.totalBytes;
+              streamHeaders = {
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15',
+              };
             }
-
-            final response = await client.send(request);
-            if (response.statusCode != 200 && response.statusCode != 206) {
-              throw Exception('Stream download HTTP error: ${response.statusCode}');
-            }
-
-            final totalBytes = response.contentLength ?? streamResult.totalBytes;
-            int downloadedBytes = 0;
-            final file = File(tmpFilePath);
-            final sink = file.openWrite();
-
-            await for (final chunk in response.stream) {
-              sink.add(chunk);
-              downloadedBytes += chunk.length;
-              if (totalBytes > 0) {
-                final progress = 0.15 + (0.75 * (downloadedBytes / totalBytes));
-                onProgress(progress.clamp(0.15, 0.90));
-              }
-            }
-
-            await sink.flush();
-            await sink.close();
-
-            final finalAudioFile = File(audioFilePath);
-            if (await finalAudioFile.exists()) {
-              await finalAudioFile.delete();
-            }
-            await file.rename(audioFilePath);
-            finalFileSize = downloadedBytes;
-          } finally {
-            client.close();
+          } catch (e) {
+            AppLogger.info('YoutubeExplode manifest download error: $e');
           }
         }
+
+        if (streamUrl == null || streamUrl.isEmpty) {
+          throw Exception('Could not resolve playable audio stream for "${song.title}"');
+        }
+
+        if (_cancelledDownloads.contains(cleanId) || _cancelledDownloads.contains(song.id)) {
+          throw Exception('Download cancelled by user');
+        }
+
+        // 3. Download using resilient chunked Range requests to prevent CDN bandwidth throttling
+        final downloadedBytes = await _downloadUrlWithResilientRanges(
+          url: streamUrl,
+          headers: streamHeaders,
+          tmpFilePath: tmpFilePath,
+          knownTotalBytes: streamTotalBytes,
+          songId: cleanId,
+          onProgress: onProgress,
+        );
+
+        if (_cancelledDownloads.contains(cleanId) || _cancelledDownloads.contains(song.id)) {
+          throw Exception('Download cancelled by user');
+        }
+
+        final tmpFile = File(tmpFilePath);
+        if (!tmpFile.existsSync() || tmpFile.lengthSync() < 10000) {
+          throw Exception('Downloaded file is incomplete or empty.');
+        }
+
+        final finalAudioFile = File(audioFilePath);
+        if (await finalAudioFile.exists()) {
+          await finalAudioFile.delete();
+        }
+        await tmpFile.rename(audioFilePath);
+        finalFileSize = downloadedBytes > 0 ? downloadedBytes : finalAudioFile.lengthSync();
       }
 
       onProgress(0.92);
 
-      // 3. Download thumbnail for offline artwork display
+      // 4. Download thumbnail for offline artwork display (4s timeout)
       String? savedThumbPath;
       if (song.thumbnailUrl.isNotEmpty) {
         try {
           final uri = Uri.tryParse(song.thumbnailUrl);
           if (uri != null) {
-            final thumbRes = await http.get(uri).timeout(const Duration(seconds: 8));
+            final thumbRes = await http.get(uri).timeout(const Duration(seconds: 4));
             if (thumbRes.statusCode == 200) {
               final thumbFile = File(thumbFilePath);
               await thumbFile.writeAsBytes(thumbRes.bodyBytes);
@@ -302,6 +302,116 @@ class DownloadService {
         }
       } catch (_) {}
       rethrow;
+    }
+  }
+
+  /// Downloads stream with Range requests to avoid 20KB/s throttling & infinite stalls
+  static Future<int> _downloadUrlWithResilientRanges({
+    required String url,
+    required Map<String, String> headers,
+    required String tmpFilePath,
+    required int knownTotalBytes,
+    required String songId,
+    required void Function(double progress) onProgress,
+  }) async {
+    final file = File(tmpFilePath);
+    if (file.existsSync()) {
+      try {
+        file.deleteSync();
+      } catch (_) {}
+    }
+    final sink = file.openWrite();
+    int downloadedBytes = 0;
+    int totalBytes = knownTotalBytes;
+
+    final client = http.Client();
+    try {
+      // 1. If total bytes unknown, query HEAD with 4s timeout
+      if (totalBytes <= 0) {
+        try {
+          final headRes = await client.head(Uri.parse(url), headers: headers).timeout(const Duration(seconds: 4));
+          if (headRes.contentLength != null && headRes.contentLength! > 0) {
+            totalBytes = headRes.contentLength!;
+          }
+        } catch (_) {}
+      }
+
+      // 2. Segmented Range requests: 512 KB per chunk to bypass bandwidth throttles
+      const int chunkSize = 512 * 1024;
+
+      if (totalBytes > 0) {
+        while (downloadedBytes < totalBytes) {
+          if (_cancelledDownloads.contains(songId)) {
+            throw Exception('Download cancelled by user');
+          }
+
+          final int start = downloadedBytes;
+          final int end = (start + chunkSize - 1) < totalBytes ? (start + chunkSize - 1) : (totalBytes - 1);
+
+          bool chunkSuccess = false;
+          int retries = 0;
+
+          while (!chunkSuccess && retries < 3) {
+            if (_cancelledDownloads.contains(songId)) {
+              throw Exception('Download cancelled by user');
+            }
+            try {
+              final rangeHeaders = Map<String, String>.from(headers);
+              rangeHeaders['Range'] = 'bytes=$start-$end';
+
+              final req = http.Request('GET', Uri.parse(url));
+              req.headers.addAll(rangeHeaders);
+
+              final streamedRes = await client.send(req).timeout(const Duration(seconds: 10));
+              if (streamedRes.statusCode == 200 || streamedRes.statusCode == 206) {
+                await for (final chunk in streamedRes.stream.timeout(const Duration(seconds: 8))) {
+                  sink.add(chunk);
+                  downloadedBytes += chunk.length;
+                  final progress = 0.15 + (0.75 * (downloadedBytes / totalBytes));
+                  onProgress(progress.clamp(0.15, 0.90));
+                }
+                chunkSuccess = true;
+              } else {
+                retries++;
+                await Future.delayed(const Duration(milliseconds: 300));
+              }
+            } catch (e) {
+              retries++;
+              await Future.delayed(const Duration(milliseconds: 350));
+              if (retries >= 3) rethrow;
+            }
+          }
+        }
+      } else {
+        // Fallback single stream with chunk timeout watchdog
+        final req = http.Request('GET', Uri.parse(url));
+        req.headers.addAll(headers);
+        final streamedRes = await client.send(req).timeout(const Duration(seconds: 10));
+        if (streamedRes.statusCode != 200 && streamedRes.statusCode != 206) {
+          throw Exception('Stream HTTP status ${streamedRes.statusCode}');
+        }
+        final streamTotal = streamedRes.contentLength ?? 4000000;
+        await for (final chunk in streamedRes.stream.timeout(const Duration(seconds: 8))) {
+          if (_cancelledDownloads.contains(songId)) {
+            throw Exception('Download cancelled by user');
+          }
+          sink.add(chunk);
+          downloadedBytes += chunk.length;
+          final progress = 0.15 + (0.75 * (downloadedBytes / streamTotal));
+          onProgress(progress.clamp(0.15, 0.90));
+        }
+      }
+
+      await sink.flush();
+      await sink.close();
+      return downloadedBytes;
+    } catch (e) {
+      try {
+        await sink.close();
+      } catch (_) {}
+      rethrow;
+    } finally {
+      client.close();
     }
   }
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../core/services/download_service.dart';
 import '../../domain/entities/song.dart';
@@ -48,7 +49,7 @@ class DownloadProvider extends ChangeNotifier {
     }
 
     _activeDownloads.add(song.id);
-    _downloadProgress[song.id] = 0.05;
+    _downloadProgress[song.id] = 0.08;
     _lastError = null;
     notifyListeners();
 
@@ -58,6 +59,11 @@ class DownloadProvider extends ChangeNotifier {
         onProgress: (progress) {
           _downloadProgress[song.id] = progress;
           notifyListeners();
+        },
+      ).timeout(
+        const Duration(seconds: 45),
+        onTimeout: () {
+          throw TimeoutException('Download timed out after 45 seconds. Please check your connection.');
         },
       );
 
@@ -78,6 +84,14 @@ class DownloadProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  void cancelDownload(String songId) {
+    DownloadService.cancelDownload(songId);
+    _activeDownloads.remove(songId);
+    _downloadProgress.remove(songId);
+    _lastError = 'Download cancelled';
+    notifyListeners();
   }
 
   Future<void> deleteDownload(String songId) async {

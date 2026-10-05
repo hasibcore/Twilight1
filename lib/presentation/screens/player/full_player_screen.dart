@@ -206,14 +206,24 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                     // Download button
                     IconButton(
                       icon: isDownloading
-                          ? SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                value: downloadProgress > 0.05 ? downloadProgress : null,
-                                strokeWidth: 2.5,
-                                color: AppColors.primaryAccent,
-                              ),
+                          ? Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    value: downloadProgress > 0.08 ? downloadProgress : null,
+                                    strokeWidth: 2.5,
+                                    color: const Color(0xFF00E676),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.close,
+                                  size: 13,
+                                  color: Colors.white,
+                                ),
+                              ],
                             )
                           : Icon(
                               isDownloaded
@@ -222,7 +232,9 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
                               color: isDownloaded ? const Color(0xFF00E676) : Colors.white,
                               size: 26,
                             ),
-                      tooltip: isDownloaded ? 'Downloaded' : 'Download for offline playback',
+                      tooltip: isDownloading
+                          ? 'Downloading ${(downloadProgress * 100).toInt()}% (Tap to cancel)'
+                          : (isDownloaded ? 'Downloaded' : 'Download for offline playback'),
                       onPressed: () => _handleDownloadTap(context, currentSong, downloadProv),
                     ),
                     // Add to playlist
@@ -543,7 +555,15 @@ class _FullPlayerScreenState extends State<FullPlayerScreen> with SingleTickerPr
   void _handleDownloadTap(BuildContext context, dynamic currentSong, DownloadProvider downloadProv) async {
     if (downloadProv.isDownloaded(currentSong.id)) {
       _showDeleteDownloadConfirm(context, currentSong, downloadProv);
-    } else if (!downloadProv.isDownloading(currentSong.id)) {
+    } else if (downloadProv.isDownloading(currentSong.id)) {
+      downloadProv.cancelDownload(currentSong.id);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cancelled download of "${currentSong.title}"'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Downloading "${currentSong.title}" for offline playback...'),
