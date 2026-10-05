@@ -70,6 +70,10 @@ class DownloadProvider extends ChangeNotifier {
       if (item != null) {
         _downloads.removeWhere((d) => d.song.id == song.id);
         _downloads.insert(0, item);
+        _downloadProgress[song.id] = 1.0;
+        notifyListeners();
+        // Allow UI to animate to 100% and transition to downloaded checkmark
+        await Future.delayed(const Duration(milliseconds: 350));
       } else {
         _lastError = 'Download could not resolve a stream.';
       }

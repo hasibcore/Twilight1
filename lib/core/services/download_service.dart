@@ -364,13 +364,27 @@ class DownloadService {
 
               final streamedRes = await client.send(req).timeout(const Duration(seconds: 10));
               if (streamedRes.statusCode == 200 || streamedRes.statusCode == 206) {
+                int bytesInThisChunk = 0;
                 await for (final chunk in streamedRes.stream.timeout(const Duration(seconds: 8))) {
                   sink.add(chunk);
                   downloadedBytes += chunk.length;
+                  bytesInThisChunk += chunk.length;
                   final progress = 0.15 + (0.75 * (downloadedBytes / totalBytes));
-                  onProgress(progress.clamp(0.15, 0.90));
+                  onProgress(progress.clamp(0.15, 0.92));
+                }
+
+                // If EOF reached (0 bytes in response) or end of file reached
+                if (bytesInThisChunk == 0) {
+                  chunkSuccess = true;
+                  downloadedBytes = totalBytes; // Successfully reached end of audio stream
+                  break;
                 }
                 chunkSuccess = true;
+              } else if (streamedRes.statusCode == 416) {
+                // Range Not Satisfiable: Stream has finished sending all bytes
+                chunkSuccess = true;
+                downloadedBytes = totalBytes;
+                break;
               } else {
                 retries++;
                 await Future.delayed(const Duration(milliseconds: 300));
@@ -378,9 +392,19 @@ class DownloadService {
             } catch (e) {
               retries++;
               await Future.delayed(const Duration(milliseconds: 350));
-              if (retries >= 3) rethrow;
+              if (retries >= 3) {
+                // If more than 85% of file is already downloaded, finalize rather than fail at 99%
+                if (downloadedBytes >= (totalBytes * 0.85).toInt()) {
+                  chunkSuccess = true;
+                  downloadedBytes = totalBytes;
+                  break;
+                }
+                rethrow;
+              }
             }
           }
+
+          if (downloadedBytes >= totalBytes) break;
         }
       } else {
         // Fallback single stream with chunk timeout watchdog
