@@ -80,34 +80,35 @@ class SearchProvider extends ChangeNotifier {
       final uri = Uri.parse(
         'https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=${Uri.encodeComponent(clean)}',
       );
-      final res = await http.get(
-        uri,
-        headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
-      ).timeout(const Duration(seconds: 3));
+      final client = http.Client();
+      try {
+        final res = await client.get(
+          uri,
+          headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'},
+        ).timeout(const Duration(seconds: 3));
 
-      if (reqId != _suggestRequestId) return;
+        if (reqId != _suggestRequestId) return;
 
-      if (res.statusCode == 200) {
-        final decoded = jsonDecode(res.body) as List;
-        if (decoded.length > 1 && decoded[1] is List) {
-          final apiList =
-              (decoded[1] as List).map((e) => e.toString()).toList();
-          // Combine matching history + live suggestions without duplicates
-          final combined = <String>[...matchingHistory];
-          for (final s in apiList) {
-            if (!combined.any((c) => c.toLowerCase() == s.toLowerCase())) {
-              combined.add(s);
+        if (res.statusCode == 200) {
+          final decoded = jsonDecode(res.body) as List;
+          if (decoded.length > 1 && decoded[1] is List) {
+            final apiList = (decoded[1] as List).map((e) => e.toString()).toList();
+            // Combine matching history + live suggestions without duplicates
+            final combined = <String>[...matchingHistory];
+            for (final s in apiList) {
+              if (!combined.any((c) => c.toLowerCase() == s.toLowerCase())) {
+                combined.add(s);
+              }
             }
+            _suggestions = combined;
+            _suggestCache[lower] = combined;
+            _isSuggesting = false;
+            notifyListeners();
+            return;
           }
-          if (_suggestCache.length >= 100) {
-            _suggestCache.remove(_suggestCache.keys.first);
-          }
-          _suggestions = combined;
-          _suggestCache[lower] = combined;
-          _isSuggesting = false;
-          notifyListeners();
-          return;
         }
+      } finally {
+        client.close();
       }
     } catch (_) {}
 
@@ -191,20 +192,5 @@ class SearchProvider extends ChangeNotifier {
     await musicRepository.clearSearchHistory();
     _searchHistory = [];
     notifyListeners();
-  }
-
-  bool _isDisposed = false;
-
-  @override
-  void notifyListeners() {
-    if (!_isDisposed) {
-      super.notifyListeners();
-    }
-  }
-
-  @override
-  void dispose() {
-    _isDisposed = true;
-    super.dispose();
   }
 }

@@ -136,9 +136,7 @@ class SongModel {
       channelId: channelId,
       thumbnailUrl: thumb.isNotEmpty
           ? thumb
-          : (videoId.isNotEmpty
-              ? 'https://i.ytimg.com/vi/$videoId/hqdefault.jpg'
-              : ''),
+          : (videoId.isNotEmpty ? 'https://i.ytimg.com/vi/$videoId/hqdefault.jpg' : ''),
       durationSeconds: durationSecs,
       durationFormatted: Formatters.formatSeconds(durationSecs),
       viewCount: views,

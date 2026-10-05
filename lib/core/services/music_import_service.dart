@@ -9,9 +9,6 @@ import '../utils/logger.dart';
 /// public web sources (Spotify and YouTube) in full compliance with Google Play guidelines.
 /// Never stores infringing content or bypasses DRM; uses standard public oEmbed & metadata aggregation.
 class MusicImportService {
-  static final MusicImportService _instance = MusicImportService._internal();
-  factory MusicImportService() => _instance;
-
   final http.Client client;
   YoutubeExplode? _ytInstance;
   YoutubeExplode get _yt => _ytInstance ??= YoutubeExplode();
@@ -27,8 +24,7 @@ class MusicImportService {
     _cache[key] = value;
   }
 
-  MusicImportService._internal({http.Client? client})
-      : client = client ?? http.Client();
+  MusicImportService({http.Client? client}) : client = client ?? http.Client();
 
   /// Determines whether a string is a Spotify URL
   bool isSpotifyUrl(String input) {
@@ -69,8 +65,7 @@ class MusicImportService {
 
   /// Fetches the daily Global Top Charts (aggregating top hits)
   Future<List<Song>> getGlobalTopCharts() async {
-    const chartUrl =
-        'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'; // Today's Top Hits
+    const chartUrl = 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M'; // Today's Top Hits
     try {
       final songs = await importFromUrl(chartUrl);
       if (songs.isNotEmpty) return songs;
@@ -82,8 +77,7 @@ class MusicImportService {
 
   /// Fetches Viral Hits chart
   Future<List<Song>> getViralHitsChart() async {
-    const viralUrl =
-        'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq'; // Viral Hits
+    const viralUrl = 'https://open.spotify.com/playlist/37i9dQZF1DX2L0iB23Enbq'; // Viral Hits
     try {
       final songs = await importFromUrl(viralUrl);
       if (songs.isNotEmpty) return songs;
@@ -104,9 +98,7 @@ class MusicImportService {
       String id = '';
 
       for (int i = 0; i < segments.length; i++) {
-        if (segments[i] == 'playlist' ||
-            segments[i] == 'track' ||
-            segments[i] == 'album') {
+        if (segments[i] == 'playlist' || segments[i] == 'track' || segments[i] == 'album') {
           type = segments[i];
           if (i + 1 < segments.length) {
             id = segments[i + 1].split('?').first;
@@ -123,25 +115,21 @@ class MusicImportService {
         headers: {
           'User-Agent':
               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Accept':
-              'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         },
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) return [];
 
       final html = response.body;
-      final match = RegExp(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>',
-              dotAll: true)
-          .firstMatch(html);
+      final match = RegExp(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', dotAll: true).firstMatch(html);
       if (match == null) return [];
 
       final jsonString = match.group(1);
       if (jsonString == null) return [];
 
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
-      final entity = data['props']?['pageProps']?['state']?['data']?['entity']
-          as Map<String, dynamic>?;
+      final entity = data['props']?['pageProps']?['state']?['data']?['entity'] as Map<String, dynamic>?;
       if (entity == null) return [];
 
       String defaultCover = 'https://picsum.photos/300/300';
@@ -157,10 +145,7 @@ class MusicImportService {
         String artist = 'Unknown Artist';
         final artists = entity['artists'] as List<dynamic>?;
         if (artists != null && artists.isNotEmpty) {
-          artist = artists
-              .map((a) => a['name']?.toString() ?? '')
-              .where((s) => s.isNotEmpty)
-              .join(', ');
+          artist = artists.map((a) => a['name']?.toString() ?? '').where((s) => s.isNotEmpty).join(', ');
         }
         final durationMs = (entity['duration'] as num?)?.toInt() ?? 180000;
         final durationSec = durationMs ~/ 1000;
@@ -172,8 +157,7 @@ class MusicImportService {
           channelId: 'spotify',
           thumbnailUrl: defaultCover,
           durationSeconds: durationSec,
-          durationFormatted:
-              Formatters.formatDuration(Duration(seconds: durationSec)),
+          durationFormatted: Formatters.formatDuration(Duration(seconds: durationSec)),
         ));
       } else {
         // Playlist or Album
@@ -185,9 +169,7 @@ class MusicImportService {
           final durationMs = (t['duration'] as num?)?.toInt() ?? 180000;
           final durationSec = durationMs ~/ 1000;
           final trackUri = t['uri']?.toString() ?? '';
-          final trackId = trackUri.split(':').last.isNotEmpty
-              ? trackUri.split(':').last
-              : 'track_$i';
+          final trackId = trackUri.split(':').last.isNotEmpty ? trackUri.split(':').last : 'track_$i';
 
           if (title.isNotEmpty) {
             results.add(Song(
@@ -197,8 +179,7 @@ class MusicImportService {
               channelId: 'spotify',
               thumbnailUrl: defaultCover,
               durationSeconds: durationSec,
-              durationFormatted:
-                  Formatters.formatDuration(Duration(seconds: durationSec)),
+              durationFormatted: Formatters.formatDuration(Duration(seconds: durationSec)),
             ));
           }
         }
@@ -230,8 +211,7 @@ class MusicImportService {
       // 1. YouTube Playlist
       if (uri.queryParameters.containsKey('list')) {
         final playlistId = uri.queryParameters['list']!;
-        await for (final video
-            in _yt.playlists.getVideos(playlistId).take(50)) {
+        await for (final video in _yt.playlists.getVideos(playlistId).take(50)) {
           final dur = video.duration ?? const Duration(minutes: 3);
           results.add(Song(
             id: video.id.value,
@@ -304,8 +284,7 @@ class MusicImportService {
 
     // Live InnerTube search fallback
     try {
-      final webId =
-          await _searchVideoIdFallback('${song.title} ${song.artist}');
+      final webId = await _searchVideoIdFallback('${song.title} ${song.artist}');
       if (webId != null && webId.isNotEmpty) {
         return song.copyWith(id: webId);
       }
@@ -313,8 +292,7 @@ class MusicImportService {
 
     try {
       final query = '${song.title} ${song.artist} official audio';
-      final searchResults =
-          await _yt.search.search(query).timeout(const Duration(seconds: 4));
+      final searchResults = await _yt.search.search(query).timeout(const Duration(seconds: 4));
       if (searchResults.isNotEmpty) {
         final matched = searchResults.first;
         final dur = matched.duration ?? Duration(seconds: song.durationSeconds);
@@ -333,34 +311,31 @@ class MusicImportService {
 
   Future<String?> _searchVideoIdFallback(String query) async {
     try {
-      final uri = Uri.parse(
-          'https://www.youtube.com/youtubei/v1/search?prettyPrint=false');
-      final resp = await client
-          .post(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            },
-            body: jsonEncode({
-              'context': {
-                'client': {
-                  'hl': 'en',
-                  'gl': 'US',
-                  'clientName': 'WEB',
-                  'clientVersion': '2.20240920.01.00',
-                }
-              },
-              'query': query,
-            }),
-          )
-          .timeout(const Duration(seconds: 4));
+      final uri = Uri.parse('https://www.youtube.com/youtubei/v1/search?prettyPrint=false');
+      final resp = await client.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        },
+        body: jsonEncode({
+          'context': {
+            'client': {
+              'hl': 'en',
+              'gl': 'US',
+              'clientName': 'WEB',
+              'clientVersion': '2.20240920.01.00',
+            }
+          },
+          'query': query,
+        }),
+      ).timeout(const Duration(seconds: 4));
 
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
         String? foundId;
-        void scan(dynamic node, [int depth = 0]) {
-          if (foundId != null || depth > 20) return;
+        void scan(dynamic node) {
+          if (foundId != null) return;
           if (node is Map<String, dynamic>) {
             if (node.containsKey('videoRenderer')) {
               final vr = node['videoRenderer'] as Map<String, dynamic>;
@@ -371,16 +346,15 @@ class MusicImportService {
               }
             }
             for (final v in node.values) {
-              scan(v, depth + 1);
+              scan(v);
             }
           } else if (node is List) {
             for (final item in node) {
-              scan(item, depth + 1);
+              scan(item);
             }
           }
         }
-
-        scan(data, 0);
+        scan(data);
         return foundId;
       }
     } catch (_) {}
@@ -408,8 +382,7 @@ class MusicImportService {
       title: 'Die With A Smile',
       artist: 'Lady Gaga, Bruno Mars',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b27382ea2e9e1f582d5a3719d3ea',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b27382ea2e9e1f582d5a3719d3ea',
       durationSeconds: 251,
       durationFormatted: '4:11',
     ),
@@ -418,8 +391,7 @@ class MusicImportService {
       title: 'Birds of a Feather',
       artist: 'Billie Eilish',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b27371d62ea7ea8a5be92d3c1f62',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b27371d62ea7ea8a5be92d3c1f62',
       durationSeconds: 190,
       durationFormatted: '3:10',
     ),
@@ -428,8 +400,7 @@ class MusicImportService {
       title: 'Espresso',
       artist: 'Sabrina Carpenter',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273659e0e3510e1925773f6b28d',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273659e0e3510e1925773f6b28d',
       durationSeconds: 175,
       durationFormatted: '2:55',
     ),
@@ -438,8 +409,7 @@ class MusicImportService {
       title: 'Taste',
       artist: 'Sabrina Carpenter',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273fd8d7a8d96871e791cb1f628',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273fd8d7a8d96871e791cb1f628',
       durationSeconds: 157,
       durationFormatted: '2:37',
     ),
@@ -448,8 +418,7 @@ class MusicImportService {
       title: 'Good Luck, Babe!',
       artist: 'Chappell Roan',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273dc601198544dcfd9f67b55f1',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273dc601198544dcfd9f67b55f1',
       durationSeconds: 218,
       durationFormatted: '3:38',
     ),
@@ -458,8 +427,7 @@ class MusicImportService {
       title: 'Not Like Us',
       artist: 'Kendrick Lamar',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad',
       durationSeconds: 274,
       durationFormatted: '4:34',
     ),
@@ -468,8 +436,7 @@ class MusicImportService {
       title: 'Cruel Summer',
       artist: 'Taylor Swift',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273e787cffec20aa2a396a61647',
       durationSeconds: 178,
       durationFormatted: '2:58',
     ),
@@ -478,8 +445,7 @@ class MusicImportService {
       title: 'Blinding Lights',
       artist: 'The Weeknd',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36',
       durationSeconds: 200,
       durationFormatted: '3:20',
     ),
@@ -488,8 +454,7 @@ class MusicImportService {
       title: 'As It Was',
       artist: 'Harry Styles',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273b46f74097655d9f353c6142d',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273b46f74097655d9f353c6142d',
       durationSeconds: 167,
       durationFormatted: '2:47',
     ),
@@ -498,8 +463,7 @@ class MusicImportService {
       title: 'Stay',
       artist: 'The Kid LAROI, Justin Bieber',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273449176378413b0a709971871',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273449176378413b0a709971871',
       durationSeconds: 141,
       durationFormatted: '2:21',
     ),
@@ -511,8 +475,7 @@ class MusicImportService {
       title: 'A Bar Song (Tipsy)',
       artist: 'Shaboozey',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b27393437340d8591f13ce60f1b2',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b27393437340d8591f13ce60f1b2',
       durationSeconds: 171,
       durationFormatted: '2:51',
     ),
@@ -521,8 +484,7 @@ class MusicImportService {
       title: 'Too Sweet',
       artist: 'Hozier',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273a5a73e6cf509533f524e9334',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273a5a73e6cf509533f524e9334',
       durationSeconds: 251,
       durationFormatted: '4:11',
     ),
@@ -531,8 +493,7 @@ class MusicImportService {
       title: 'Million Dollar Baby',
       artist: 'Tommy Richman',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273b98c5040ffc20251787c88c7',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273b98c5040ffc20251787c88c7',
       durationSeconds: 155,
       durationFormatted: '2:35',
     ),
@@ -541,8 +502,7 @@ class MusicImportService {
       title: 'Beautiful Things',
       artist: 'Benson Boone',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273c52a06ee526b14299b9cf995',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273c52a06ee526b14299b9cf995',
       durationSeconds: 180,
       durationFormatted: '3:00',
     ),
@@ -551,8 +511,7 @@ class MusicImportService {
       title: 'Gata Only',
       artist: 'FloyyMenor, Cris Mj',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b27318ff24aa508cf311d4eb3c4f',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b27318ff24aa508cf311d4eb3c4f',
       durationSeconds: 222,
       durationFormatted: '3:42',
     ),
@@ -564,8 +523,7 @@ class MusicImportService {
       title: 'Riptide',
       artist: 'Vance Joy',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b273ecb1ef0841961a8685e135e5',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b273ecb1ef0841961a8685e135e5',
       durationSeconds: 204,
       durationFormatted: '3:24',
     ),
@@ -574,8 +532,7 @@ class MusicImportService {
       title: 'Let Her Go',
       artist: 'Passenger',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b2735d4ff303b71ae757134da9e4',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b2735d4ff303b71ae757134da9e4',
       durationSeconds: 252,
       durationFormatted: '4:12',
     ),
@@ -584,8 +541,7 @@ class MusicImportService {
       title: 'Photograph',
       artist: 'Ed Sheeran',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b27313b3e37318a0c247b950bb3e',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b27313b3e37318a0c247b950bb3e',
       durationSeconds: 258,
       durationFormatted: '4:18',
     ),
@@ -594,8 +550,7 @@ class MusicImportService {
       title: 'Ho Hey',
       artist: 'The Lumineers',
       channelId: 'spotify',
-      thumbnailUrl:
-          'https://i.scdn.co/image/ab67616d0000b2734f66453916d7a46abf58e137',
+      thumbnailUrl: 'https://i.scdn.co/image/ab67616d0000b2734f66453916d7a46abf58e137',
       durationSeconds: 163,
       durationFormatted: '2:43',
     ),

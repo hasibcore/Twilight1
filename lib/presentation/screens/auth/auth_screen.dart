@@ -27,8 +27,7 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _showForgotPasswordDialog(BuildContext context, AuthProvider auth) {
-    final resetEmailController =
-        TextEditingController(text: _emailController.text.trim());
+    final resetEmailController = TextEditingController(text: _emailController.text.trim());
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
@@ -40,9 +39,7 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             const Icon(Icons.lock_reset, color: AppColors.primaryAccent),
             const SizedBox(width: 8),
-            Text('Reset Password',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context), fontSize: 18)),
+            Text('Reset Password', style: TextStyle(color: AppColors.textPrimary(context), fontSize: 18)),
           ],
         ),
         content: Column(
@@ -51,8 +48,7 @@ class _AuthScreenState extends State<AuthScreen> {
           children: [
             Text(
               'Enter your registered database email address to receive password reset instructions.',
-              style: TextStyle(
-                  color: AppColors.textSecondary(context), fontSize: 13),
+              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -62,14 +58,10 @@ class _AuthScreenState extends State<AuthScreen> {
               decoration: InputDecoration(
                 labelText: 'Email Address',
                 labelStyle: TextStyle(color: AppColors.textSecondary(context)),
-                prefixIcon: const Icon(Icons.email_outlined,
-                    color: AppColors.primaryAccent),
+                prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primaryAccent),
                 filled: true,
-                fillColor: isDark
-                    ? Colors.white.withValues(alpha: 0.05)
-                    : Colors.black.withValues(alpha: 0.04),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.04),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ],
@@ -77,8 +69,7 @@ class _AuthScreenState extends State<AuthScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: TextStyle(color: AppColors.textSecondary(context))),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary(context))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -105,13 +96,10 @@ class _AuthScreenState extends State<AuthScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryTextColor = AppColors.textPrimary(context);
     final secondaryTextColor = AppColors.textSecondary(context);
-    final inputFill = isDark
-        ? Colors.white.withValues(alpha: 0.06)
-        : Colors.black.withValues(alpha: 0.04);
+    final inputFill = isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.04);
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(
-          color: Theme.of(context).dividerColor.withValues(alpha: 0.2)),
+      borderSide: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.2)),
     );
 
     return Scaffold(
@@ -144,28 +132,20 @@ class _AuthScreenState extends State<AuthScreen> {
 
               // Firebase Cloud Database Badge
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.06)
-                      : AppColors.primary.withValues(alpha: 0.08),
+                  color: isDark ? Colors.white.withValues(alpha: 0.06) : AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: AppColors.primaryAccent.withValues(alpha: 0.3)),
+                  border: Border.all(color: AppColors.primaryAccent.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.cloud_done_outlined,
-                        size: 16, color: AppColors.primaryAccent),
+                    const Icon(Icons.cloud_done_outlined, size: 16, color: AppColors.primaryAccent),
                     const SizedBox(width: 6),
                     Text(
                       'Powered by Firebase & Local Users Table',
-                      style: TextStyle(
-                          color: isDark ? Colors.white70 : AppColors.primary,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600),
+                      style: TextStyle(color: isDark ? Colors.white70 : AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -179,24 +159,20 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: AppColors.error.withValues(alpha: 0.4)),
+                    border: Border.all(color: AppColors.error.withValues(alpha: 0.4)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline,
-                          color: AppColors.error, size: 20),
+                      const Icon(Icons.error_outline, color: AppColors.error, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           auth.errorMessage!,
-                          style:
-                              TextStyle(color: primaryTextColor, fontSize: 12),
+                          style: TextStyle(color: primaryTextColor, fontSize: 12),
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.close,
-                            size: 16, color: secondaryTextColor),
+                        icon: Icon(Icons.close, size: 16, color: secondaryTextColor),
                         onPressed: () => auth.clearError(),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -214,19 +190,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     color: Colors.green.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
-                    border:
-                        Border.all(color: Colors.green.withValues(alpha: 0.4)),
+                    border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle_outline,
-                          color: Colors.green, size: 20),
+                      const Icon(Icons.check_circle_outline, color: Colors.green, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           auth.successMessage!,
-                          style:
-                              TextStyle(color: primaryTextColor, fontSize: 12),
+                          style: TextStyle(color: primaryTextColor, fontSize: 12),
                         ),
                       ),
                     ],
@@ -244,8 +217,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: InputDecoration(
                     labelText: 'Full Name',
                     labelStyle: TextStyle(color: secondaryTextColor),
-                    prefixIcon: const Icon(Icons.person_outline,
-                        color: AppColors.primaryAccent),
+                    prefixIcon: const Icon(Icons.person_outline, color: AppColors.primaryAccent),
                     filled: true,
                     fillColor: inputFill,
                     border: inputBorder,
@@ -263,8 +235,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 decoration: InputDecoration(
                   labelText: 'Email Address',
                   labelStyle: TextStyle(color: secondaryTextColor),
-                  prefixIcon: const Icon(Icons.email_outlined,
-                      color: AppColors.primaryAccent),
+                  prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primaryAccent),
                   filled: true,
                   fillColor: inputFill,
                   border: inputBorder,
@@ -281,13 +252,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(color: secondaryTextColor),
-                  prefixIcon: const Icon(Icons.lock_outline,
-                      color: AppColors.primaryAccent),
+                  prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primaryAccent),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
                       color: secondaryTextColor,
                     ),
                     onPressed: () {
@@ -309,8 +277,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     onPressed: () => _showForgotPasswordDialog(context, auth),
                     child: const Text(
                       'Forgot Password?',
-                      style: TextStyle(
-                          color: AppColors.primaryAccent, fontSize: 12),
+                      style: TextStyle(color: AppColors.primaryAccent, fontSize: 12),
                     ),
                   ),
                 ),
@@ -326,8 +293,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                     elevation: 2,
                   ),
                   onPressed: auth.isLoading
@@ -338,20 +304,16 @@ class _AuthScreenState extends State<AuthScreen> {
                           final name = _nameController.text.trim();
 
                           if (_isSignUp) {
-                            final success = await auth.registerWithEmail(
-                                email, password, name);
+                            final success = await auth.registerWithEmail(email, password, name);
                             if (success && context.mounted) {
-                              Future.delayed(const Duration(milliseconds: 600),
-                                  () {
+                              Future.delayed(const Duration(milliseconds: 600), () {
                                 if (context.mounted) Navigator.pop(context);
                               });
                             }
                           } else {
-                            final success =
-                                await auth.signInWithEmail(email, password);
+                            final success = await auth.signInWithEmail(email, password);
                             if (success && context.mounted) {
-                              Future.delayed(const Duration(milliseconds: 600),
-                                  () {
+                              Future.delayed(const Duration(milliseconds: 600), () {
                                 if (context.mounted) Navigator.pop(context);
                               });
                             }
@@ -361,13 +323,11 @@ class _AuthScreenState extends State<AuthScreen> {
                       ? const SizedBox(
                           width: 22,
                           height: 22,
-                          child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
                           _isSignUp ? 'Create Free Account' : 'Sign In',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                         ),
                 ),
               ),
@@ -384,16 +344,12 @@ class _AuthScreenState extends State<AuthScreen> {
                     style: const TextStyle(fontSize: 13),
                     children: [
                       TextSpan(
-                        text: _isSignUp
-                            ? 'Already have an account? '
-                            : "Don't have an account? ",
+                        text: _isSignUp ? 'Already have an account? ' : "Don't have an account? ",
                         style: TextStyle(color: secondaryTextColor),
                       ),
                       TextSpan(
                         text: _isSignUp ? 'Sign In' : 'Sign Up',
-                        style: const TextStyle(
-                            color: AppColors.primaryAccent,
-                            fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: AppColors.primaryAccent, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -403,23 +359,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
               Row(
                 children: [
-                  Expanded(
-                      child: Divider(
-                          color: Theme.of(context)
-                              .dividerColor
-                              .withValues(alpha: 0.15))),
+                  Expanded(child: Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.15))),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('OR',
-                        style: TextStyle(
-                            color: secondaryTextColor.withValues(alpha: 0.6),
-                            fontSize: 11)),
+                    child: Text('OR', style: TextStyle(color: secondaryTextColor.withValues(alpha: 0.6), fontSize: 11)),
                   ),
-                  Expanded(
-                      child: Divider(
-                          color: Theme.of(context)
-                              .dividerColor
-                              .withValues(alpha: 0.15))),
+                  Expanded(child: Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.15))),
                 ],
               ),
               const SizedBox(height: 18),
@@ -431,17 +376,11 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: primaryTextColor,
-                    side: BorderSide(
-                        color: Theme.of(context)
-                            .dividerColor
-                            .withValues(alpha: 0.3)),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24)),
+                    side: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.3)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                   ),
-                  icon: const Icon(Icons.g_mobiledata,
-                      size: 28, color: AppColors.primaryAccent),
-                  label: const Text('Continue with Google',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  icon: const Icon(Icons.g_mobiledata, size: 28, color: AppColors.primaryAccent),
+                  label: const Text('Continue with Google', style: TextStyle(fontWeight: FontWeight.w600)),
                   onPressed: auth.isLoading
                       ? null
                       : () async {

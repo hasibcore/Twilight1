@@ -4,8 +4,7 @@ import 'package:melody_tube/presentation/widgets/app_logo.dart';
 
 void main() {
   group('Twilight App UI Widget Tests', () {
-    testWidgets('AppLogo renders icon without text when showText is false',
-        (WidgetTester tester) async {
+    testWidgets('AppLogo renders icon without text when showText is false', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -23,8 +22,7 @@ void main() {
       expect(find.text('Twilight'), findsNothing);
     });
 
-    testWidgets('AppLogo renders Twilight title text when showText is true',
-        (WidgetTester tester) async {
+    testWidgets('AppLogo renders Twilight title text when showText is true', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -42,8 +40,7 @@ void main() {
       expect(find.text('Twilight'), findsOneWidget);
     });
 
-    testWidgets('AppLogo scales appropriately with custom size',
-        (WidgetTester tester) async {
+    testWidgets('AppLogo scales appropriately with custom size', (WidgetTester tester) async {
       const customSize = 64.0;
 
       await tester.pumpWidget(

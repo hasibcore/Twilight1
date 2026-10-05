@@ -6,8 +6,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       const MethodChannel('plugins.flutter.io/path_provider'),
       (MethodCall methodCall) async {
         if (methodCall.method == 'getApplicationDocumentsDirectory' ||
@@ -26,8 +25,7 @@ void main() {
         songId: 'test_song',
       );
       expect(uri, isNotNull);
-      expect(
-          uri.toString(), equals('https://i.ytimg.com/vi/test/hqdefault.jpg'));
+      expect(uri.toString(), equals('https://i.ytimg.com/vi/test/hqdefault.jpg'));
     });
 
     test('getArtworkUri handles empty or null thumbnail gracefully', () async {

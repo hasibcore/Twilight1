@@ -77,12 +77,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
             // Mini Player floating directly above bottom navigation
             if (hasActiveSong)
-              Positioned(
+              const Positioned(
                 left: 0,
                 right: 0,
-                bottom: MediaQuery.of(context).padding.bottom +
-                    kBottomNavigationBarHeight,
-                child: const MiniPlayerWidget(),
+                bottom: 0,
+                child: MiniPlayerWidget(),
               ),
           ],
         ),

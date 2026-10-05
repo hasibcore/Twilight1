@@ -33,8 +33,7 @@ class UserDatabaseService {
     _cachedUsers = users;
     try {
       await LocalStorageService.setString(_usersTableKey, jsonEncode(users));
-      AppLogger.info(
-          'Users database table updated (${users.length} registered users)');
+      AppLogger.info('Users database table updated (${users.length} registered users)');
     } catch (e) {
       AppLogger.error('Failed to persist users database table: $e');
     }
@@ -44,8 +43,7 @@ class UserDatabaseService {
   static Map<String, dynamic>? findUserByEmail(String email) {
     final clean = email.trim().toLowerCase();
     final users = getAllUsers();
-    final index = users.indexWhere(
-        (u) => (u['email'] as String? ?? '').toLowerCase() == clean);
+    final index = users.indexWhere((u) => (u['email'] as String? ?? '').toLowerCase() == clean);
     return index != -1 ? Map<String, dynamic>.from(users[index]) : null;
   }
 
@@ -54,18 +52,6 @@ class UserDatabaseService {
     final users = getAllUsers();
     final index = users.indexWhere((u) => (u['uid'] as String? ?? '') == uid);
     return index != -1 ? Map<String, dynamic>.from(users[index]) : null;
-  }
-
-  /// Computes a salted cryptographic hash for password security
-  static String _hashPassword(String password) {
-    final bytes = utf8.encode('twilight_salt_v1_${password.trim()}');
-    int hash1 = 0xcbf29ce484222325;
-    int hash2 = 0x811c9dc5;
-    for (final b in bytes) {
-      hash1 = ((hash1 ^ b) * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF;
-      hash2 = ((hash2 ^ b) * 0x01000193) & 0xFFFFFFFF;
-    }
-    return 'twhash_${hash1.toRadixString(16)}_${hash2.toRadixString(16)}';
   }
 
   /// Registers a new user into the database table.
@@ -78,24 +64,20 @@ class UserDatabaseService {
   }) async {
     final cleanEmail = email.trim().toLowerCase();
     final cleanPass = password.trim();
-    final cleanName = displayName.trim().isNotEmpty
-        ? displayName.trim()
-        : cleanEmail.split('@').first;
+    final cleanName = displayName.trim().isNotEmpty ? displayName.trim() : cleanEmail.split('@').first;
 
     final existing = findUserByEmail(cleanEmail);
     if (existing != null) {
-      throw Exception(
-          'An account with email "$cleanEmail" already exists. Please sign in instead.');
+      throw Exception('An account with email "$cleanEmail" already exists. Please sign in instead.');
     }
 
     final nowIso = DateTime.now().toIso8601String();
-    final uid =
-        'usr_${DateTime.now().millisecondsSinceEpoch}_${cleanEmail.hashCode.abs().toRadixString(16)}';
+    final uid = 'usr_${DateTime.now().millisecondsSinceEpoch}_${cleanEmail.hashCode.abs().toRadixString(16)}';
 
     final newUser = <String, dynamic>{
       'uid': uid,
       'email': cleanEmail,
-      'password': _hashPassword(cleanPass), // Salted hash for secure storage
+      'password': cleanPass, // Checked during login: typed password must match stored
       'displayName': cleanName,
       'avatarUrl': avatarUrl ?? '',
       'createdAt': nowIso,
@@ -121,27 +103,19 @@ class UserDatabaseService {
 
     final user = findUserByEmail(cleanEmail);
     if (user == null) {
-      throw Exception(
-          'No account found for "$cleanEmail". Please sign up first.');
+      throw Exception('No account found for "$cleanEmail". Please sign up first.');
     }
 
     final storedPassword = user['password'] as String? ?? '';
-    final hashedInput = _hashPassword(cleanPass);
-    final isMatch =
-        storedPassword == hashedInput || storedPassword == cleanPass;
-    if (!isMatch) {
-      throw Exception(
-          'Incorrect password. The password you typed does not match our database records.');
+    if (storedPassword != cleanPass) {
+      throw Exception('Incorrect password. The password you typed does not match our database records.');
     }
 
-    // Update last login timestamp and auto-migrate legacy plain text password
+    // Update last login timestamp
     final users = List<Map<String, dynamic>>.from(getAllUsers());
     final index = users.indexWhere((u) => (u['uid'] as String?) == user['uid']);
     if (index != -1) {
       users[index]['lastLoginAt'] = DateTime.now().toIso8601String();
-      if (storedPassword == cleanPass) {
-        users[index]['password'] = hashedInput;
-      }
       await _persistUsers(users);
     }
 
@@ -178,11 +152,7 @@ class UserDatabaseService {
     if (user == null) {
       throw Exception('User account not found.');
     }
-
-    final storedPassword = user['password'] as String? ?? '';
-    final hashedCurrent = _hashPassword(currentPassword.trim());
-    if (storedPassword != hashedCurrent &&
-        storedPassword != currentPassword.trim()) {
+    if ((user['password'] as String? ?? '') != currentPassword.trim()) {
       throw Exception('Current password does not match.');
     }
     if (newPassword.trim().length < 6) {
@@ -190,10 +160,9 @@ class UserDatabaseService {
     }
 
     final users = List<Map<String, dynamic>>.from(getAllUsers());
-    final index = users.indexWhere(
-        (u) => (u['email'] as String? ?? '').toLowerCase() == cleanEmail);
+    final index = users.indexWhere((u) => (u['email'] as String? ?? '').toLowerCase() == cleanEmail);
     if (index != -1) {
-      users[index]['password'] = _hashPassword(newPassword.trim());
+      users[index]['password'] = newPassword.trim();
       await _persistUsers(users);
     }
   }

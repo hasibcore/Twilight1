@@ -27,8 +27,7 @@ class MockMusicRepository implements MusicRepository {
   Future<List<Song>> getFavorites() async => favorites;
 
   @override
-  Future<bool> isFavorite(String songId) async =>
-      favorites.any((s) => s.id == songId);
+  Future<bool> isFavorite(String songId) async => favorites.any((s) => s.id == songId);
 
   @override
   Future<void> toggleFavorite(Song song) async {
@@ -109,8 +108,7 @@ void main() {
   });
 
   group('PlayerProvider Single-Track Integrity Tests', () {
-    test('playSong sets currentSong accurately and avoids song mismatches',
-        () async {
+    test('playSong sets currentSong accurately and avoids song mismatches', () async {
       await playerProvider.playSong(songA, newQueue: [songA, songB]);
 
       expect(playerProvider.currentSong?.id, equals('dQw4w9WgXcQ'));
@@ -126,8 +124,7 @@ void main() {
       expect(playerProvider.currentIndex, equals(1));
     });
 
-    test('playSong sanitizes full YouTube URLs into clean 11-char video IDs',
-        () async {
+    test('playSong sanitizes full YouTube URLs into clean 11-char video IDs', () async {
       const urlSong = Song(
         id: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         title: 'Rickroll',
@@ -190,9 +187,7 @@ void main() {
       expect(playerProvider.currentSong, isNotNull);
     });
 
-    test(
-        'Next song starts playback without premature pause state and pauses when pause() is called',
-        () async {
+    test('Next song starts playback without premature pause state and pauses when pause() is called', () async {
       await playerProvider.playSong(songA, newQueue: [songA, songB]);
       expect(playerProvider.isPlaying, isTrue);
       expect(playerProvider.currentIndex, equals(0));
@@ -219,3 +214,4 @@ void main() {
     });
   });
 }
+

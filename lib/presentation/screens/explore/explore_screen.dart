@@ -22,50 +22,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
   List<Song> _genreSongs = [];
 
   final List<Map<String, dynamic>> _genreData = [
-    {
-      'title': 'Pop',
-      'gradient': const [Color(0xFFE91E63), Color(0xFFC2185B)]
-    },
-    {
-      'title': 'Rock',
-      'gradient': const [Color(0xFFD32F2F), Color(0xFF7B1FA2)]
-    },
-    {
-      'title': 'Hip-Hop',
-      'gradient': const [Color(0xFFFF9800), Color(0xFFE65100)]
-    },
-    {
-      'title': 'EDM',
-      'gradient': const [Color(0xFF00BCD4), Color(0xFF0097A7)]
-    },
-    {
-      'title': 'Classical',
-      'gradient': const [Color(0xFF5D4037), Color(0xFF3E2723)]
-    },
-    {
-      'title': 'Lo-fi',
-      'gradient': const [Color(0xFF7E57C2), Color(0xFF512DA8)]
-    },
-    {
-      'title': 'Bollywood',
-      'gradient': const [Color(0xFFFF5722), Color(0xFFBF360C)]
-    },
-    {
-      'title': 'Bangla',
-      'gradient': const [Color(0xFF00897B), Color(0xFF004D40)]
-    },
-    {
-      'title': 'K-pop',
-      'gradient': const [Color(0xFFEC407A), Color(0xFF880E4F)]
-    },
-    {
-      'title': 'Instrumental',
-      'gradient': const [Color(0xFF455A64), Color(0xFF263238)]
-    },
-    {
-      'title': 'Islamic/Nasheed',
-      'gradient': const [Color(0xFF2E7D32), Color(0xFF1B5E20)]
-    },
+    {'title': 'Pop', 'gradient': const [Color(0xFFE91E63), Color(0xFFC2185B)]},
+    {'title': 'Rock', 'gradient': const [Color(0xFFD32F2F), Color(0xFF7B1FA2)]},
+    {'title': 'Hip-Hop', 'gradient': const [Color(0xFFFF9800), Color(0xFFE65100)]},
+    {'title': 'EDM', 'gradient': const [Color(0xFF00BCD4), Color(0xFF0097A7)]},
+    {'title': 'Classical', 'gradient': const [Color(0xFF5D4037), Color(0xFF3E2723)]},
+    {'title': 'Lo-fi', 'gradient': const [Color(0xFF7E57C2), Color(0xFF512DA8)]},
+    {'title': 'Bollywood', 'gradient': const [Color(0xFFFF5722), Color(0xFFBF360C)]},
+    {'title': 'Bangla', 'gradient': const [Color(0xFF00897B), Color(0xFF004D40)]},
+    {'title': 'K-pop', 'gradient': const [Color(0xFFEC407A), Color(0xFF880E4F)]},
+    {'title': 'Instrumental', 'gradient': const [Color(0xFF455A64), Color(0xFF263238)]},
+    {'title': 'Islamic/Nasheed', 'gradient': const [Color(0xFF2E7D32), Color(0xFF1B5E20)]},
   ];
 
   Future<void> _loadGenreSongs(String genre) async {
@@ -136,8 +103,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final hasCurrentSong =
-        context.select<PlayerProvider, bool>((p) => p.currentSong != null);
+    final hasCurrentSong = context.select<PlayerProvider, bool>((p) => p.currentSong != null);
     final bottomPadding = hasCurrentSong ? 100.0 : 40.0;
 
     return Scaffold(
@@ -205,18 +171,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
             // Active Genre view or Genre selection grid
             if (_selectedGenre != null) ...[
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
                         '$_selectedGenre Hits (${_genreSongs.length})',
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary(context)),
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: AppColors.textPrimary(context)),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -225,18 +187,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryAccent,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         icon: const Icon(Icons.play_arrow_rounded, size: 18),
-                        label: const Text('Play All',
-                            style: TextStyle(fontSize: 12)),
+                        label: const Text('Play All', style: TextStyle(fontSize: 12)),
                         onPressed: () {
-                          context.read<PlayerProvider>().playSong(
-                              _genreSongs.first,
-                              newQueue: _genreSongs);
+                          context.read<PlayerProvider>().playSong(_genreSongs.first, newQueue: _genreSongs);
                         },
                       ),
                     const SizedBox(width: 8),
@@ -247,9 +204,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           _genreSongs = [];
                         });
                       },
-                      child: Text('Clear',
-                          style: TextStyle(
-                              color: AppColors.textSecondary(context))),
+                      child: Text('Clear', style: TextStyle(color: AppColors.textSecondary(context))),
                     ),
                   ],
                 ),
@@ -258,8 +213,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(32),
-                    child: CircularProgressIndicator(
-                        color: AppColors.primaryAccent),
+                    child: CircularProgressIndicator(color: AppColors.primaryAccent),
                   ),
                 )
               else if (_genreSongs.isEmpty)
@@ -270,8 +224,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       children: [
                         Text(
                           'No tracks found for "$_selectedGenre".',
-                          style: TextStyle(
-                              color: AppColors.textSecondary(context)),
+                          style: TextStyle(color: AppColors.textSecondary(context)),
                         ),
                         const SizedBox(height: 12),
                         ElevatedButton.icon(
@@ -348,8 +301,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       alignment: Alignment.centerLeft,
                       child: Text(
                         title,

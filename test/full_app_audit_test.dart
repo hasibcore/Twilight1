@@ -15,8 +15,7 @@ class MockMusicRepo implements MusicRepository {
   final List<String> _searchHistory = [];
 
   @override
-  Future<bool> isFavorite(String songId) async =>
-      _favorites.any((s) => s.id == songId);
+  Future<bool> isFavorite(String songId) async => _favorites.any((s) => s.id == songId);
 
   @override
   Future<List<Playlist>> getUserPlaylists() async => List.from(_playlists);
@@ -61,8 +60,7 @@ class MockMusicRepo implements MusicRepository {
   Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
     final idx = _playlists.indexWhere((p) => p.id == playlistId);
     if (idx != -1) {
-      final updated = List<Song>.from(_playlists[idx].songs)
-        ..removeWhere((s) => s.id == songId);
+      final updated = List<Song>.from(_playlists[idx].songs)..removeWhere((s) => s.id == songId);
       _playlists[idx] = _playlists[idx].copyWith(songs: updated);
     }
   }
@@ -118,23 +116,18 @@ void main() {
   });
 
   group('PlaylistProvider Synchronous & Async Hardening', () {
-    test(
-        'createPlaylist returns new Playlist and updates in-memory immediately',
-        () async {
+    test('createPlaylist returns new Playlist and updates in-memory immediately', () async {
       final repo = MockMusicRepo();
       final prov = PlaylistProvider(musicRepository: repo);
       await prov.loadAll();
 
-      final created =
-          await prov.createPlaylist('Study Beats', description: 'Deep focus');
+      final created = await prov.createPlaylist('Study Beats', description: 'Deep focus');
       expect(created.title, equals('Study Beats'));
       expect(prov.playlists.length, equals(1));
       expect(prov.playlists.first.id, equals(created.id));
     });
 
-    test(
-        'addSongToPlaylist and removeSongFromPlaylist update memory synchronously',
-        () async {
+    test('addSongToPlaylist and removeSongFromPlaylist update memory synchronously', () async {
       final repo = MockMusicRepo();
       final prov = PlaylistProvider(musicRepository: repo);
       await prov.loadAll();
@@ -163,27 +156,22 @@ void main() {
   });
 
   group('PlayerProvider Settings & Feature Persistence', () {
-    test('Audio quality and equalizer presets persist to local storage',
-        () async {
+    test('Audio quality and equalizer presets persist to local storage', () async {
       final repo = MockMusicRepo();
       final player = PlayerProvider(musicRepository: repo);
 
       player.setAudioQuality('Very High (320 kbps - Lossless)');
       expect(player.audioQuality, equals('Very High (320 kbps - Lossless)'));
-      expect(LocalStorageService.getString('mt_audio_quality'),
-          equals('Very High (320 kbps - Lossless)'));
+      expect(LocalStorageService.getString('mt_audio_quality'), equals('Very High (320 kbps - Lossless)'));
 
       player.setEqualizerPreset('Bass Boost (Punchy Sub-Bass)');
       expect(player.equalizerPreset, equals('Bass Boost (Punchy Sub-Bass)'));
-      expect(LocalStorageService.getString('mt_equalizer_preset'),
-          equals('Bass Boost (Punchy Sub-Bass)'));
+      expect(LocalStorageService.getString('mt_equalizer_preset'), equals('Bass Boost (Punchy Sub-Bass)'));
 
       // Construct a new PlayerProvider and verify it loads the persisted settings
       final restoredPlayer = PlayerProvider(musicRepository: repo);
-      expect(restoredPlayer.audioQuality,
-          equals('Very High (320 kbps - Lossless)'));
-      expect(restoredPlayer.equalizerPreset,
-          equals('Bass Boost (Punchy Sub-Bass)'));
+      expect(restoredPlayer.audioQuality, equals('Very High (320 kbps - Lossless)'));
+      expect(restoredPlayer.equalizerPreset, equals('Bass Boost (Punchy Sub-Bass)'));
     });
   });
 

@@ -31,14 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Artist> _popularArtists = [];
   String _selectedMood = 'All';
 
-  final List<String> _moodTags = [
-    'All',
-    'Energize',
-    'Workout',
-    'Relax',
-    'Focus',
-    'Commute'
-  ];
+  final List<String> _moodTags = ['All', 'Energize', 'Workout', 'Relax', 'Focus', 'Commute'];
   final Map<String, List<Song>> _moodCache = {};
   List<Song> _moodSongs = [];
 
@@ -171,8 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final queryMap = {
       '✨ For You (Taste Match)': 'top viral hits popular songs 2026',
       '🔥 Heavy Repeat': 'most played trending hit songs',
-      '🌙 Late Night Chill':
-          'late night chill aesthetic songs Billie Eilish The Weeknd',
+      '🌙 Late Night Chill': 'late night chill aesthetic songs Billie Eilish The Weeknd',
       '🎧 Lo-Fi & Focus': 'lofi beats study chill chillhop',
       '💖 Romantic Melodies': 'romantic love songs acoustic playlist',
       '🇧🇩 Bengali Mix': 'top bengali hit songs bangla playlist',
@@ -208,8 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ? _trending.first
         : const Song(
             id: 'mG4PvhXkKq8',
-            title:
-                'Best 50 Trending TikTok Songs 2026 🎧 || Hot Hits Music Spotify',
+            title: 'Best 50 Trending TikTok Songs 2026 🎧 || Hot Hits Music Spotify',
             artist: 'JsVibes Music · Trending Top Track',
             channelId: 'jsvibes',
             thumbnailUrl: 'https://i.ytimg.com/vi/mG4PvhXkKq8/hqdefault.jpg',
@@ -230,8 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.notifications_none,
-                size: 26, color: AppColors.icon(context)),
+            icon: Icon(Icons.notifications_none, size: 26, color: AppColors.icon(context)),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('No new notifications')),
@@ -262,8 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 48,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   itemCount: _moodTags.length,
                   itemBuilder: (_, index) {
                     final tag = _moodTags[index];
@@ -275,9 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? Icon(
                                 _moodIcons[tag] ?? Icons.music_note,
                                 size: 16,
-                                color: isSelected
-                                    ? Colors.white
-                                    : AppColors.primaryAccent,
+                                color: isSelected ? Colors.white : AppColors.primaryAccent,
                               )
                             : null,
                         label: Text(tag),
@@ -285,12 +272,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         selectedColor: AppColors.primary,
                         backgroundColor: AppColors.surfaceVariant(context),
                         labelStyle: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : AppColors.textSecondary(context),
+                          color: isSelected ? Colors.white : AppColors.textSecondary(context),
                           fontSize: 13,
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                         onSelected: (selected) {
                           if (selected) {
@@ -338,78 +322,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Trending Music
                 if (_trending.isNotEmpty) ...[
                   const SizedBox(height: 24),
-                  _buildSectionHeader(
-                      AppStrings.trendingMusic, 'Global Charts'),
+                  _buildSectionHeader(AppStrings.trendingMusic, 'Global Charts'),
                   _buildSongHorizontalList(_trending),
                 ],
 
                 // Recommended For You
                 if (_recommended.isNotEmpty) ...[
                   const SizedBox(height: 24),
-                  _buildSectionHeader(
-                      AppStrings.recommended, 'Based on your taste'),
+                  _buildSectionHeader(AppStrings.recommended, 'Based on your taste'),
                   _buildSongHorizontalList(_recommended),
                 ],
 
                 // Popular Artists
                 if (_popularArtists.isNotEmpty) ...[
                   const SizedBox(height: 24),
-                  _buildSectionHeader(
-                      AppStrings.popularArtists, 'Top creators'),
+                  _buildSectionHeader(AppStrings.popularArtists, 'Top creators'),
                   _buildArtistHorizontalList(_popularArtists),
-                ],
-
-                // Empty / Offline fallback state if no sections loaded
-                if (!_isLoading &&
-                    _quickPicks.isEmpty &&
-                    _trending.isEmpty &&
-                    _recommended.isEmpty &&
-                    _popularArtists.isEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 48, horizontal: 24),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.wifi_off_rounded,
-                              size: 54, color: AppColors.iconMuted(context)),
-                          const SizedBox(height: 14),
-                          Text(
-                            'Unable to load music feed',
-                            style: TextStyle(
-                              color: AppColors.textPrimary(context),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Check your internet connection or tap retry below.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: AppColors.textSecondary(context),
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton.icon(
-                            onPressed: _loadHomeData,
-                            icon: const Icon(Icons.refresh_rounded, size: 18),
-                            label: const Text('Retry Connection'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ],
             ],
@@ -468,16 +396,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: isWide ? 170 : 130,
                         height: isWide ? 170 : 130,
                         color: Colors.white10,
-                        child: const Icon(Icons.music_note,
-                            color: Colors.white38, size: 48),
+                        child: const Icon(Icons.music_note, color: Colors.white38, size: 48),
                       ),
                     )
                   : Container(
                       width: isWide ? 170 : 130,
                       height: isWide ? 170 : 130,
                       color: Colors.white10,
-                      child: const Icon(Icons.music_note,
-                          color: Colors.white38, size: 48),
+                      child: const Icon(Icons.music_note, color: Colors.white38, size: 48),
                     ),
             ),
           );
@@ -526,8 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
@@ -535,8 +460,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: const Icon(Icons.play_arrow_rounded, size: 22),
                     label: const Text(
                       'Play Now',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                     onPressed: () {
                       playerProv.playSong(featuredSong, newQueue: _trending);
@@ -547,18 +471,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.white.withValues(alpha: 0.08),
                       side: const BorderSide(color: Colors.white24),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                     ),
-                    onPressed: () =>
-                        _showAddToPlaylistDialog(context, featuredSong),
+                    onPressed: () => _showAddToPlaylistDialog(context, featuredSong),
                     child: const Text(
                       'Add to Playlist',
-                      style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -609,69 +530,59 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFF4081).withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color:
-                                const Color(0xFFFF4081).withValues(alpha: 0.4)),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.auto_awesome,
-                              color: Color(0xFFFF4081), size: 12),
-                          SizedBox(width: 4),
-                          Text(
-                            'DYNAMIC TASTE MATCH',
-                            style: TextStyle(
-                              color: Color(0xFFFF4081),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.8,
-                            ),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF4081).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFFF4081).withValues(alpha: 0.4)),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.auto_awesome, color: Color(0xFFFF4081), size: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          'DYNAMIC TASTE MATCH',
+                          style: TextStyle(
+                            color: Color(0xFFFF4081),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: Colors.white10,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'Global Pop',
-                        style: TextStyle(color: Colors.white70, fontSize: 11),
-                      ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
-                ),
+                    child: const Text(
+                      'Global Pop',
+                      style: TextStyle(color: Colors.white70, fontSize: 11),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   side: const BorderSide(color: Colors.white24),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
                 icon: const Icon(Icons.refresh_rounded, size: 14),
-                label:
-                    const Text('Refresh Mix', style: TextStyle(fontSize: 12)),
+                label: const Text('Refresh Mix', style: TextStyle(fontSize: 12)),
                 onPressed: () {
                   _tasteCache.remove(_selectedTaste);
                   _loadTasteSongs(_selectedTaste);
@@ -719,8 +630,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     labelStyle: TextStyle(
                       color: isSelected ? Colors.white : Colors.white70,
                       fontSize: 12,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                     onSelected: (val) {
                       if (val) {
@@ -739,8 +649,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Padding(
               padding: EdgeInsets.all(24),
               child: Center(
-                child:
-                    CircularProgressIndicator(color: AppColors.primaryAccent),
+                child: CircularProgressIndicator(color: AppColors.primaryAccent),
               ),
             )
           else if (_tasteSongs.isNotEmpty)
@@ -773,10 +682,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         const Text(
                           'Add to Playlist',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         TextButton.icon(
                           icon: const Icon(Icons.add, size: 18),
@@ -794,10 +700,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Divider(color: Colors.white10),
                   if (playlistProv.playlists.isEmpty)
                     const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                      child: Text('No playlists created yet',
-                          style: TextStyle(color: Colors.white54)),
+                      padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                      child: Text('No playlists created yet', style: TextStyle(color: Colors.white54)),
                     )
                   else
                     Flexible(
@@ -807,10 +711,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (_, index) {
                           final pl = playlistProv.playlists[index];
                           return ListTile(
-                            leading: const Icon(Icons.queue_music,
-                                color: AppColors.primaryAccent),
-                            title: Text(pl.title,
-                                style: const TextStyle(color: Colors.white)),
+                            leading: const Icon(Icons.queue_music, color: AppColors.primaryAccent),
+                            title: Text(pl.title, style: const TextStyle(color: Colors.white)),
                             onTap: () {
                               playlistProv.addSongToPlaylist(pl.id, song);
                               Navigator.pop(ctx);
@@ -836,8 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return const Column(
         children: [
           SizedBox(height: 40),
-          Center(
-              child: CircularProgressIndicator(color: AppColors.primaryAccent)),
+          Center(child: CircularProgressIndicator(color: AppColors.primaryAccent)),
           SizedBox(height: 40),
         ],
       );
@@ -895,8 +796,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.black.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(_moodIcons[_selectedMood] ?? Icons.music_note,
-                    color: Colors.white, size: 32),
+                child: Icon(_moodIcons[_selectedMood] ?? Icons.music_note, color: Colors.white, size: 32),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -905,16 +805,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       '$_selectedMood Mix',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _moodSubtitles[_selectedMood] ?? 'Curated for you',
-                      style:
-                          const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                   ],
                 ),
@@ -947,12 +843,9 @@ class _HomeScreenState extends State<HomeScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          itemCount:
-              _moodSongs.length > 5 ? _moodSongs.length - 5 : _moodSongs.length,
+          itemCount: _moodSongs.length > 5 ? _moodSongs.length - 5 : _moodSongs.length,
           itemBuilder: (_, index) {
-            final song = _moodSongs.length > 5
-                ? _moodSongs[index + 5]
-                : _moodSongs[index];
+            final song = _moodSongs.length > 5 ? _moodSongs[index + 5] : _moodSongs[index];
             return SongCard(
               song: song,
               queueContext: _moodSongs,

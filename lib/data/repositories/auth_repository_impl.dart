@@ -115,8 +115,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserProfile> registerWithEmail(
-      String email, String password, String name) async {
+  Future<UserProfile> registerWithEmail(String email, String password, String name) async {
     // 1. Register into persistent user database table (enforces unique email)
     final dbUser = await UserDatabaseService.registerUser(
       email: email,

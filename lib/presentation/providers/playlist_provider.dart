@@ -20,11 +20,9 @@ class PlaylistProvider extends ChangeNotifier {
   List<Song> get recentlyPlayed => _recentlyPlayed;
   bool get isLoading => _isLoading;
 
-  Future<void> loadAll({bool silent = false}) async {
-    if (!silent) {
-      _isLoading = true;
-      notifyListeners();
-    }
+  Future<void> loadAll() async {
+    _isLoading = true;
+    notifyListeners();
 
     try {
       final results = await Future.wait([
@@ -39,16 +37,13 @@ class PlaylistProvider extends ChangeNotifier {
     } catch (_) {
       // Retain existing state if load encounters an error
     } finally {
-      if (!silent) {
-        _isLoading = false;
-      }
+      _isLoading = false;
       notifyListeners();
     }
   }
 
   Future<Playlist> createPlaylist(String title, {String? description}) async {
-    final newPl =
-        await musicRepository.createPlaylist(title, description: description);
+    final newPl = await musicRepository.createPlaylist(title, description: description);
     _playlists.insert(0, newPl);
     notifyListeners();
     return newPl;
@@ -79,42 +74,24 @@ class PlaylistProvider extends ChangeNotifier {
       }
     }
     await musicRepository.addSongToPlaylist(playlistId, song);
-    await loadAll(silent: true);
+    await loadAll();
   }
 
   Future<void> removeSongFromPlaylist(String playlistId, String songId) async {
     final plIndex = _playlists.indexWhere((p) => p.id == playlistId);
     if (plIndex != -1) {
-      final updated = List<Song>.from(_playlists[plIndex].songs)
-        ..removeWhere((s) => s.id == songId);
+      final updated = List<Song>.from(_playlists[plIndex].songs)..removeWhere((s) => s.id == songId);
       _playlists[plIndex] = _playlists[plIndex].copyWith(songs: updated);
       notifyListeners();
     }
     await musicRepository.removeSongFromPlaylist(playlistId, songId);
-    await loadAll(silent: true);
+    await loadAll();
   }
 
   Future<void> toggleFavorite(Song song) async {
-    final wasFav = _favorites.any((s) => s.id == song.id);
-    if (wasFav) {
-      _favorites = _favorites.where((s) => s.id != song.id).toList();
-    } else {
-      _favorites = [..._favorites, song];
-    }
+    await musicRepository.toggleFavorite(song);
+    _favorites = await musicRepository.getFavorites();
     notifyListeners();
-
-    try {
-      await musicRepository.toggleFavorite(song);
-      _favorites = await musicRepository.getFavorites();
-      notifyListeners();
-    } catch (_) {
-      if (wasFav) {
-        _favorites = [..._favorites, song];
-      } else {
-        _favorites = _favorites.where((s) => s.id != song.id).toList();
-      }
-      notifyListeners();
-    }
   }
 
   bool isSongFavorite(String songId) {
@@ -125,20 +102,5 @@ class PlaylistProvider extends ChangeNotifier {
     await musicRepository.clearRecentlyPlayed();
     _recentlyPlayed = [];
     notifyListeners();
-  }
-
-  bool _isDisposed = false;
-
-  @override
-  void notifyListeners() {
-    if (!_isDisposed) {
-      super.notifyListeners();
-    }
-  }
-
-  @override
-  void dispose() {
-    _isDisposed = true;
-    super.dispose();
   }
 }

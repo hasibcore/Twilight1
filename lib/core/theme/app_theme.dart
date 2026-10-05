@@ -41,8 +41,7 @@ class AppTheme {
         unselectedItemColor: AppColors.textTertiaryDark,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle:
-            TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
         unselectedLabelStyle: TextStyle(fontSize: 12),
       ),
       sliderTheme: SliderThemeData(
@@ -56,14 +55,12 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceVariantDark,
-        hintStyle:
-            const TextStyle(color: AppColors.textSecondaryDark, fontSize: 14),
+        hintStyle: const TextStyle(color: AppColors.textSecondaryDark, fontSize: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
     );
   }
@@ -105,8 +102,7 @@ class AppTheme {
         unselectedItemColor: AppColors.textSecondaryLight,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle:
-            TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        selectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
         unselectedLabelStyle: TextStyle(fontSize: 12),
       ),
       sliderTheme: SliderThemeData(
@@ -118,46 +114,35 @@ class AppTheme {
         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
       ),
       textTheme: const TextTheme(
-        displayLarge: TextStyle(
-            color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold),
-        headlineMedium: TextStyle(
-            color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold),
-        titleLarge: TextStyle(
-            color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold),
-        titleMedium: TextStyle(
-            color: AppColors.textPrimaryLight, fontWeight: FontWeight.w600),
-        titleSmall: TextStyle(
-            color: AppColors.textPrimaryLight, fontWeight: FontWeight.w500),
+        displayLarge: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold),
+        headlineMedium: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.bold),
+        titleMedium: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.w600),
+        titleSmall: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.w500),
         bodyLarge: TextStyle(color: AppColors.textPrimaryLight),
         bodyMedium: TextStyle(color: AppColors.textPrimaryLight),
         bodySmall: TextStyle(color: AppColors.textSecondaryLight),
-        labelLarge: TextStyle(
-            color: AppColors.textPrimaryLight, fontWeight: FontWeight.w600),
+        labelLarge: TextStyle(color: AppColors.textPrimaryLight, fontWeight: FontWeight.w600),
         labelMedium: TextStyle(color: AppColors.textSecondaryLight),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceVariantLight,
         selectedColor: AppColors.primary,
-        labelStyle:
-            const TextStyle(color: AppColors.textPrimaryLight, fontSize: 13),
-        secondaryLabelStyle: const TextStyle(
-            color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+        labelStyle: const TextStyle(color: AppColors.textPrimaryLight, fontSize: 13),
+        secondaryLabelStyle: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
         side: BorderSide.none,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceVariantLight,
-        hintStyle:
-            const TextStyle(color: AppColors.textSecondaryLight, fontSize: 14),
-        labelStyle:
-            const TextStyle(color: AppColors.textSecondaryLight, fontSize: 14),
+        hintStyle: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 14),
+        labelStyle: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       ),
       listTileTheme: const ListTileThemeData(
         textColor: AppColors.textPrimaryLight,
@@ -165,12 +150,8 @@ class AppTheme {
       ),
       dialogTheme: const DialogThemeData(
         backgroundColor: AppColors.surfaceLight,
-        titleTextStyle: TextStyle(
-            color: AppColors.textPrimaryLight,
-            fontSize: 18,
-            fontWeight: FontWeight.bold),
-        contentTextStyle:
-            TextStyle(color: AppColors.textSecondaryLight, fontSize: 14),
+        titleTextStyle: TextStyle(color: AppColors.textPrimaryLight, fontSize: 18, fontWeight: FontWeight.bold),
+        contentTextStyle: TextStyle(color: AppColors.textSecondaryLight, fontSize: 14),
       ),
     );
   }

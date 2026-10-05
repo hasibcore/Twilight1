@@ -14,8 +14,7 @@ class SettingsScreen extends StatelessWidget {
     final themeProv = context.watch<ThemeProvider>();
     final playlistProv = context.watch<PlaylistProvider>();
     final searchProv = context.watch<SearchProvider>();
-    final isAutoplay =
-        context.select<PlayerProvider, bool>((p) => p.isAutoplay);
+    final isAutoplay = context.select<PlayerProvider, bool>((p) => p.isAutoplay);
     final dividerColor = Theme.of(context).dividerColor.withValues(alpha: 0.1);
 
     return Scaffold(
@@ -27,42 +26,24 @@ class SettingsScreen extends StatelessWidget {
           // Appearance
           _buildHeader(context, 'Appearance'),
           ListTile(
-            title: Text('Theme Mode',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
+            title: Text('Theme Mode', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
             subtitle: Text(
               themeProv.themeMode == ThemeMode.dark
                   ? 'Dark (Recommended for OLED)'
                   : themeProv.themeMode == ThemeMode.light
                       ? 'Light Theme'
                       : 'System Default',
-              style: TextStyle(
-                  color: AppColors.textSecondary(context), fontSize: 12),
+              style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12),
             ),
             trailing: DropdownButton<ThemeMode>(
               value: themeProv.themeMode,
               dropdownColor: AppColors.surface(context),
               underline: const SizedBox(),
-              style: TextStyle(
-                  color: AppColors.textPrimary(context),
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.bold),
               items: [
-                DropdownMenuItem(
-                    value: ThemeMode.dark,
-                    child: Text('Dark',
-                        style:
-                            TextStyle(color: AppColors.textPrimary(context)))),
-                DropdownMenuItem(
-                    value: ThemeMode.light,
-                    child: Text('Light',
-                        style:
-                            TextStyle(color: AppColors.textPrimary(context)))),
-                DropdownMenuItem(
-                    value: ThemeMode.system,
-                    child: Text('System',
-                        style:
-                            TextStyle(color: AppColors.textPrimary(context)))),
+                DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark', style: TextStyle(color: AppColors.textPrimary(context)))),
+                DropdownMenuItem(value: ThemeMode.light, child: Text('Light', style: TextStyle(color: AppColors.textPrimary(context)))),
+                DropdownMenuItem(value: ThemeMode.system, child: Text('System', style: TextStyle(color: AppColors.textPrimary(context)))),
               ],
               onChanged: (mode) {
                 if (mode != null) themeProv.setThemeMode(mode);
@@ -74,14 +55,9 @@ class SettingsScreen extends StatelessWidget {
           // Playback
           _buildHeader(context, 'Playback & Performance'),
           SwitchListTile(
-            title: Text('Autoplay',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
-            subtitle: Text(
-                'Automatically play recommended tracks when queue ends',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
+            title: Text('Autoplay', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
+            subtitle: Text('Automatically play recommended tracks when queue ends',
+                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
             value: isAutoplay,
             activeThumbColor: AppColors.primaryAccent,
             onChanged: (val) {
@@ -90,26 +66,17 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           SwitchListTile(
-            title: Text('Stream on Wi-Fi Only',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
-            subtitle: Text(
-                'Save mobile data by disabling playback on cellular networks',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
+            title: Text('Stream on Wi-Fi Only', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
+            subtitle: Text('Save mobile data by disabling playback on cellular networks',
+                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
             value: themeProv.wifiOnly,
             activeThumbColor: AppColors.primaryAccent,
             onChanged: (val) => themeProv.toggleWifiOnly(val),
           ),
           SwitchListTile(
-            title: Text('Data Saver Mode',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
+            title: Text('Data Saver Mode', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
             subtitle: Text('Request lower bitrate streams to save bandwidth',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
+                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
             value: themeProv.dataSaver,
             activeThumbColor: AppColors.primaryAccent,
             onChanged: (val) => themeProv.toggleDataSaver(val),
@@ -119,15 +86,9 @@ class SettingsScreen extends StatelessWidget {
           // History & Privacy
           _buildHeader(context, 'History & Privacy'),
           ListTile(
-            title: Text('Clear Search History',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
-            subtitle: Text('Remove all saved search suggestions',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
-            trailing:
-                Icon(Icons.delete_outline, color: AppColors.icon(context)),
+            title: Text('Clear Search History', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
+            subtitle: Text('Remove all saved search suggestions', style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
+            trailing: Icon(Icons.delete_outline, color: AppColors.icon(context)),
             onTap: () async {
               await searchProv.clearHistory();
               if (context.mounted) {
@@ -138,15 +99,9 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Clear Playback History',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
-            subtitle: Text('Reset recently played songs list',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
-            trailing:
-                Icon(Icons.history_toggle_off, color: AppColors.icon(context)),
+            title: Text('Clear Playback History', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
+            subtitle: Text('Reset recently played songs list', style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
+            trailing: Icon(Icons.history_toggle_off, color: AppColors.icon(context)),
             onTap: () async {
               await playlistProv.clearRecentlyPlayed();
               if (context.mounted) {
@@ -161,13 +116,9 @@ class SettingsScreen extends StatelessWidget {
           // About & Compliance
           _buildHeader(context, 'About & Legal'),
           ListTile(
-            title: Text('App Version',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
+            title: Text('App Version', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
             subtitle: Text('Twilight Music Player v1.0.10 (Release)',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
+                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -182,37 +133,27 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text('YouTube & Spotify Disclaimer',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
+            title: Text('YouTube & Spotify Disclaimer', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
             subtitle: Text('Third-party API and content fair use policy',
-                style: TextStyle(
-                    color: AppColors.textSecondary(context), fontSize: 12)),
-            trailing:
-                Icon(Icons.chevron_right, color: AppColors.iconMuted(context)),
+                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 12)),
+            trailing: Icon(Icons.chevron_right, color: AppColors.iconMuted(context)),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
                   backgroundColor: AppColors.surface(context),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   title: const Text('Content Disclaimer'),
                   content: Text(
                     '• Twilight Music utilizes public YouTube API streams for media playback.\n'
                     '• Twilight is not affiliated with, authorized, or endorsed by Google LLC, YouTube, or Spotify AB.\n'
                     '• All trademarks and copyright remain the sole property of their respective owners.',
-                    style: TextStyle(
-                        color: AppColors.textSecondary(context),
-                        fontSize: 13,
-                        height: 1.4),
+                    style: TextStyle(color: AppColors.textSecondary(context), fontSize: 13, height: 1.4),
                   ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Understood',
-                          style: TextStyle(color: AppColors.primaryAccent)),
+                      child: const Text('Understood', style: TextStyle(color: AppColors.primaryAccent)),
                     ),
                   ],
                 ),
@@ -220,12 +161,8 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Open Source Licenses',
-                style: TextStyle(
-                    color: AppColors.textPrimary(context),
-                    fontWeight: FontWeight.w600)),
-            trailing:
-                Icon(Icons.chevron_right, color: AppColors.iconMuted(context)),
+            title: Text('Open Source Licenses', style: TextStyle(color: AppColors.textPrimary(context), fontWeight: FontWeight.w600)),
+            trailing: Icon(Icons.chevron_right, color: AppColors.iconMuted(context)),
             onTap: () => showLicensePage(
               context: context,
               applicationName: 'Twilight Music Player',

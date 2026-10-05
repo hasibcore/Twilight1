@@ -63,11 +63,9 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final searchProv = context.watch<SearchProvider>();
-    final hasCurrentSong =
-        context.select<PlayerProvider, bool>((p) => p.currentSong != null);
+    final hasCurrentSong = context.select<PlayerProvider, bool>((p) => p.currentSong != null);
     final bottomPadding = hasCurrentSong ? 100.0 : 40.0;
-    final isSuggestionMode =
-        !_hasSubmitted && _controller.text.trim().isNotEmpty;
+    final isSuggestionMode = !_hasSubmitted && _controller.text.trim().isNotEmpty;
 
     return Scaffold(
       bottomNavigationBar: hasCurrentSong
@@ -82,18 +80,14 @@ class _SearchScreenState extends State<SearchScreen> {
             controller: _controller,
             focusNode: _focusNode,
             textInputAction: TextInputAction.search,
-            style:
-                TextStyle(color: AppColors.textPrimary(context), fontSize: 15),
+            style: TextStyle(color: AppColors.textPrimary(context), fontSize: 15),
             decoration: InputDecoration(
               hintText: AppStrings.searchHint,
-              hintStyle: TextStyle(
-                  color: AppColors.textSecondary(context), fontSize: 14),
-              prefixIcon: Icon(Icons.search,
-                  color: AppColors.textSecondary(context), size: 20),
+              hintStyle: TextStyle(color: AppColors.textSecondary(context), fontSize: 14),
+              prefixIcon: Icon(Icons.search, color: AppColors.textSecondary(context), size: 20),
               suffixIcon: _controller.text.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.clear,
-                          color: AppColors.icon(context), size: 20),
+                      icon: Icon(Icons.clear, color: AppColors.icon(context), size: 20),
                       onPressed: () {
                         _debounceTimer?.cancel();
                         _hasSubmitted = false;
@@ -163,18 +157,13 @@ class _SearchScreenState extends State<SearchScreen> {
                   height: 44,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     children: [
                       _buildFilterChip(searchProv, SearchCategory.all, 'All'),
-                      _buildFilterChip(
-                          searchProv, SearchCategory.songs, 'Songs'),
-                      _buildFilterChip(
-                          searchProv, SearchCategory.videos, 'Videos'),
-                      _buildFilterChip(
-                          searchProv, SearchCategory.artists, 'Artists'),
-                      _buildFilterChip(
-                          searchProv, SearchCategory.playlists, 'Playlists'),
+                      _buildFilterChip(searchProv, SearchCategory.songs, 'Songs'),
+                      _buildFilterChip(searchProv, SearchCategory.videos, 'Videos'),
+                      _buildFilterChip(searchProv, SearchCategory.artists, 'Artists'),
+                      _buildFilterChip(searchProv, SearchCategory.playlists, 'Playlists'),
                     ],
                   ),
                 ),
@@ -183,8 +172,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(48),
-                    child: CircularProgressIndicator(
-                        color: AppColors.primaryAccent),
+                    child: CircularProgressIndicator(color: AppColors.primaryAccent),
                   ),
                 )
               else
@@ -228,19 +216,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
             return ListTile(
               dense: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               leading: Icon(
                 isHistory ? Icons.history : Icons.search,
-                color: isHistory
-                    ? AppColors.primaryAccent
-                    : AppColors.textSecondary(context),
+                color: isHistory ? AppColors.primaryAccent : AppColors.textSecondary(context),
                 size: 20,
               ),
               title: _buildHighlightedText(suggestion, queryLower),
               trailing: IconButton(
-                icon: Icon(Icons.north_west,
-                    color: AppColors.iconMuted(context), size: 16),
+                icon: Icon(Icons.north_west, color: AppColors.iconMuted(context), size: 16),
                 tooltip: 'Insert',
                 onPressed: () {
                   _hasSubmitted = false;
@@ -328,8 +312,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildFilterChip(
-      SearchProvider prov, SearchCategory cat, String label) {
+  Widget _buildFilterChip(SearchProvider prov, SearchCategory cat, String label) {
     final isSelected = prov.selectedCategory == cat;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -375,8 +358,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               TextButton(
                 onPressed: () => prov.clearHistory(),
-                child: const Text(AppStrings.clearHistory,
-                    style: TextStyle(color: AppColors.primaryAccent)),
+                child: const Text(AppStrings.clearHistory, style: TextStyle(color: AppColors.primaryAccent)),
               ),
             ],
           ),
@@ -388,12 +370,9 @@ class _SearchScreenState extends State<SearchScreen> {
           itemBuilder: (_, index) {
             final query = prov.searchHistory[index];
             return ListTile(
-              leading:
-                  Icon(Icons.history, color: AppColors.textTertiary(context)),
-              title: Text(query,
-                  style: TextStyle(color: AppColors.textPrimary(context))),
-              trailing: Icon(Icons.north_west,
-                  color: AppColors.textTertiary(context), size: 18),
+              leading: Icon(Icons.history, color: AppColors.textTertiary(context)),
+              title: Text(query, style: TextStyle(color: AppColors.textPrimary(context))),
+              trailing: Icon(Icons.north_west, color: AppColors.textTertiary(context), size: 18),
               onTap: () {
                 _hasSubmitted = true;
                 _debounceTimer?.cancel();
@@ -427,8 +406,7 @@ class _SearchScreenState extends State<SearchScreen> {
       return EmptyStateWidget(
         icon: Icons.person_off_outlined,
         title: 'No artists found',
-        message:
-            'No artists matched "${prov.query}". Try selecting "All" or "Songs".',
+        message: 'No artists matched "${prov.query}". Try selecting "All" or "Songs".',
       );
     }
 
@@ -436,13 +414,11 @@ class _SearchScreenState extends State<SearchScreen> {
       return EmptyStateWidget(
         icon: Icons.playlist_remove_rounded,
         title: 'No playlists found',
-        message:
-            'No playlists matched "${prov.query}". Try selecting "All" or "Songs".',
+        message: 'No playlists matched "${prov.query}". Try selecting "All" or "Songs".',
       );
     }
 
-    if ((cat == SearchCategory.songs || cat == SearchCategory.videos) &&
-        results.songs.isEmpty) {
+    if ((cat == SearchCategory.songs || cat == SearchCategory.videos) && results.songs.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.music_off_outlined,
         title: 'No tracks found',
@@ -453,9 +429,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (cat == SearchCategory.all ||
-            cat == SearchCategory.songs ||
-            cat == SearchCategory.videos) ...[
+        if (cat == SearchCategory.all || cat == SearchCategory.songs || cat == SearchCategory.videos) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
@@ -480,8 +454,7 @@ class _SearchScreenState extends State<SearchScreen> {
             },
           ),
         ],
-        if ((cat == SearchCategory.all || cat == SearchCategory.artists) &&
-            results.artists.isNotEmpty) ...[
+        if ((cat == SearchCategory.all || cat == SearchCategory.artists) && results.artists.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
@@ -505,8 +478,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
         ],
-        if ((cat == SearchCategory.all || cat == SearchCategory.playlists) &&
-            results.playlists.isNotEmpty) ...[
+        if ((cat == SearchCategory.all || cat == SearchCategory.playlists) && results.playlists.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(

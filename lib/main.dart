@@ -42,8 +42,7 @@ void main() async {
       await JustAudioBackground.init(
         androidNotificationChannelId: 'com.twilight.music.audio',
         androidNotificationChannelName: 'Twilight Music',
-        androidNotificationChannelDescription:
-            'Twilight Music playback controls',
+        androidNotificationChannelDescription: 'Twilight Music playback controls',
         // Keep foreground service notification ongoing while playing to prevent Android OS kill
         androidNotificationOngoing: true,
         // Release foreground status when paused so notification can be dismissed cleanly
@@ -74,29 +73,23 @@ void main() async {
   // Load configuration safely
   String apiKey = '';
   try {
-    final configString =
-        await rootBundle.loadString('assets/config/app_config.json');
+    final configString = await rootBundle.loadString('assets/config/app_config.json');
     final Map<String, dynamic> configJson = jsonDecode(configString);
     apiKey = configJson['youtubeApiKey'] as String? ?? '';
     final fbApiKey = configJson['firebaseApiKey'] as String?;
     final fbProjectId = configJson['firebaseProjectId'] as String?;
     FirebaseConfig.init(customApiKey: fbApiKey, customProjectId: fbProjectId);
   } catch (e) {
-    AppLogger.error(
-        'Could not load assets/config/app_config.json, falling back to defaults',
-        e);
+    AppLogger.error('Could not load assets/config/app_config.json, falling back to defaults', e);
   }
 
   // Setup Dependency Injection Layer
   final httpClient = http.Client();
-  final ytRemoteDatasource =
-      YouTubeRemoteDatasource(client: httpClient, apiKey: apiKey);
+  final ytRemoteDatasource = YouTubeRemoteDatasource(client: httpClient, apiKey: apiKey);
   final localDatasource = LocalStorageDatasource();
 
-  final YouTubeRepository youtubeRepository =
-      YouTubeRepositoryImpl(remoteDatasource: ytRemoteDatasource);
-  final MusicRepository musicRepository =
-      MusicRepositoryImpl(localDatasource: localDatasource);
+  final YouTubeRepository youtubeRepository = YouTubeRepositoryImpl(remoteDatasource: ytRemoteDatasource);
+  final MusicRepository musicRepository = MusicRepositoryImpl(localDatasource: localDatasource);
   final AuthRepository authRepository = AuthRepositoryImpl();
 
   runApp(

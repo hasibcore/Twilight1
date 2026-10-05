@@ -17,14 +17,13 @@ class PlaylistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ??
-          () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => PlaylistDetailScreen(playlist: playlist),
-              ),
-            );
-          },
+      onTap: onTap ?? () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => PlaylistDetailScreen(playlist: playlist),
+          ),
+        );
+      },
       child: Container(
         width: 150,
         margin: const EdgeInsets.only(right: 14),
@@ -43,16 +42,14 @@ class PlaylistCard extends StatelessWidget {
                         width: 150,
                         height: 150,
                         color: AppColors.surfaceVariantDark,
-                        child: const Icon(Icons.queue_music,
-                            color: Colors.white38, size: 48),
+                        child: const Icon(Icons.queue_music, color: Colors.white38, size: 48),
                       ),
                     )
                   : Container(
                       width: 150,
                       height: 150,
                       color: AppColors.surfaceVariantDark,
-                      child: const Icon(Icons.queue_music,
-                          color: Colors.white38, size: 48),
+                      child: const Icon(Icons.queue_music, color: Colors.white38, size: 48),
                     ),
             ),
             const SizedBox(height: 8),

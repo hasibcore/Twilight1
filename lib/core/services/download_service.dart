@@ -39,9 +39,7 @@ class DownloadItem {
 
   factory DownloadItem.fromJson(Map<String, dynamic> json) => DownloadItem(
         song: SongModel.fromJson(
-          json['song'] is Map
-              ? Map<String, dynamic>.from(json['song'] as Map)
-              : {},
+          json['song'] is Map ? Map<String, dynamic>.from(json['song'] as Map) : {},
         ).toEntity(),
         localFilePath: json['localFilePath'] as String? ?? '',
         localThumbnailPath: json['localThumbnailPath'] as String?,
@@ -121,17 +119,12 @@ class DownloadService {
       final cacheM4a = File('${tempDir.path}/twilight_cache_$cleanId.m4a');
       final cacheWebm = File('${tempDir.path}/twilight_cache_$cleanId.webm');
       final doneM4a = File('${tempDir.path}/twilight_cache_$cleanId.m4a.done');
-      final doneWebm =
-          File('${tempDir.path}/twilight_cache_$cleanId.webm.done');
+      final doneWebm = File('${tempDir.path}/twilight_cache_$cleanId.webm.done');
 
       File? sourceCached;
-      if (cacheM4a.existsSync() &&
-          doneM4a.existsSync() &&
-          cacheM4a.lengthSync() > 100000) {
+      if (cacheM4a.existsSync() && doneM4a.existsSync() && cacheM4a.lengthSync() > 100000) {
         sourceCached = cacheM4a;
-      } else if (cacheWebm.existsSync() &&
-          doneWebm.existsSync() &&
-          cacheWebm.lengthSync() > 100000) {
+      } else if (cacheWebm.existsSync() && doneWebm.existsSync() && cacheWebm.lengthSync() > 100000) {
         sourceCached = cacheWebm;
       }
 
@@ -148,18 +141,13 @@ class DownloadService {
         try {
           final manifest = await _yt.videos.streamsClient.getManifest(
             cleanId,
-            ytClients: [
-              YoutubeApiClient.android,
-              YoutubeApiClient.androidSdkless
-            ],
+            ytClients: [YoutubeApiClient.android, YoutubeApiClient.androidSdkless],
           );
           final audios = manifest.audioOnly.toList();
           if (audios.isNotEmpty) {
-            final mp4s = audios
-                .where((s) =>
-                    s.container.name.toLowerCase().contains('mp4') ||
-                    s.container.name.toLowerCase().contains('m4a'))
-                .toList();
+            final mp4s = audios.where((s) =>
+                s.container.name.toLowerCase().contains('mp4') ||
+                s.container.name.toLowerCase().contains('m4a')).toList();
             final bestStream = mp4s.isNotEmpty
                 ? mp4s.withHighestBitrate()
                 : audios.withHighestBitrate();
@@ -170,21 +158,18 @@ class DownloadService {
             final file = File(tmpFilePath);
             final sink = file.openWrite();
 
-            try {
-              final stream = _yt.videos.streamsClient.get(bestStream);
-              await for (final chunk in stream) {
-                sink.add(chunk);
-                downloadedBytes += chunk.length;
-                if (totalBytes > 0) {
-                  final progress =
-                      0.15 + (0.75 * (downloadedBytes / totalBytes));
-                  onProgress(progress.clamp(0.15, 0.90));
-                }
+            final stream = _yt.videos.streamsClient.get(bestStream);
+            await for (final chunk in stream) {
+              sink.add(chunk);
+              downloadedBytes += chunk.length;
+              if (totalBytes > 0) {
+                final progress = 0.15 + (0.75 * (downloadedBytes / totalBytes));
+                onProgress(progress.clamp(0.15, 0.90));
               }
-              await sink.flush();
-            } finally {
-              await sink.close();
             }
+
+            await sink.flush();
+            await sink.close();
 
             final finalAudioFile = File(audioFilePath);
             if (await finalAudioFile.exists()) {
@@ -195,8 +180,7 @@ class DownloadService {
             downloadSuccess = true;
           }
         } catch (e) {
-          AppLogger.info(
-              'Direct streamsClient download error, attempting stream extractor fallback: $e');
+          AppLogger.info('Direct streamsClient download error, attempting stream extractor fallback: $e');
         }
 
         // Fallback: extract audio stream via multi-tiered extractor (Invidious / iOS client)
@@ -206,8 +190,7 @@ class DownloadService {
             preferDownload: true,
           );
           if (streamResult == null) {
-            throw Exception(
-                'Could not resolve playable audio stream for "${song.title}"');
+            throw Exception('Could not resolve playable audio stream for "${song.title}"');
           }
 
           final client = http.Client();
@@ -219,30 +202,25 @@ class DownloadService {
 
             final response = await client.send(request);
             if (response.statusCode != 200 && response.statusCode != 206) {
-              throw Exception(
-                  'Stream download HTTP error: ${response.statusCode}');
+              throw Exception('Stream download HTTP error: ${response.statusCode}');
             }
 
-            final totalBytes =
-                response.contentLength ?? streamResult.totalBytes;
+            final totalBytes = response.contentLength ?? streamResult.totalBytes;
             int downloadedBytes = 0;
             final file = File(tmpFilePath);
             final sink = file.openWrite();
 
-            try {
-              await for (final chunk in response.stream) {
-                sink.add(chunk);
-                downloadedBytes += chunk.length;
-                if (totalBytes > 0) {
-                  final progress =
-                      0.15 + (0.75 * (downloadedBytes / totalBytes));
-                  onProgress(progress.clamp(0.15, 0.90));
-                }
+            await for (final chunk in response.stream) {
+              sink.add(chunk);
+              downloadedBytes += chunk.length;
+              if (totalBytes > 0) {
+                final progress = 0.15 + (0.75 * (downloadedBytes / totalBytes));
+                onProgress(progress.clamp(0.15, 0.90));
               }
-              await sink.flush();
-            } finally {
-              await sink.close();
             }
+
+            await sink.flush();
+            await sink.close();
 
             final finalAudioFile = File(audioFilePath);
             if (await finalAudioFile.exists()) {
@@ -264,8 +242,7 @@ class DownloadService {
         try {
           final uri = Uri.tryParse(song.thumbnailUrl);
           if (uri != null) {
-            final thumbRes =
-                await http.get(uri).timeout(const Duration(seconds: 8));
+            final thumbRes = await http.get(uri).timeout(const Duration(seconds: 8));
             if (thumbRes.statusCode == 200) {
               final thumbFile = File(thumbFilePath);
               await thumbFile.writeAsBytes(thumbRes.bodyBytes);
@@ -283,20 +260,12 @@ class DownloadService {
         id: song.id,
         title: song.title.isNotEmpty ? song.title : targetSong.title,
         artist: song.artist.isNotEmpty ? song.artist : targetSong.artist,
-        channelId:
-            song.channelId.isNotEmpty ? song.channelId : targetSong.channelId,
-        thumbnailUrl:
-            (savedThumbPath != null && File(savedThumbPath).existsSync())
-                ? savedThumbPath
-                : (song.thumbnailUrl.isNotEmpty
-                    ? song.thumbnailUrl
-                    : targetSong.thumbnailUrl),
-        durationSeconds: song.durationSeconds > 0
-            ? song.durationSeconds
-            : targetSong.durationSeconds,
-        durationFormatted: song.durationFormatted.isNotEmpty
-            ? song.durationFormatted
-            : targetSong.durationFormatted,
+        channelId: song.channelId.isNotEmpty ? song.channelId : targetSong.channelId,
+        thumbnailUrl: (savedThumbPath != null && File(savedThumbPath).existsSync())
+            ? savedThumbPath
+            : (song.thumbnailUrl.isNotEmpty ? song.thumbnailUrl : targetSong.thumbnailUrl),
+        durationSeconds: song.durationSeconds > 0 ? song.durationSeconds : targetSong.durationSeconds,
+        durationFormatted: song.durationFormatted.isNotEmpty ? song.durationFormatted : targetSong.durationFormatted,
         viewCount: song.viewCount,
         publishedAt: song.publishedAt,
         isFavorite: song.isFavorite,
@@ -307,24 +276,16 @@ class DownloadService {
         localFilePath: audioFilePath,
         localThumbnailPath: savedThumbPath,
         downloadedAtMillis: DateTime.now().millisecondsSinceEpoch,
-        fileSize: finalFileSize > 0
-            ? finalFileSize
-            : (File(audioFilePath).existsSync()
-                ? File(audioFilePath).lengthSync()
-                : 0),
+        fileSize: finalFileSize > 0 ? finalFileSize : (File(audioFilePath).existsSync() ? File(audioFilePath).lengthSync() : 0),
       );
 
       // Persist in metadata
       final currentList = loadSavedDownloads();
-      currentList.removeWhere((i) =>
-          i.song.id == song.id ||
-          i.song.id == cleanId ||
-          i.localFilePath.contains(cleanId));
+      currentList.removeWhere((i) => i.song.id == song.id || i.song.id == cleanId || i.localFilePath.contains(cleanId));
       currentList.insert(0, item);
       await _saveDownloads(currentList);
 
-      AppLogger.info(
-          'Successfully downloaded track: "${song.title}" (${(finalFileSize / (1024 * 1024)).toStringAsFixed(1)} MB)');
+      AppLogger.info('Successfully downloaded track: "${song.title}" (${(finalFileSize / (1024 * 1024)).toStringAsFixed(1)} MB)');
 
       // Invalidate in-memory downloads cache so next play sees this file
       YouTubeAudioSource.invalidateDownloadsCache();
@@ -347,11 +308,9 @@ class DownloadService {
   static Future<void> deleteTrack(String songId) async {
     try {
       final currentList = loadSavedDownloads();
-      final toDelete = currentList
-          .where(
-            (i) => i.song.id == songId || i.localFilePath.contains(songId),
-          )
-          .toList();
+      final toDelete = currentList.where(
+        (i) => i.song.id == songId || i.localFilePath.contains(songId),
+      ).toList();
 
       for (final item in toDelete) {
         if (item.localFilePath.isNotEmpty) {
@@ -362,8 +321,7 @@ class DownloadService {
             } catch (_) {}
           }
         }
-        if (item.localThumbnailPath != null &&
-            item.localThumbnailPath!.isNotEmpty) {
+        if (item.localThumbnailPath != null && item.localThumbnailPath!.isNotEmpty) {
           final thumbFile = File(item.localThumbnailPath!);
           if (thumbFile.existsSync()) {
             try {
@@ -373,8 +331,7 @@ class DownloadService {
         }
       }
 
-      currentList.removeWhere(
-          (i) => i.song.id == songId || i.localFilePath.contains(songId));
+      currentList.removeWhere((i) => i.song.id == songId || i.localFilePath.contains(songId));
       await _saveDownloads(currentList);
       AppLogger.info('Deleted download for $songId');
 
