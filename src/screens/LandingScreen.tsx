@@ -136,21 +136,29 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onNavigate }) => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <button
-              onClick={() => onNavigate ? onNavigate('home') : (window.location.href = '/')}
+            <a
+              href="https://github.com/hasibcore/Twilight1/releases/download/v2.3.3/Twilight-Android-v2.3.3.apk"
+              download="Twilight-Android-v2.3.3.apk"
               className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition-all text-center cursor-pointer"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Launch & Install App (PWA)</span>
+              <Download className="w-4 h-4" />
+              <span>Download Android APK (67.7 MB)</span>
+            </a>
+            <button
+              onClick={() => onNavigate ? onNavigate('home') : (window.location.href = '/')}
+              className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700/60 transition-all text-center cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Launch & Install Web App (PWA)</span>
             </button>
             <a
               href="https://github.com/hasibcore/Twilight1"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700/60 transition-all text-center"
+              className="w-full py-2 rounded-2xl text-slate-400 hover:text-slate-200 font-medium text-[11px] flex items-center justify-center gap-1.5 transition-colors"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>View GitHub Source & Build</span>
+              <ExternalLink className="w-3 h-3" />
+              <span>View GitHub Source</span>
             </a>
           </div>
         </div>
@@ -219,22 +227,22 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onNavigate }) => {
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
           <a
-            href="https://github.com/hasibcore/Twilight1/releases/tag/v1.0.1"
+            href="https://github.com/hasibcore/Twilight1/releases/tag/v2.3.3"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2 transition-all"
           >
-            <span>GitHub v1.0.1</span>
+            <span>GitHub v2.3.3</span>
             <ExternalLink className="w-4 h-4" />
           </a>
 
           <a
-            href="https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/twilight-music-full-project-v1.0.1.tar.gz"
-            download="twilight-music-full-project-v1.0.1.tar.gz"
+            href="https://github.com/hasibcore/Twilight1/releases/download/v2.3.3/Twilight-Music-v1.0.3-Full-Project.zip"
+            download="Twilight-Music-v1.0.3-Full-Project.zip"
             className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all"
           >
             <Download className="w-4 h-4" />
-            <span>Download Archive</span>
+            <span>Download Project ZIP (87 MB)</span>
           </a>
 
           <button

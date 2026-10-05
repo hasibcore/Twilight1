@@ -109,24 +109,24 @@ export class GoogleDriveService {
       const folderId = await this.getOrCreateTwilightFolder(accessToken);
 
       if (onProgress) onProgress(45, 'Fetching release archive package...');
-      // Try local tarball first; fallback to GitHub archive tarball
+      // Try local package first; fallback to GitHub release package
       let blob: Blob;
       try {
-        const archiveResponse = await fetch('/landing/downloads/twilight-music-full-project.tar.gz');
+        const archiveResponse = await fetch('/landing/downloads/Twilight-Music-v1.0.3-Full-Project.zip');
         if (archiveResponse.ok) {
           blob = await archiveResponse.blob();
         } else {
           throw new Error('Local archive not found');
         }
       } catch {
-        const fallbackRes = await fetch('https://github.com/hasibcore/Twilight1/releases/download/v1.0.1/twilight-music-full-project-v1.0.1.tar.gz');
+        const fallbackRes = await fetch('https://github.com/hasibcore/Twilight1/releases/download/v2.3.3/Twilight-Music-v1.0.3-Full-Project.zip');
         if (!fallbackRes.ok) {
           throw new Error('Could not retrieve release archive package.');
         }
         blob = await fallbackRes.blob();
       }
 
-      const fileName = `Twilight-Music-v1.0.1-Release-${new Date().toISOString().slice(0, 10)}.tar.gz`;
+      const fileName = `Twilight-Music-v2.3.3-Full-Project-${new Date().toISOString().slice(0, 10)}.zip`;
 
       if (onProgress) onProgress(65, 'Uploading archive to Google Drive...');
 
