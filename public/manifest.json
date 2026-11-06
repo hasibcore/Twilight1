@@ -1,0 +1,32 @@
+{
+  "name": "Twilight Music",
+  "short_name": "Twilight",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "description": "High-fidelity music streaming, smart taste algorithm, lyrics, offline playback, and library manager.",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/twilight_b_icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/twilight_b_icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/twilight_b_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
