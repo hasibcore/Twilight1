@@ -185,7 +185,7 @@ class MiniPlayerWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${currentSong.artist} • ${Formatters.formatDuration(player.currentPosition.inSeconds)} / ${Formatters.formatDuration(player.totalDuration.inSeconds > 0 ? player.totalDuration.inSeconds : currentSong.durationSeconds)}',
+                          '${currentSong.artist} • ${Formatters.formatDuration(player.currentPosition)} / ${Formatters.formatDuration(player.totalDuration.inSeconds > 0 ? player.totalDuration : Duration(seconds: currentSong.durationSeconds))}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(

@@ -25,6 +25,16 @@ class ArtistModel {
     );
   }
 
+  factory ArtistModel.fromEntity(Artist entity) {
+    return ArtistModel(
+      id: entity.id,
+      name: entity.name,
+      thumbnailUrl: entity.thumbnailUrl,
+      subscriberCountFormatted: entity.subscriberCountFormatted,
+      description: entity.description,
+    );
+  }
+
   factory ArtistModel.fromJson(Map<String, dynamic> json) {
     return ArtistModel(
       id: json['id'] as String? ?? '',
